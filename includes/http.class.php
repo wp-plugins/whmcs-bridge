@@ -174,7 +174,7 @@ if (!class_exists('HTTPRequest')) {
 			if (curl_errno($ch)) {
 				$this->errno=curl_errno($ch);
 				$this->error=curl_error($ch);
-				die('Error:'.$this->errno.'/'.$this->error);
+				die('HTTP Error:'.$this->errno.'/'.$this->error.' at '.$this->_url);
 			}
 			$info=curl_getinfo($ch);
 				

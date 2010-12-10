@@ -10,7 +10,7 @@ if (!function_exists('cc_footers')) {
 		//Please contact us if you wish to remove the ChoppedCode logo in the footer
 		if (!$cc_footer) {
 			$msg.='<center style="margin-top:0px;font-size:x-small">';
-			$msg.='Powered by <a href="http://www.zingiri.com">ChoppedCode</a>';
+			$msg.='Powered by <a href="http://www.choppedcode.com">ChoppedCode</a>';
 			if (count($cc_footers) >0) {
 				foreach ($cc_footers as $foot) {
 					$msg.=', <a href="'.$foot[0].'">'.$foot[1].'</a>';
