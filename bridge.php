@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 0.9.0
+ Version: 0.9.1
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","0.9.0");
+define("CC_WHMCS_BRIDGE_VERSION","0.9.1");
 define("CC_CE","mybb");
 define("CC_WHMCS_VERSION","4.0");
 
@@ -41,18 +41,8 @@ if ($cc_whmcs_bridge_version) {
 	if (get_option('cc_whmcs_bridge_footer')=='Site') add_filter('wp_footer','cc_footers');
 	add_filter('the_content', 'cc_whmcs_bridge_content', 10, 3);
 	add_filter('the_title', 'cc_whmcs_bridge_title');
-	
 	add_action('wp_head','cc_whmcs_bridge_header');
 	add_action("plugins_loaded", "cc_whmcs_sidebar_init");
-
-	//add_action('wp_login','cc_whmcs_bridge_login');
-	//add_action('wp_logout','cc_whmcs_bridge_logout');
-
-	//add_filter('check_password','cc_whmcs_bridge_check_password',10,4);
-	//add_action('profile_update','cc_whmcs_bridge_profile_update'); //post wp update
-	//add_action('user_register','cc_whmcs_bridge_user_register'); //post wp update
-	//add_action('delete_user','cc_whmcs_bridge_user_delete');
-
 }
 register_activation_hook(__FILE__,'cc_whmcs_bridge_activate');
 register_deactivation_hook(__FILE__,'cc_whmcs_bridge_deactivate');
@@ -63,8 +53,7 @@ require_once(dirname(__FILE__) . '/includes/http.class.php');
 require_once(dirname(__FILE__) . '/includes/footer.inc.php');
 require_once(dirname(__FILE__) . '/includes/integrator.inc.php');
 require_once(dirname(__FILE__) . '/bridge_cp.php');
-require_once(dirname(__FILE__) . '/includes/wpusers.class.php');
-require(dirname(__FILE__) . '/includes/simple_html_dom.php');
+require_once(dirname(__FILE__) . '/includes/simple_html_dom.php');
 
 $zErrorLog=new zErrorLog();
 
@@ -75,7 +64,6 @@ function cc_whmcs_bridge_check() {
 	$files=array();
 	$dirs=array();
 
-	//$files[]=dirname(__FILE__).'/'.CC_CE.'/inc/settings.php';
 	foreach ($files as $file) {
 		if (!is_writable($file)) $warnings[]='File '.$file.' is not writable, please chmod to 666';
 	}
@@ -194,7 +182,7 @@ function cc_whmcs_bridge_output() {
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
 	//echo '<br />'.$http.'<br />';
-	$news = new HTTPRequest($http);
+	$news = new HTTPRequestWHMCS($http);
 
 	if (!$news->curlInstalled()) return "cURL not installed";
 	elseif (!$news->live()) return "A HTTP Error occured";
@@ -352,11 +340,8 @@ function cc_whmcs_bridge_header()
 	if ($head=$html->find('head',0)) $ret['head']=$head->__toString();//$buffer;
 	
 	$ret['msg']=$_SESSION;
-	//$ret['loggedin']=cc_ce_is_loggedin();
 
-	//print_r($ret['title']);
 	$cc_whmcs_bridge_content=$ret;
-//	var_dump($cc_whmcs_bridge_content['msg']);
 	echo $cc_whmcs_bridge_content['head'];
 	echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
 
@@ -366,7 +351,6 @@ function cc_whmcs_bridge_mainpage() {
 	$ids=get_option("cc_whmcs_bridge_pages");
 	$ida=explode(",",$ids);
 	return $ida[0];
-
 }
 
 /**
@@ -386,7 +370,6 @@ function cc_whmcs_sidebar_main($args) {
 	echo 'WHMCS Main';
 	echo $after_title;
 	echo $cc_whmcs_bridge_content['sidebar'][0];
-	//print_r($cc_whmcs_bridge_content->sidebar);
 	echo $after_widget;
 }
 
@@ -398,117 +381,5 @@ function cc_whmcs_bridge_init()
 {
 	ob_start();
 	session_start();
-	//cc_whmcs_bridge_login();
-}
-
-function cc_whmcs_bridge_login() {
-	global $current_user;
-	if (is_user_logged_in()) {
-		cc_whmcs_bridge_login_user($current_user->data->user_email,$_SESSION['__ccce']['password']);
-	}
-}
-
-function cc_whmcs_bridge_login_user($email,$password) {
-	$post['email']=$email;
-	$post['passed_password']=$password;
-	//print_r($post);
-	$http=cc_whmcs_bridge_http('fuse=admin&action=Login&public=1');
-	$news = new HTTPRequest($http);
-	$news->post=$post;
-	if ($news->live()) {
-		//$output=$news->DownloadToString(true,false);
-		//print_r($output);
-	}
-	return true;
-}
-
-function cc_whmcs_bridge_login_admin() {
-	$post['email']=get_option('cc_whmcs_bridge_admin_login');
-	$post['passed_password']=get_option('cc_whmcs_bridge_admin_password');
-	$http=cc_whmcs_bridge_http('fuse=admin&action=Login');
-	//print_r($post);
-	$news = new HTTPRequest($http);
-	$news->post=$post;
-	if ($news->live()) {
-		$output=$news->DownloadToString(true,false);
-		print_r($output);
-		//die();
-	}
-	return true;
-}
-
-function cc_whmcs_bridge_logout() {
-	$http=cc_whmcs_bridge_http('fuse=newedge&action=Logout');
-	$news = new HTTPRequest($http);
-	$news->post=$post;
-	if ($news->live()) {
-		$output=$news->DownloadToString(true,false);
-	}
-
-	if (isset($_SESSION['tmpfile'])) {
-		$ckfile=dirname(__FILE__).'/cache/'.$_SESSION['tmpfile'].md5($_SESSION['tmpfile']).'.tmp';
-		unlink($ckfile);
-		unset($_SESSION['tmpfile']);
-	}
-}
-
-function cc_whmcs_bridge_check_password($check,$password,$hash,$user_id) {
-	global $wpdb;
-
-	$prefix=$wpdb->prefix."cc_mybb_";
-
-	if (!$check) { //the user could be using his old password, pre Web Shop to Wordpress migration
-		$user=new WP_User($user_id);
-		$post['email']=$user->data->user_email;
-		$post['passed_password']=$password;
-		$http=cc_whmcs_bridge_http('fuse=admin&action=Login&public=1');
-		$news = new HTTPRequest($http);
-		$news->post=$post;
-		if ($news->live()) {
-			$output=$news->DownloadToString(true,false);
-			if ($output['loggedin']) {
-				$_SESSION['__ccce']['password']=$password;
-				return true;
-			}
-		}
-		return false;
-	} else {
-		$_SESSION['__ccce']['password']=$password;
-		return $check;
-	}
-}
-
-function cc_whmcs_bridge_profile_update($user_id) {
-	//latest: erik@zingir.com - test123
-	$user=new WP_User($user_id);
-	$wpusers=new wpusers();
-	$group=$wpusers->getForumGroup($user);
-	$wpusers->updateForumUser($user->data->user_login,$_POST['pass1'],$user->data->user_email,$group);
-}
-
-function cc_whmcs_bridge_user_register($user_id) {
-	//error_reporting(E_ALL & ~E_NOTICE);
-	//ini_set('display_errors', '1');
-	$user=new WP_User($user_id);
-	$wpusers=new wpusers();
-	$group=$wpusers->getForumGroup($user);
-	$wpusers->createForumUser($user->data->user_login,$user->data->user_pass,$user->data->user_email,$group);
-}
-
-function cc_whmcs_bridge_user_delete($user_id) {
-	$user=new WP_User($user_id);
-	$wpusers=new wpusers();
-	$wpusers->deleteForumUser($user->data->user_login);
-}
-
-function cc_whmcs_bridge_admin_password() {
-	$login=get_option('cc_whmcs_bridge_admin_login');
-	if (get_option("cc_whmcs_bridge_login")=="WHMCS") {
-		$user_pass=get_option("cc_whmcs_bridge_admin_password");
-	} else {
-		$user=new WP_User($login);
-		$user_pass=substr($user->data->user_pass,1,25);
-	}
-	return $user_pass;
 }
 ?>

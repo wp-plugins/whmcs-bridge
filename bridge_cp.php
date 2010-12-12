@@ -11,16 +11,16 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The site URL of your WHMCS installation",
 			"id" => $cc_whmcs_bridge_shortname."_url",
 			"type" => "text");
-	/*
+	
 	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin user",
-			"desc" => "This is your WHMCS admin user, used for connections, upgrades and synchronisation of new users.",
+			"desc" => 'This is your WHMCS admin user, used for connections, upgrades and synchronisation of new users.<br />Make sure you authorise your IP in your WHMCS portal (General Settings - Security - API IP Access Restriction).',
 			"id" => $cc_whmcs_bridge_shortname."_admin_login",
 			"type" => "text");
 	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin password",
 			"desc" => "The password of the WHMCS admin user.",
 			"id" => $cc_whmcs_bridge_shortname."_admin_password",
 			"type" => "text");
-			*/
+			
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
 			"desc" => "Specify where you want the ChoppedCode footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
 			"id" => $cc_whmcs_bridge_shortname."_footer",
@@ -38,7 +38,7 @@ function cc_whmcs_bridge_add_admin() {
 	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
 
 	if ( $_GET['page'] == "cc-ce-bridge-cp" ) {
-
+		
 		if ( 'install' == $_REQUEST['action'] ) {
 			foreach ($cc_whmcs_bridge_options as $value) {
 				update_option( $value['id'], $_REQUEST[ $value['id'] ] );
@@ -50,10 +50,8 @@ function cc_whmcs_bridge_add_admin() {
 				} else { delete_option( $value['id'] );
 				}
 			}
-			if (cc_whmcs_bridge_install()) {
-				//$wpusers=new wpusers();
-				//$wpusers->sync();
-			}
+			cc_whmcs_bridge_install();
+				cc_whmcs_sync_users();
 			header("Location: options-general.php?page=cc-ce-bridge-cp&installed=true");
 			die;
 		}
@@ -83,7 +81,8 @@ function cc_whmcs_bridge_admin() {
 
 	if ( $_REQUEST['installed'] ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' installed.</strong></p></div>';
 	if ( $_REQUEST['uninstalled'] ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' uninstalled.</strong></p></div>';
-
+	if ( $_REQUEST['error'] ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
+	
 	?>
 <div class="wrap">
 <h2><b><?php echo $cc_whmcs_bridge_name; ?></b></h2>

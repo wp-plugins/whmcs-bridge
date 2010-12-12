@@ -125,7 +125,7 @@ if (!function_exists('assign_rand_value')) {
 }
 
 if (!function_exists('create_sessionid')) {
-	function create_sessionid($length,$s=27)
+	function create_sessionid($length,$s=1)
 	{
 		if($length>0)
 		{

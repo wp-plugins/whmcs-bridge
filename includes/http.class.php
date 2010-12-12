@@ -1,6 +1,6 @@
 <?php
-if (!class_exists('HTTPRequest')) {
-	class HTTPRequest
+if (!class_exists('HTTPRequestWHMCS')) {
+	class HTTPRequestWHMCS
 	{
 		var $_fp;        // HTTP socket
 		var $_url;        // full URL
@@ -43,7 +43,7 @@ if (!class_exists('HTTPRequest')) {
 		}
 
 		// constructor
-		function HTTPRequest($url="",$login=false)
+		function HTTPRequestWHMCS($url="",$login=false)
 		{
 			if (!$url) return;
 			$this->login=$login;
@@ -74,7 +74,7 @@ if (!class_exists('HTTPRequest')) {
 		}
 
 		// download URL to string
-		function DownloadToString($withHeaders=false,$withCookies=false)
+		function DownloadToString($withHeaders=false,$withCookies=true)
 		{
 			//$withHeaders=false;
 			$newfiles=array();
@@ -97,9 +97,6 @@ if (!class_exists('HTTPRequest')) {
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
-			if (!ini_get('safe_mode') && !ini_get('open_basedir')) {
-				//	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);// allow redirects - not allowed if safe mode
-			}
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 60); // times out after 10s
@@ -115,19 +112,18 @@ if (!class_exists('HTTPRequest')) {
 			if ($withCookies && isset($_COOKIE)) {
 				$cookies="";
 				foreach ($_COOKIE as $i => $v) {
-					if ($i!='zing') {
+					if ($i=='WHMCSUID' || $i=="WHMCSPW") {
 						if ($cookies) $cookies.=';';
 						$cookies.=$i.'='.$v;
 					}
 				}
+				echo $cookies;
 				curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 			}
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $ckfile);
 			curl_setopt ($ch, CURLOPT_COOKIEFILE, $ckfile);
 
 			if (count($_FILES) > 0) {
-				//print_r($_FILES);
-				//$this->post['z_FILES']=$_FILES;
 				foreach ($_FILES as $name => $file) {
 					if ($file['tmp_name']) {
 						$newfile=dirname(__FILE__).'/../cache/'.$file['name'];
@@ -137,7 +133,6 @@ if (!class_exists('HTTPRequest')) {
 						if ($file['tmp_name']) $this->post[$name]='@'.$newfile;
 					}
 				}
-				//print_r($_FILES);
 			}
 			if (count($this->post) > 0) {
 				curl_setopt($ch, CURLOPT_POST, 1); // set POST method

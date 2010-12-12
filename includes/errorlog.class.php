@@ -8,7 +8,7 @@
 class zErrorLog {
 	var $debug=false;
 	
-	function zErrorLog($clear=false,$debug=true) {
+	function zErrorLog($clear=false,$debug=false) {
 		if ($clear) $this->clear();
 		$this->debug=$debug;
 	}

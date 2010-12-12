@@ -1,19 +1,19 @@
-=== WHMCS Bridge ===
+=== ChoppedCode WHMCS Bridge ===
 Contributors: EBO
 Donate link: http://www.choppedcode.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.0.3
-Stable tag: 0.9.0
+Stable tag: 0.9.1
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 == Description ==
 
 The WHMCS Bridge plugin integrates your WHMCS support and billing software into Wordpress providing a seamless and consistent user experience to your customers.
 
-Thanks to the single sign-on feature, your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
-
 Thanks to the theme inheritance feature, you don't need to style your WHMCS installation anymore, the integration ensures that your WHMCS installation looks and feels like your Wordpress site. 
+
+Thanks to the single sign-on feature (WHMCS Bridge SSO plugin), your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
 
 == Installation ==
 
@@ -39,6 +39,12 @@ None available ... yet.
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 0.9.1 =
+* Corrected plugin description
+* Protected cache directory
+* Protected plugin directory
+* Cleaned up code
 
 = 0.9.0 =
 * First release
