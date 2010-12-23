@@ -40,6 +40,11 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 == Changelog ==
 
+= 0.9.3 =
+* Replaced get_settings (deprecated) by get_option
+* Replaced register_sidebar_widget (deprecated) by wp_register_sidebar_widget
+* Fixed issue with tests on $_REQUEST variables throwing warnings
+
 = 0.9.2 =
 * Removed obsolete files
 * Fixed issue with install throwing an error

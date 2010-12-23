@@ -359,7 +359,7 @@ function cc_whmcs_bridge_mainpage() {
  */
 function cc_whmcs_sidebar_init()
 {
-	register_sidebar_widget('WHMCS Main', 'cc_whmcs_sidebar_main');
+	wp_register_sidebar_widget('WHMCS Main','WHMCS Main', 'cc_whmcs_sidebar_main');
 }
 
 function cc_whmcs_sidebar_main($args) {

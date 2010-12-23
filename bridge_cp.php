@@ -39,7 +39,7 @@ function cc_whmcs_bridge_add_admin() {
 
 	if ( $_GET['page'] == "cc-ce-bridge-cp" ) {
 		
-		if ( 'install' == $_REQUEST['action'] ) {
+		if ( isset($_REQUEST['action']) && 'install' == $_REQUEST['action'] ) {
 			foreach ($cc_whmcs_bridge_options as $value) {
 				update_option( $value['id'], $_REQUEST[ $value['id'] ] );
 			}
@@ -55,7 +55,7 @@ function cc_whmcs_bridge_add_admin() {
 			die;
 		}
 
-		if( 'uninstall' == $_REQUEST['action'] ) {
+		if( isset($_REQUEST['action']) && 'uninstall' == $_REQUEST['action'] ) {
 			cc_whmcs_bridge_uninstall();
 			foreach ($cc_whmcs_bridge_options as $value) {
 				delete_option( $value['id'] );
@@ -78,9 +78,9 @@ function cc_whmcs_bridge_admin() {
 
 	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
 
-	if ( $_REQUEST['installed'] ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' installed.</strong></p></div>';
-	if ( $_REQUEST['uninstalled'] ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' uninstalled.</strong></p></div>';
-	if ( $_REQUEST['error'] ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
+	if ( isset($_REQUEST['installed']) ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' installed.</strong></p></div>';
+	if ( isset($_REQUEST['uninstalled']) ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' uninstalled.</strong></p></div>';
+	if ( isset($_REQUEST['error']) ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
 	
 	?>
 <div class="wrap">
@@ -128,7 +128,7 @@ function cc_whmcs_bridge_admin() {
 		<th scope="row"><?php echo $value['name']; ?>:</th>
 		<td><input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>"
 			type="<?php echo $value['type']; ?>"
-			value="<?php if ( get_settings( $value['id'] ) != "") { echo get_settings( $value['id'] ); } else { echo $value['std']; } ?>"
+			value="<?php if ( get_option( $value['id'] ) != "") { echo get_option( $value['id'] ); } else { echo $value['std']; } ?>"
 			size="40"
 		/></td>
 
@@ -145,7 +145,7 @@ function cc_whmcs_bridge_admin() {
 		<td><textarea name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>" cols="50"
 			rows="8"
 		/>
-		<?php if ( get_settings( $value['id'] ) != "") { echo stripslashes (get_settings( $value['id'] )); }
+		<?php if ( get_option( $value['id'] ) != "") { echo stripslashes (get_option( $value['id'] )); }
 		else { echo $value['std'];
 		} ?>
 </textarea></td>
@@ -163,7 +163,7 @@ function cc_whmcs_bridge_admin() {
 		<th scope="top"><?php echo $value['name']; ?>:</th>
 		<td><select name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>">
 		<?php foreach ($value['options'] as $option) { ?>
-			<option <?php if ( get_settings( $value['id'] ) == $option) { echo ' selected="selected"'; }?>><?php echo $option; ?></option>
+			<option <?php if ( get_option( $value['id'] ) == $option) { echo ' selected="selected"'; }?>><?php echo $option; ?></option>
 			<?php } ?>
 		</select></td>
 
