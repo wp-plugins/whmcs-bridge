@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 0.9.2
+ Version: 0.9.4
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","0.9.2");
+define("CC_WHMCS_BRIDGE_VERSION","0.9.4");
 define("CC_CE","mybb");
 define("CC_WHMCS_VERSION","4.0");
 
@@ -190,15 +190,16 @@ function cc_whmcs_bridge_output() {
 		$output=$news->DownloadToString(true,false);
 		//echo $output;
 		if ($news->redirect) {
-			echo 'redirect1';
+			//echo 'redirect1';
 				
-			$f[]='/([a-zA-Z\_]*?).php.(.*?)/';
+			$f[]='/.*\/([a-zA-Z\_]*?).php.(.*?)/';
 			$r[]=get_option('home').'/index.php?ccce=$1&$2';
-
+			//echo $output.'<br />';
+			
 			$output=preg_replace($f,$r,$output,-1,$count);
 				
 			header('Location:'.$output);
-			//header($output);
+			//echo $output;
 			die();
 		}
 		return $output;
@@ -253,11 +254,22 @@ function cc_whmcs_bridge_content($content) {
 function cc_whmcs_bridge_title($title,$id=0) {
 	global $cc_whmcs_bridge_content;
 	if (!in_the_loop()) return $title;
-	//	if (!zing_ws_is_shop_page($post->ID) || $id==0 || ($id != $post->ID)) return $pageTitle;
+	if (!cc_whmcs_bridge_default_page($post->ID) || $id==0 || ($id != $post->ID)) return $title;
 	
 	if (isset($cc_whmcs_bridge_content['title'])) return $cc_whmcs_bridge_content['title'];
 	else return $title;
 }
+
+function cc_whmcs_bridge_default_page($pid) {
+	$isPage=false;
+	$ids=get_option("cc_whmcs_bridge_pages");
+	$ida=explode(",",$ids);
+	foreach ($ida as $id) {
+		if (!empty($id) && $pid==$id) $isPage=true;
+	}
+	return $isPage;
+}
+
 /**
  * Header hook: loads FWS addons and css files
  * @return unknown_type
@@ -303,7 +315,7 @@ function cc_whmcs_bridge_header()
 	$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
 	$r[]='window.location = \''.$home.'index.php?ccce=$1&$2'.$pid.'\'';
 
-	$f[]='/action\="([a-zA-Z\_]*?).php.(.*?)"/';
+	$f[]='/action\="([a-zA-Z\_]*?).php\?(.*?)"/';
 	$r[]='action="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
 
 	$f[]='/action\="([a-zA-Z\_]*?).php"/';
