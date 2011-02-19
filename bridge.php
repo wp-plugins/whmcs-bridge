@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 0.9.4
+ Version: 1.0.0
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","0.9.4");
+define("CC_WHMCS_BRIDGE_VERSION","1.0.0");
 define("CC_CE","mybb");
 define("CC_WHMCS_VERSION","4.0");
 
@@ -29,7 +29,6 @@ if (!defined("CC_WHMCS_BRIDGE_PLUGIN")) {
 	$cc_whmcs_bridge_plugin=substr($cc_whmcs_bridge_plugin,1);
 	define("CC_WHMCS_BRIDGE_PLUGIN", $cc_whmcs_bridge_plugin);
 }
-//$cc_footers[]=array('http://www.mybboard.net/','WHMCS');
 
 define("CC_WHMCS_BRIDGE_URL", WP_CONTENT_URL . "/plugins/".CC_WHMCS_BRIDGE_PLUGIN."/");
 
@@ -344,9 +343,7 @@ function cc_whmcs_bridge_header()
 	if ($body=$html->find('div[id=content_left]',0)) {
 		$title=$body->find('h1',0);
 		$ret['title']=$title->innertext;
-		//die($title->__toString());
 		$title->outertext='';
-		//$body->find('h1',0)->innerText='';
 		$ret['main']=$body->__toString();//$buffer;
 	}
 	if ($head=$html->find('head',0)) $ret['head']=$head->__toString();//$buffer;
@@ -356,7 +353,6 @@ function cc_whmcs_bridge_header()
 	$cc_whmcs_bridge_content=$ret;
 	echo $cc_whmcs_bridge_content['head'];
 	echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
-
 }
 
 function cc_whmcs_bridge_mainpage() {

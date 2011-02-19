@@ -19,7 +19,7 @@ function cc_whmcs_bridge_options() {
 	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin password",
 			"desc" => "The password of the WHMCS admin user.",
 			"id" => $cc_whmcs_bridge_shortname."_admin_password",
-			"type" => "text");
+			"type" => "password");
 			
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
 			"desc" => "Specify where you want the ChoppedCode footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
@@ -84,6 +84,7 @@ function cc_whmcs_bridge_admin() {
 	
 	?>
 <div class="wrap">
+<div id="cc-left" style="position:relative;float:left;width:70%">
 <h2><b><?php echo $cc_whmcs_bridge_name; ?></b></h2>
 
 	<?php
@@ -113,8 +114,6 @@ function cc_whmcs_bridge_admin() {
 		echo 'Your version is up to date!';
 		$submit='Update';
 	}
-
-	//if (count($cc_errors)==0) {
 	?>
 <form method="post">
 
@@ -122,7 +121,7 @@ function cc_whmcs_bridge_admin() {
 
 <?php if ($cc_whmcs_bridge_options) foreach ($cc_whmcs_bridge_options as $value) {
 
-	if ($value['type'] == "text") { ?>
+	if ($value['type'] == "text" || $value['type'] == "password") { ?>
 
 	<tr align="left">
 		<th scope="row"><?php echo $value['name']; ?>:</th>
@@ -189,9 +188,8 @@ function cc_whmcs_bridge_admin() {
 		</td>
 	</tr>
 
-	<?php } ?>
-	<?php
-}
+	<?php } 
+} //end foreach
 ?>
 </table>
 
@@ -199,8 +197,7 @@ function cc_whmcs_bridge_admin() {
 	type="hidden" name="action" value="install"
 /></p>
 </form>
-<?php //}?> <?php if ($cc_whmcs_bridge_version) { ?>
-</form>
+<?php if ($cc_whmcs_bridge_version) { ?>
 <hr />
 <form method="post">
 <p class="submit"><input name="uninstall" type="submit" value="Uninstall" /> <input type="hidden"
@@ -210,8 +207,27 @@ function cc_whmcs_bridge_admin() {
 <?php } ?>
 <hr />
 <img src="<?php echo CC_WHMCS_BRIDGE_URL?>/choppedcode.png" height="50px" />
-<p>For more info and support, contact us at <a href="http://www.choppedcode.com">ChoppedCode</a> or
-check out our <a href="http://forums.choppedcode.com">support forums</a>.</p>
+<p>For more info and support, you can find us at <a href="http://www.choppedcode.com">ChoppedCode</a>.</p>
+</div> <!-- end cc-left -->
 <?php
+	echo '<div id="cc-right" style="width:25%;float:right;position:relative;" class="update-nag">';
+	echo '<script type="text/javascript" src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>';
+	echo '<h3>Support Us</h3>';
+	echo '<p>If you like this plugin, please share it with your friends and help us out with a small token of appreciation</p>';
+	echo '<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="SD5JE3BLJSVM6">
+<input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online.">
+<img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+</form>';
+	echo '<div style="align:center;margin-bottom:15px;text-align:center">';
+	echo '<a style="margin-bottom:15px;" href="http://www.twitter.com/choppedcode"><img align="middle" src="http://twitter-badges.s3.amazonaws.com/follow_us-a.png" alt="Follow ChoppedCode on Twitter"/></a>';
+	echo '</div>';
+	echo '<div style="margin-bottom:15px;text-align:center">';
+	echo '<fb:share-button href="http://www.choppedcode.com/products/whmcs-bridge/" type="button" >';
+	echo '</div>';
+	echo '</div>'; //end cc-right
+	
+	echo '</div>'; //end wrap
 }
 add_action('admin_menu', 'cc_whmcs_bridge_add_admin'); ?>
