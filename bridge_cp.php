@@ -58,6 +58,7 @@ function cc_whmcs_bridge_add_admin() {
 				}
 			}
 			cc_whmcs_bridge_install();
+			if (function_exists('cc_whmcs_bridge_sso_update')) cc_whmcs_bridge_sso_update();
 			header("Location: options-general.php?page=cc-ce-bridge-cp&installed=true");
 			die;
 		}
