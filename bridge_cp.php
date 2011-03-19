@@ -21,6 +21,13 @@ function cc_whmcs_bridge_options() {
 			"id" => $cc_whmcs_bridge_shortname."_admin_password",
 			"type" => "password");
 			
+	if (file_exists(dirname(__FILE__).'/../whmcs-bridge-sso')) {
+		$cc_whmcs_bridge_options[] = array(	"name" => "SSO license key",
+				"desc" => 'Only required if you are using the Single Sign On extension. You can obtain a license key <a href="http://www.clientcentral.info/cart.php?gid=4">here</a>.',
+				"id" => $cc_whmcs_bridge_shortname."_sso_license_key",
+				"type" => "text");
+	}
+			
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
 			"desc" => "Specify where you want the ChoppedCode footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
 			"id" => $cc_whmcs_bridge_shortname."_footer",
@@ -210,23 +217,7 @@ function cc_whmcs_bridge_admin() {
 <p>For more info and support, you can find us at <a href="http://www.choppedcode.com">ChoppedCode</a>.</p>
 </div> <!-- end cc-left -->
 <?php
-	echo '<div id="cc-right" style="width:25%;float:right;position:relative;" class="update-nag">';
-	echo '<script type="text/javascript" src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>';
-	echo '<h3>Support Us</h3>';
-	echo '<p>If you like this plugin, please share it with your friends and help us out with a small token of appreciation</p>';
-	echo '<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="SD5JE3BLJSVM6">
-<input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online.">
-<img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1">
-</form>';
-	echo '<div style="align:center;margin-bottom:15px;text-align:center">';
-	echo '<a style="margin-bottom:15px;" href="http://www.twitter.com/choppedcode"><img align="middle" src="http://twitter-badges.s3.amazonaws.com/follow_us-a.png" alt="Follow ChoppedCode on Twitter"/></a>';
-	echo '</div>';
-	echo '<div style="margin-bottom:15px;text-align:center">';
-	echo '<fb:share-button href="http://www.choppedcode.com/products/whmcs-bridge/" type="button" >';
-	echo '</div>';
-	echo '</div>'; //end cc-right
+	require(dirname(__FILE__).'/support-us.inc.php');
 	
 	echo '</div>'; //end wrap
 }
