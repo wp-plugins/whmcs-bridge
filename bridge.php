@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 1.0.1
+ Version: 1.0.2
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.0.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.0.2");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -190,6 +190,8 @@ function cc_whmcs_bridge_output() {
 				
 			$f[]='/.*\/([a-zA-Z\_]*?).php.(.*?)/';
 			$r[]=get_option('home').'/index.php?ccce=$1&$2';
+			$f[]='/([a-zA-Z\_]*?).php.(.*?)/';
+			$r[]=get_option('home').'/index.php?ccce=$1&$2';
 			//echo $output.'<br />';
 			
 			$output=preg_replace($f,$r,$output,-1,$count);
@@ -286,15 +288,14 @@ function cc_whmcs_bridge_header()
 
 	$f[]='/thisshouldneveroccur/';
 	$r[]='';
-
 	$f[]='/href\="'.preg_quote($_GET['ce_url'],'/').'\/([a-zA-Z\_]*?).php"/';
 	$r[]='href="'.$home.'index.php?ccce=$1'.$pid.'"';
 
 	$f[]='/href\="'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)"/';
 	$r[]='href="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/href\="([a-zA-Z\_]*?).php.(.*?)"/';
-	$r[]='href="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
+	$f[]='/href\="([a-zA-Z\_]*?).php\?(.*?)"/';
+	$r[]='href="'.$home.'index.php?ccce=x$1x&y$2y'.$pid.'"';
 
 	$f[]='/href\="([a-zA-Z\_]*?).php"/';
 	$r[]='href="'.$home.'index.php?ccce=$1'.$pid.'"';
