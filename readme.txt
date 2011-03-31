@@ -6,6 +6,7 @@ Requires at least: 2.1.7
 Tested up to: 3.1
 Stable tag: 1.0.3
 
+
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 == Description ==
 
