@@ -12,6 +12,7 @@ if (!class_exists('HTTPRequestWHMCS')) {
 		var $errno=false;
 		var $post=array();	//post variables, defaults to $_POST
 		var $redirect=false;
+		var $errors=array();
 
 		// scan url
 		function _scan_url()
@@ -73,6 +74,16 @@ if (!class_exists('HTTPRequestWHMCS')) {
 			else return false;
 		}
 
+		//error logging
+		function error($msg) {
+			cc_whmcs_log('Error',$msg);
+		}
+		
+		//notification logging
+		function notify($msg) {
+			cc_whmcs_log('Notification',$msg);
+		}
+		
 		// download URL to string
 		function DownloadToString($withHeaders=false,$withCookies=true)
 		{
@@ -84,8 +95,8 @@ if (!class_exists('HTTPRequestWHMCS')) {
 				if (!$_SESSION['tmpfile']) {
 					$_SESSION['tmpfile']=create_sessionid(16,1);
 					$ckfile=dirname(__FILE__).'/../cache/'.$_SESSION['tmpfile'].md5($_SESSION['tmpfile']).'.tmp';
-					$fh = fopen($ckfile, 'w');
-					fclose($fh);
+					if ($fh = fopen($ckfile, 'w')) fclose($fh);
+					else $this->error('Unable to write file to cache directory');
 				} else {
 					$ckfile=dirname(__FILE__).'/../cache/'.$_SESSION['tmpfile'].md5($_SESSION['tmpfile']).'.tmp';
 				}
@@ -106,6 +117,7 @@ if (!class_exists('HTTPRequestWHMCS')) {
 					curl_setopt($ch, CURLOPT_CAINFO, $cainfo);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 				} else {
+					$this->error('No certificate file found '.$cainfo);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 				}
 			}
@@ -128,7 +140,6 @@ if (!class_exists('HTTPRequestWHMCS')) {
 					if ($file['tmp_name']) {
 						$newfile=dirname(__FILE__).'/../cache/'.$file['name'];
 						$newfiles[]=$newfile;
-						//echo 'copy '.$file['tmp_name'].' to '.$newfile;
 						copy($file['tmp_name'],$newfile);
 						if ($file['tmp_name']) $this->post[$name]='@'.$newfile;
 					}
@@ -169,7 +180,8 @@ if (!class_exists('HTTPRequestWHMCS')) {
 			if (curl_errno($ch)) {
 				$this->errno=curl_errno($ch);
 				$this->error=curl_error($ch);
-				die('HTTP Error:'.$this->errno.'/'.$this->error.' at '.$this->_url);
+				$this->error('HTTP Error:'.$this->errno.'/'.$this->error.' at '.$this->_url);
+				return false;
 			}
 			$info=curl_getinfo($ch);
 				
@@ -182,25 +194,21 @@ if (!class_exists('HTTPRequestWHMCS')) {
 
 			curl_close($ch);
 			
-//die($data);
 			if ($withHeaders) {
+				//$this->notify($data);
 				list($header,$result)=explode("<", $data, 2);
 				if ($result) $result='<'.$result;
 				$matches = array();
 				preg_match('/(Location:|URI:)(.*?)\n/', $header, $matches);
-				//print_r($matches);
 				if (count($matches) > 0) {
+					$this->notify('Follow redirect');
 					$this->redirect=true;
 					return $matches[2];
 				}
 			} else {
-				//$result=json_decode($data,true);
+				//$this->notify($data);
 				$result=$data;
 			}
-			//die($data);
-			//var_dump($result);
-			//if (empty($header)) return "";
-			//echo '<br />--'.$header;
 			$lookup='<meta http-equiv="refresh" content="2;URL=';
 			$i=strpos($data,$lookup);
 			if ($i!==false) {
@@ -209,12 +217,12 @@ if (!class_exists('HTTPRequestWHMCS')) {
 				$j=strpos($s,'" />');
 				$refresh=htmlspecialchars_decode(substr($s,0,$j));
 				if ($refresh != "") {
+					$this->notify('Follow redirect');
 					$this->redirect=true;
 					return "Location: ".$refresh;
 				}
 			}
 
-			//echo '<br />--';
 			return $result;
 		}
 	}

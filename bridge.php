@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 1.0.2
+ Version: 1.0.3
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.0.2");
+define("CC_WHMCS_BRIDGE_VERSION","1.0.3");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -69,6 +69,9 @@ function cc_whmcs_bridge_check() {
 		if (!is_writable($file)) $errors[]='Directory '.$file.' is not writable, please chmod to 777';
 	}
 
+	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
+	if (stristr(cc_whmcs_bridge_url(),'https')) $errors[]="SSL (https) access is currently not supported, please use a http URL";
+	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
 	if (phpversion() < '5')	$warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
 	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
 	if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
@@ -150,6 +153,7 @@ function cc_whmcs_bridge_uninstall() {
 	foreach ($ida as $id) {
 		wp_delete_post($id);
 	}
+	delete_option("cc_whmcs_bridge_log");
 	delete_option("cc_whmcs_bridge_version");
 	delete_option("cc_whmcs_bridge_pages");
 	delete_option("cc_mybb_version");
@@ -177,12 +181,17 @@ function cc_whmcs_bridge_output() {
 	}
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
+	cc_whmcs_log('Notification','Call: '.$http);
 	//echo '<br />'.$http.'<br />';
 	$news = new HTTPRequestWHMCS($http);
 
-	if (!$news->curlInstalled()) return "cURL not installed";
-	elseif (!$news->live()) return "A HTTP Error occured";
-	else {
+	if (!$news->curlInstalled()) {
+		cc_whmcs_log('Error','CURL not installed');
+		return "cURL not installed";
+	} elseif (!$news->live()) {
+		cc_whmcs_log('Error','A HTTP Error occured');
+		return "A HTTP Error occured";
+	} else {
 		$output=$news->DownloadToString(true,false);
 		//echo $output;
 		if ($news->redirect) {
@@ -195,7 +204,8 @@ function cc_whmcs_bridge_output() {
 			//echo $output.'<br />';
 			
 			$output=preg_replace($f,$r,$output,-1,$count);
-				
+			cc_whmcs_log('Notification','Redirect to: '.$output);
+			
 			header('Location:'.$output);
 			//echo $output;
 			die();
@@ -208,7 +218,7 @@ function cc_whmcs_bridge_http($page="index") {
 	global $wpdb;
 
 	$vars="";
-	$http=get_option('cc_whmcs_bridge_url').'/'.$page.'.php';
+	$http=cc_whmcs_bridge_url().'/'.$page.'.php';
 	$and="";
 	if (count($_GET) > 0) {
 		foreach ($_GET as $n => $v) {
@@ -220,7 +230,7 @@ function cc_whmcs_bridge_http($page="index") {
 		}
 	}
 	$vars.=$and.'cc_url='.cc_urlencode(get_option('home'));
-	$vars.='&ce_url='.cc_urlencode(get_option('cc_whmcs_bridge_url'));
+	$vars.='&ce_url='.cc_urlencode(cc_whmcs_bridge_url());
 	$vars.='&cc_site_url='.cc_urlencode(CC_WHMCS_BRIDGE_URL);
 	if ($get && $vars) $vars.='&';
 	if ($get) $vars.=$get;
@@ -280,9 +290,9 @@ function cc_whmcs_bridge_header()
 	$home=get_option('home').'/';
 	$buffer=cc_whmcs_bridge_output();
 
-	$tmp=explode('://',get_option('cc_whmcs_bridge_url'),2);
+	$tmp=explode('://',cc_whmcs_bridge_url(),2);
 	$tmp2=explode('/',$tmp[1],2);
-	$sub=str_replace($tmp[0].'://'.$tmp2[0],'',get_option('cc_whmcs_bridge_url')).'/';
+	$sub=str_replace($tmp[0].'://'.$tmp2[0],'',cc_whmcs_bridge_url()).'/';
 
 	$ret['buffer']=$buffer;
 
@@ -323,9 +333,9 @@ function cc_whmcs_bridge_header()
 
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
-	$buffer=str_replace('src="templates','src="'.get_option('cc_whmcs_bridge_url').'/templates',$buffer);
-	$buffer=str_replace('href="templates','href="'.get_option('cc_whmcs_bridge_url').'/templates',$buffer);
-	$buffer=str_replace('src="includes','src="'.get_option('cc_whmcs_bridge_url').'/includes',$buffer);
+	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
+	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
+	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	
 	if ($_REQUEST['ccce']=='viewinvoice') {
 		echo $buffer;
@@ -387,5 +397,20 @@ function cc_whmcs_bridge_init()
 {
 	ob_start();
 	session_start();
+}
+
+function cc_whmcs_log($type,$msg) {
+	if (get_option('cc_whmcs_bridge_debug')) {
+		$v=get_option('cc_whmcs_bridge_log');
+		if (!is_array($v)) $v=array();
+		array_unshift($v,array(time(),$type,$msg));
+		update_option('cc_whmcs_bridge_log',$v);
+	}
+}
+
+function cc_whmcs_bridge_url() {
+	$url=get_option('cc_whmcs_bridge_url');
+	if (substr($url,-1)=='/') $url=substr($url,0,-1);
+	return $url;
 }
 ?>

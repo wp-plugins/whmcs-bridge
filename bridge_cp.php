@@ -28,6 +28,11 @@ function cc_whmcs_bridge_options() {
 				"type" => "text");
 	}
 			
+	$cc_whmcs_bridge_options[] = array(	"name" => "Debug",
+			"desc" => "If you have problems with the plugin, activate the debug mode to generate a debug log for our support team",
+			"id" => $cc_whmcs_bridge_shortname."_debug",
+			"type" => "checkbox");
+	
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
 			"desc" => "Specify where you want the ChoppedCode footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
 			"id" => $cc_whmcs_bridge_shortname."_footer",
@@ -47,6 +52,7 @@ function cc_whmcs_bridge_add_admin() {
 	if ( $_GET['page'] == "cc-ce-bridge-cp" ) {
 		
 		if ( isset($_REQUEST['action']) && 'install' == $_REQUEST['action'] ) {
+			delete_option('cc_whmcs_bridge_log');
 			foreach ($cc_whmcs_bridge_options as $value) {
 				update_option( $value['id'], $_REQUEST[ $value['id'] ] );
 			}
@@ -74,10 +80,7 @@ function cc_whmcs_bridge_add_admin() {
 		}
 	}
 
-	//add_menu_page($cc_whmcs_bridge_name, $cc_whmcs_bridge_name, 'administrator', 'cc-ce-bridge-cp','cc_whmcs_bridge_admin');
-	//add_submenu_page('cc-ce-bridge-cp', $cc_whmcs_bridge_name.'- Integration', 'Integration', 'administrator', 'cc-ce-bridge-cp', 'cc_whmcs_bridge_admin');
 	add_options_page($cc_whmcs_bridge_name, $cc_whmcs_bridge_name, 'administrator', 'cc-ce-bridge-cp','cc_whmcs_bridge_admin');
-	//add_options_page('My Plugin Options', 'My Plugin', 'manage_options', 'my-unique-identifier', 'my_plugin_options');
 }
 
 function cc_whmcs_bridge_admin() {
@@ -146,6 +149,24 @@ function cc_whmcs_bridge_admin() {
 		</td>
 	</tr>
 
+	<?php } elseif ($value['type'] == "checkbox") { ?>
+
+	<tr align="left">
+		<th scope="row"><?php echo $value['name']; ?>:</th>
+		<td><input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>"
+			type="checkbox"
+			value="checked"
+			<?php if ( get_option( $value['id'] ) != "") { echo " checked"; } ?>"
+		/></td>
+
+	</tr>
+	<tr>
+		<td colspan=2><small><?php echo $value['desc']; ?> </small>
+		<hr />
+		</td>
+	</tr>
+
+
 	<?php } elseif ($value['type'] == "textarea") { ?>
 	<tr align="left">
 		<th scope="row"><?php echo $value['name']; ?>:</th>
@@ -212,7 +233,23 @@ function cc_whmcs_bridge_admin() {
 	name="action" value="uninstall"
 /></p>
 </form>
-<?php } ?>
+<hr />
+<?php } 
+	if ($cc_whmcs_bridge_version && get_option('cc_whmcs_bridge_debug')) {
+		echo '<h2 style="color: green;">Debug log</h2>';
+		echo '<textarea rows=10 cols=80>';
+		$r=get_option('cc_whmcs_bridge_log');
+		if ($r) {
+			//$v=unserialize($r);
+			$v=$r;
+			foreach ($v as $m) {
+				echo date('H:i:s',$m[0]).' '.$m[1].chr(13).chr(10);
+				echo $m[2].chr(13).chr(10);
+			}
+		}
+		echo '</textarea>';
+	}
+?>
 <hr />
 <img src="<?php echo CC_WHMCS_BRIDGE_URL?>/choppedcode.png" height="50px" />
 <p>For more info and support, you can find us at <a href="http://www.choppedcode.com">ChoppedCode</a>.</p>
