@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 1.0.3
+ Version: 1.0.4
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.0.3");
+define("CC_WHMCS_BRIDGE_VERSION","1.0.4");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -305,7 +305,7 @@ function cc_whmcs_bridge_header()
 	$r[]='href="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
 
 	$f[]='/href\="([a-zA-Z\_]*?).php\?(.*?)"/';
-	$r[]='href="'.$home.'index.php?ccce=x$1x&y$2y'.$pid.'"';
+	$r[]='href="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
 
 	$f[]='/href\="([a-zA-Z\_]*?).php"/';
 	$r[]='href="'.$home.'index.php?ccce=$1'.$pid.'"';
