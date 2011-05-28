@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 1.0.4
+ Version: 1.0.5
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.0.4");
+define("CC_WHMCS_BRIDGE_VERSION","1.0.5");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -184,7 +184,11 @@ function cc_whmcs_bridge_output() {
 	cc_whmcs_log('Notification','Call: '.$http);
 	//echo '<br />'.$http.'<br />';
 	$news = new HTTPRequestWHMCS($http);
-
+	if (isset($news->post['whmcsname'])) {
+		$news->post['name']=$news->post['whmcsname'];
+		unset($news->post['whmcsname']);
+	}
+	
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
 		return "cURL not installed";
@@ -333,6 +337,9 @@ function cc_whmcs_bridge_header()
 
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
+	//name is a reserved Wordpress field name
+	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
+	
 	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);

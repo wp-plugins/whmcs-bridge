@@ -4,7 +4,7 @@ Donate link: http://www.choppedcode.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
@@ -40,6 +40,9 @@ None available ... yet.
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 1.0.5 =
+* Fixed issue with ticket submission
 
 = 1.0.4 =
 * Fixed parsing issue with xviewticketx

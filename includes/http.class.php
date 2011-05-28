@@ -137,7 +137,15 @@ if (!class_exists('HTTPRequestWHMCS')) {
 
 			if (count($_FILES) > 0) {
 				foreach ($_FILES as $name => $file) {
-					if ($file['tmp_name']) {
+					if (is_array($file['tmp_name']) && count($file['tmp_name']) > 0) {
+						$c=count($file['tmp_name']);
+						for ($i=0;$i<$c;$i++) {
+							$newfile=dirname(__FILE__).'/../cache/'.$file['name'][$i];
+							$newfiles[]=$newfile;
+							copy($file['tmp_name'],$newfile);
+							if ($file['tmp_name'][$i]) $this->post[$name][$i]='@'.$newfile;
+						}
+					} elseif ($file['tmp_name']) {
 						$newfile=dirname(__FILE__).'/../cache/'.$file['name'];
 						$newfiles[]=$newfile;
 						copy($file['tmp_name'],$newfile);
@@ -222,7 +230,6 @@ if (!class_exists('HTTPRequestWHMCS')) {
 					return "Location: ".$refresh;
 				}
 			}
-
 			return $result;
 		}
 	}
