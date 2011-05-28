@@ -5,14 +5,14 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: EBO
- Version: 1.0.5
+ Version: 1.0.6
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.0.5");
+define("CC_WHMCS_BRIDGE_VERSION","1.0.6");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -70,7 +70,6 @@ function cc_whmcs_bridge_check() {
 	}
 
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
-	if (stristr(cc_whmcs_bridge_url(),'https')) $errors[]="SSL (https) access is currently not supported, please use a http URL";
 	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
 	if (phpversion() < '5')	$warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
 	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
@@ -182,7 +181,7 @@ function cc_whmcs_bridge_output() {
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
 	cc_whmcs_log('Notification','Call: '.$http);
-	//echo '<br />'.$http.'<br />';
+	echo '<br />'.$http.'<br />';
 	$news = new HTTPRequestWHMCS($http);
 	if (isset($news->post['whmcsname'])) {
 		$news->post['name']=$news->post['whmcsname'];

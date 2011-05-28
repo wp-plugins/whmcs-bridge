@@ -56,7 +56,7 @@ if (!class_exists('HTTPRequestWHMCS')) {
 		//check if server is live
 		function live() {
 			if (ip2long($this->_host)) return true; //in case using an IP instead of a host name
-			$url=($this->_protocol == 'https' ? 'ssl://' : '') . $this->_host;
+			$url=$this->_host;
 			if (gethostbyname($url) == $url) return false;
 			else return true;
 		}
@@ -117,8 +117,10 @@ if (!class_exists('HTTPRequestWHMCS')) {
 					curl_setopt($ch, CURLOPT_CAINFO, $cainfo);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 				} else {
-					$this->error('No certificate file found '.$cainfo);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+					curl_setopt($ch, CURLOPT_CAINFO, NULL);
+					curl_setopt($ch, CURLOPT_CAPATH, NULL);
 				}
 			}
 			if ($withCookies && isset($_COOKIE)) {
