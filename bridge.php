@@ -1,18 +1,18 @@
 <?php
 /*
  Plugin Name: WHMCS Bridge
- Plugin URI: http://www.choppedcode.com/Forum
+ Plugin URI: http://www.choppedcode.com
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
- Author: EBO
- Version: 1.0.7
+ Author: ChoppedCode
+ Version: 1.1.0
  Author URI: http://www.choppedcode.com/
  */
 
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.0.7");
+define("CC_WHMCS_BRIDGE_VERSION","1.1.0");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -29,7 +29,7 @@ if (!defined("CC_WHMCS_BRIDGE_PLUGIN")) {
 	define("CC_WHMCS_BRIDGE_PLUGIN", $cc_whmcs_bridge_plugin);
 }
 
-define("CC_WHMCS_BRIDGE_URL", WP_CONTENT_URL . "/plugins/".CC_WHMCS_BRIDGE_PLUGIN."/");
+define("cc_whmcs_bridge_url", WP_CONTENT_URL . "/plugins/".CC_WHMCS_BRIDGE_PLUGIN."/");
 
 $cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 if ($cc_whmcs_bridge_version) {
@@ -50,6 +50,8 @@ require_once(dirname(__FILE__) . '/includes/footer.inc.php');
 require_once(dirname(__FILE__) . '/includes/integrator.inc.php');
 require_once(dirname(__FILE__) . '/bridge_cp.php');
 require_once(dirname(__FILE__) . '/includes/simple_html_dom.php');
+require(dirname(__FILE__).'/includes/sidebars.php');
+require(dirname(__FILE__).'/includes/cron.php');
 
 $zErrorLog=new zErrorLog();
 
@@ -71,7 +73,7 @@ function cc_whmcs_bridge_check() {
 
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
 	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
-	if (phpversion() < '5')	$warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
+	if (phpversion() < '5')    $warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
 	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
 	if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
 	@session_start();
@@ -140,6 +142,7 @@ function cc_whmcs_bridge_install() {
  * @return void
  */
 function cc_whmcs_bridge_deactivate() {
+	wp_clear_scheduled_hook('cc_whmcs_bridge_cron_hook');
 }
 
 /**
@@ -161,20 +164,16 @@ function cc_whmcs_bridge_uninstall() {
 function cc_whmcs_bridge_output() {
 	global $post;
 	global $wpdb;
+	global $wordpressPageName;
 
 	global $cc_whmcs_bridge_loaded,$cc_whmcs_bridge_to_include;
 
 	$cf=get_post_custom($post->ID);
-	if (isset($_REQUEST['ccce']))
-	{
+	if (isset($_REQUEST['ccce'])) {
 		$cc_whmcs_bridge_to_include=$_REQUEST['ccce'];
-	}
-	elseif (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS')
-	{
+	} elseif (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS') {
 		$cc_whmcs_bridge_to_include="index";
-	}
-	else
-	{
+	} else {
 		$cc_whmcs_bridge_to_include="index";
 		//return $content;
 	}
@@ -187,7 +186,7 @@ function cc_whmcs_bridge_output() {
 		$news->post['name']=$news->post['whmcsname'];
 		unset($news->post['whmcsname']);
 	}
-	
+
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
 		return "cURL not installed";
@@ -199,16 +198,16 @@ function cc_whmcs_bridge_output() {
 		//echo $output;
 		if ($news->redirect) {
 			//echo 'redirect1';
-				
+
 			$f[]='/.*\/([a-zA-Z\_]*?).php.(.*?)/';
-			$r[]=get_option('home').'/index.php?ccce=$1&$2';
+			$r[]=get_option('home').'/'.$wordpressPageName.'/'.'?ccce=$1&$2';
 			$f[]='/([a-zA-Z\_]*?).php.(.*?)/';
-			$r[]=get_option('home').'/index.php?ccce=$1&$2';
+			$r[]=get_option('home').'/'.$wordpressPageName.'/'.'?ccce=$1&$2';
 			//echo $output.'<br />';
-			
+
 			$output=preg_replace($f,$r,$output,-1,$count);
 			cc_whmcs_log('Notification','Redirect to: '.$output);
-			
+
 			header('Location:'.$output);
 			//echo $output;
 			die();
@@ -234,7 +233,7 @@ function cc_whmcs_bridge_http($page="index") {
 	}
 	$vars.=$and.'cc_url='.cc_urlencode(get_option('home'));
 	$vars.='&ce_url='.cc_urlencode(cc_whmcs_bridge_url());
-	$vars.='&cc_site_url='.cc_urlencode(CC_WHMCS_BRIDGE_URL);
+	$vars.='&cc_site_url='.cc_urlencode(cc_whmcs_bridge_url);
 	if ($get && $vars) $vars.='&';
 	if ($get) $vars.=$get;
 	if ($vars) $http.='?'.$vars;
@@ -266,7 +265,7 @@ function cc_whmcs_bridge_title($title,$id=0) {
 	global $cc_whmcs_bridge_content;
 	if (!in_the_loop()) return $title;
 	if (!cc_whmcs_bridge_default_page($post->ID) || $id==0 || ($id != $post->ID)) return $title;
-	
+
 	if (isset($cc_whmcs_bridge_content['title'])) return $cc_whmcs_bridge_content['title'];
 	else return $title;
 }
@@ -289,8 +288,20 @@ function cc_whmcs_bridge_header()
 {
 	global $cc_whmcs_bridge_content;
 	global $cc_whmcs_bridge_menu;
-	$pid='&page_id='.cc_whmcs_bridge_mainpage();
-	$home=get_option('home').'/';
+	global $wordpressPageName;
+
+	$pageID = cc_whmcs_bridge_mainpage();
+	
+	if (get_option('permalink_structure')){
+		$homePage = get_option('home');
+		$wordpressPageName = get_permalink($pageID);
+		$wordpressPageName = str_replace($homePage,"",$wordpressPageName);
+		$pid="";
+		$home=$homePage.$wordpressPageName;
+	}else{
+		$pid='&page_id='.$pageID;
+		$home=get_option('home').'/';
+	}
 	$buffer=cc_whmcs_bridge_output();
 
 	$tmp=explode('://',cc_whmcs_bridge_url(),2);
@@ -301,98 +312,165 @@ function cc_whmcs_bridge_header()
 
 	$f[]='/thisshouldneveroccur/';
 	$r[]='';
-	$f[]='/href\="'.preg_quote($_GET['ce_url'],'/').'\/([a-zA-Z\_]*?).php"/';
-	$r[]='href="'.$home.'index.php?ccce=$1'.$pid.'"';
 
-	$f[]='/href\="'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)"/';
-	$r[]='href="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
+	$f[]='/href\=\"'.preg_quote($_GET['ce_url'],'/').'\/([a-zA-Z\_]*?).php\"/';
+	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-	$f[]='/href\="([a-zA-Z\_]*?).php\?(.*?)"/';
-	$r[]='href="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
+	$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/href\="([a-zA-Z\_]*?).php"/';
-	$r[]='href="'.$home.'index.php?ccce=$1'.$pid.'"';
+	$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
+
+	$f[]='/href\=\"([a-zA-Z\_]*?).php\"/';
+	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
 	$f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location=\''.$home.'index.php?ccce=$1&$2'.$pid.'\'';
+	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
 	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location=\''.$home.'index.php?ccce=$1&$2'.$pid.'\'';
+	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
 	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
-	$r[]='window.location=\''.$home.'index.php?ccce=$1'.$pid.'\'';
+	$r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
 
 	$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location = \''.$home.'index.php?ccce=$1&$2'.$pid.'\'';
+	$r[]='window.location = \''.$home.'?ccce=$1&$2'.$pid.'\'';
 
-	$f[]='/action\="([a-zA-Z\_]*?).php\?(.*?)"/';
-	$r[]='action="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
+	$f[]='/action\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/action\="([a-zA-Z\_]*?).php"/';
-	$r[]='action="'.$home.'index.php?ccce=$1'.$pid.'"';
+	$f[]='/action\=\"([a-zA-Z\_]*?).php\"/';
+	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
-	$f[]='/action\="'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)"/';
-	$r[]='action="'.$home.'index.php?ccce=$1&$2'.$pid.'"';
+	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+
+	//fixes the cart.php
+	$f[]='#\'cart.php\?#';
+	$r[]='\''.$home.'?ccce=cart&';
+
+	//remove cart heading
+	$f[]='#\<p align\=\"center\" class=\"cartheading\">(?:.*?)\<\/p\>#';
+	$r[]='';
+
+	//replace html head base
+	$f[]="(\<base\s*href\=(?:\"|\')(?:.*?)(?:\"|\')\s*/\>)";
+	$r[]='<base href="'.get_option('home').'">';
 
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
 	//name is a reserved Wordpress field name
 	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
-	
+
 	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
-	
+	//import local images
+	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
+
 	if ($_REQUEST['ccce']=='viewinvoice') {
 		echo $buffer;
 		die();
 	}
+
+	//load WHMCS style.css style sheet
+	if (!get_option('cc_whmcs_bridge_style') == 'checked') {
+		$buffer=preg_replace('/<link.*style.css" \/>/','',$buffer);
+	}
 	
-	$buffer=str_replace('style.css','unknown.css',$buffer);
-	
+	//replaces whmcs jquery so that it doesn't start it twice
+	if(get_option('cc_whmcs_bridge_jquery')=='checked'){
+		//$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+	}
+
 	$html = new simple_html_dom();
 	$html->load($buffer);
-	$sidebar=$html->find('div[id=side_menu]', 0);
-	if ($sidebar) $ret['sidebar'][]=$sidebar->__toString();
+	$sidebar=trim($html->find('div[id=side_menu]', 0)->innertext);
+	if ($sidebar) {
+		//$ret['sidebar'][]=$sidebar->__toString();
+		//$sidebarData=str_replace()
+		//<div id="side_menu">
+		//start sidebar change
+		$pattern = '/<form.*?dologin.>/';
+		if (preg_match($pattern,$sidebar,$matches)) {
+			$loginForm=$matches[0];
+			$sidebar=preg_replace('/(<form.*?dologin.>)(\s*)(<p class.*>)/','$3$1',$sidebar); //swap around the <form> and <p> tags
+			$ret['sidebar'][]=$sidebar;
+		}
+		$sidebarSearch='<p class="header">';
+		$sidebarData=explode($sidebarSearch, $sidebar);
+
+		//Remove end paragraph and text headings
+		foreach($sidebarData as $count => $data){
+			$title='';			
+			if (preg_match('/.*<\/p>/',$data,$matches)) {
+				$title=substr($matches[0],0,-4);
+				$data=str_replace($title.'</p>','',$data);
+			}
+			$sidebarData[$count]=$data;
+			$sidebarData['mode'][$count-1]=$title;
+			
+		}
+		$ret['sidebarNav']=$sidebarData[1]; //QUICK NAVIGATION
+		$ret['sidebarAcInf']=$sidebarData[2]; //ACCOUNT INFORMATION
+		$ret['sidebarAcSta']=$sidebarData[3]; //ACCOUNT STATISTICS
+		$ret['mode']=$sidebarData['mode'];
+	};
 	if ($body=$html->find('div[id=content_left]',0)) {
 		$title=$body->find('h1',0);
 		$ret['title']=$title->innertext;
 		$title->outertext='';
-		$ret['main']=$body->__toString();//$buffer;
+		//start change
+		//$ret['main']=$body->__toString();//$buffer;
+		$body->__toString();
+		$body=str_replace(' class="heading2"',"",$body);
+		$body=str_replace("<h1>","<h4>",$body);
+		$body=str_replace("</h1>","</h4>",$body);
+		$body=str_replace("<h2>","<h4>",$body);
+		$body=str_replace("</h2>","</h4>",$body);
+		$body=str_replace("<h3>","<h5>",$body);
+		$body=str_replace("</h3>","</h5>",$body);
+		$ret['main']=$body;//$buffer;
+		//end change
+
 	}
 	if ($head=$html->find('head',0)) $ret['head']=$head->__toString();//$buffer;
-	
+
+	//start new change
+	if ($topMenu=$html->find('div[id=top_menu]',0)){
+		//top menu here
+		$topMenu=$topMenu->__toString();
+		$ret['topNav']=$topMenu;
+	}else{
+		$ret['topNav']="";
+	}
+	if ($welcomebox=$html->find('div[id=welcome_box]',0)){
+		//top menu here
+		$welcomebox=$welcomebox->__toString();
+		$welcomebox=str_replace("&nbsp;","",$welcomebox);
+		$welcomebox=str_replace("</div>","",$welcomebox);
+		$welcomebox=str_replace('<div id="welcome_box">',"",$welcomebox);
+		$welcomebox=preg_replace("/<img[^>]+\>/i", " | ", $welcomebox);
+		$welcomebox='<div class="search_engine">'.$welcomebox;
+		$welcomebox=$welcomebox."</div>";
+		$ret['welcomebox']=$welcomebox;
+	}
+	//end new change
 	$ret['msg']=$_SESSION;
 
 	$cc_whmcs_bridge_content=$ret;
 	echo $cc_whmcs_bridge_content['head'];
-	echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
+	echo '<link rel="stylesheet" type="text/css" href="' . cc_whmcs_bridge_url . 'cc.css" media="screen" />';
+	if (get_option('cc_whmcs_bridge_css')) {
+		echo '<style type="text/css">'.get_option('cc_whmcs_bridge_css').'</style>';
+	}
 }
 
 function cc_whmcs_bridge_mainpage() {
 	$ids=get_option("cc_whmcs_bridge_pages");
 	$ida=explode(",",$ids);
 	return $ida[0];
-}
-
-/**
- * Register sidebar widgets
- * @return unknown_type
- */
-function cc_whmcs_sidebar_init()
-{
-	wp_register_sidebar_widget('WHMCS Main','WHMCS Main', 'cc_whmcs_sidebar_main');
-}
-
-function cc_whmcs_sidebar_main($args) {
-	global $cc_whmcs_bridge_content;
-	if (is_array($args)) extract($args);
-	echo $before_widget;
-	echo $before_title;
-	echo 'WHMCS Main';
-	echo $after_title;
-	echo $cc_whmcs_bridge_content['sidebar'][0];
-	echo $after_widget;
 }
 
 /**

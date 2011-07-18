@@ -11,8 +11,7 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The site URL of your WHMCS installation",
 			"id" => $cc_whmcs_bridge_shortname."_url",
 			"type" => "text");
-	
-	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin user",
+		$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin user",
 			"desc" => 'This is your WHMCS admin user, used for connections, upgrades and synchronisation of new users.<br />Make sure you authorise your IP in your WHMCS portal (General Settings - Security - API IP Access Restriction).',
 			"id" => $cc_whmcs_bridge_shortname."_admin_login",
 			"type" => "text");
@@ -20,19 +19,36 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The password of the WHMCS admin user.",
 			"id" => $cc_whmcs_bridge_shortname."_admin_password",
 			"type" => "password");
-			
 	if (file_exists(dirname(__FILE__).'/../whmcs-bridge-sso')) {
 		$cc_whmcs_bridge_options[] = array(	"name" => "SSO license key",
 				"desc" => 'Only required if you are using the Single Sign On extension. You can obtain a license key <a href="http://www.clientcentral.info/cart.php?gid=4">here</a>.',
 				"id" => $cc_whmcs_bridge_shortname."_sso_license_key",
 				"type" => "text");
 	}
-			
+	
+	$cc_whmcs_bridge_options[] = array(  "name" => "Styling Settings",
+            "type" => "heading",
+			"desc" => "This section customizes the look and feel.");
+	$cc_whmcs_bridge_options[] = array(	"name" => "Don't load jQuery",
+			"desc" => "If you have a theme using jQuery, you can avoid loading it twice by ticking this box",
+			"id" => $cc_whmcs_bridge_shortname."_jquery",
+			"type" => "checkbox");
+	$cc_whmcs_bridge_options[] = array(	"name" => "Custom styles",
+			"desc" => 'Enter your custom CSS styles here',
+			"id" => $cc_whmcs_bridge_shortname."_css",
+			"type" => "textarea");
+	$cc_whmcs_bridge_options[] = array(	"name" => "Load WHMCS styles",
+			"desc" => 'Select if you want to load the WHMCS style.css style sheet',
+			"id" => $cc_whmcs_bridge_shortname."_style",
+			"type" => "checkbox");
+	
+	$cc_whmcs_bridge_options[] = array(  "name" => "Other Settings",
+            "type" => "heading",
+			"desc" => "This section customizes miscellaneous settings.");
 	$cc_whmcs_bridge_options[] = array(	"name" => "Debug",
 			"desc" => "If you have problems with the plugin, activate the debug mode to generate a debug log for our support team",
 			"id" => $cc_whmcs_bridge_shortname."_debug",
 			"type" => "checkbox");
-	
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
 			"desc" => "Specify where you want the ChoppedCode footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
 			"id" => $cc_whmcs_bridge_shortname."_footer",
@@ -156,7 +172,7 @@ function cc_whmcs_bridge_admin() {
 		<td><input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>"
 			type="checkbox"
 			value="checked"
-			<?php if ( get_option( $value['id'] ) != "") { echo " checked"; } ?>"
+			<?php if ( get_option( $value['id'] ) != "") { echo " checked"; } ?>
 		/></td>
 
 	</tr>

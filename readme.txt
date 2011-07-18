@@ -3,8 +3,8 @@ Contributors: EBO
 Donate link: http://www.choppedcode.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
-Tested up to: 3.1
-Stable tag: 1.0.7
+Tested up to: 3.2.1
+Stable tag: 1.1.0
 
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
@@ -40,6 +40,20 @@ None available ... yet.
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 1.1.0 =
+* Split main sidebar widget in 5 separate widgets
+* Added option to disable loading the WHMCS jQuery library if the Wordpress already uses this library
+* Added support for permalinks
+* Added option to add custom styles in control panel
+* Revamped settings page
+* Added option to disable loading the default WHMCS styles (to avoid conflicts with Wordpress)
+* Added top menu widget
+* Added welcome box widget
+* Icon (gif) import (embedded as local)
+* Fixed issue with checkout button taking you to cart.php
+* Removed <p align="center" class="cartheading">Browse Products &amp; Services</p>
+* Replace html head base
 
 = 1.0.7 =
 * Removed trailing debugging display

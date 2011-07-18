@@ -144,7 +144,7 @@ if (!class_exists('HTTPRequestWHMCS')) {
 						for ($i=0;$i<$c;$i++) {
 							$newfile=dirname(__FILE__).'/../cache/'.$file['name'][$i];
 							$newfiles[]=$newfile;
-							copy($file['tmp_name'],$newfile);
+							copy($file['tmp_name'][$i],$newfile);
 							if ($file['tmp_name'][$i]) $this->post[$name][$i]='@'.$newfile;
 						}
 					} elseif ($file['tmp_name']) {
