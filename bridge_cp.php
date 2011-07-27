@@ -115,21 +115,6 @@ function cc_whmcs_bridge_admin() {
 <h2><b><?php echo $cc_whmcs_bridge_name; ?></b></h2>
 
 	<?php
-	$cc_ew=cc_whmcs_bridge_check();
-	$cc_errors=$cc_ew['errors'];
-	$cc_warnings=$cc_ew['warnings'];
-	if ($cc_errors) {
-		echo '<div style="background-color:pink" id="message" class="updated fade"><p>';
-		echo '<strong>Errors - you need to resolve these errors before continuing:</strong><br /><br />';
-		foreach ($cc_errors as $cc_error) echo $cc_error.'<br />';
-		echo '</p></div>';
-	}
-	if ($cc_warnings) {
-		echo '<div style="background-color:peachpuff" id="message" class="updated fade"><p>';
-		echo '<strong>Warnings - you might want to have a look at these issues to avoid surprises or unexpected behaviour:</strong><br /><br />';
-		foreach ($cc_warnings as $cc_warning) echo $cc_warning.'<br />';
-		echo '</p></div>';
-	}
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if (empty($cc_whmcs_bridge_version)) {
 		echo 'Please proceed with a clean install or deactivate your plugin';

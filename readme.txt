@@ -41,6 +41,15 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 == Changelog ==
 
+= 1.2.0 =
+* Fixed issue with captchas not working when submitting tickets
+* Fixed issues with ajax cart templates not working
+* Fixed issue with wrong definition of CC_WHMCS_BRIDGE_URL
+* Fixed issue with delete of cc_mybb_version option
+* Improved handling of cURL connection to WHMCS, avoiding use of cache files
+* Disabling the loading of WHMCS styles now only disables the load of the main stylesheet, the cart templates are still being loaded
+* Changed handling of redirects within cURL calls
+
 = 1.1.0 =
 * Split main sidebar widget in 5 separate widgets
 * Added option to disable loading the WHMCS jQuery library if the Wordpress already uses this library

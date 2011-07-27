@@ -5,6 +5,7 @@
  * @return unknown_type
  */
 
+$zErrorLog=new zErrorLog();
 class zErrorLog {
 	var $debug=false;
 	
