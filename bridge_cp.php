@@ -50,7 +50,7 @@ function cc_whmcs_bridge_options() {
 			"id" => $cc_whmcs_bridge_shortname."_debug",
 			"type" => "checkbox");
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
-			"desc" => "Specify where you want the ChoppedCode footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
+			"desc" => "Specify where you want the Zingiri footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
 			"id" => $cc_whmcs_bridge_shortname."_footer",
 			"std" => 'Page',
 			"type" => "select",
@@ -252,8 +252,8 @@ function cc_whmcs_bridge_admin() {
 	}
 ?>
 <hr />
-<img src="<?php echo CC_WHMCS_BRIDGE_URL?>/choppedcode.png" height="50px" />
-<p>For more info and support, you can find us at <a href="http://www.choppedcode.com">ChoppedCode</a>.</p>
+<img src="<?php echo CC_WHMCS_BRIDGE_URL?>/logo.png" height="50px" />
+<p>For more info and support, you can find us at <a href="http://www.zingiri.net">Zingiri</a>.</p>
 </div> <!-- end cc-left -->
 <?php
 	require(dirname(__FILE__).'/support-us.inc.php');

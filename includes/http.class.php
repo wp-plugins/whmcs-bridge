@@ -182,21 +182,21 @@ if (!class_exists('zHttpRequest')) {
 			if (isset($_SESSION[$sid])) {
 				curl_setopt($ch, CURLOPT_COOKIE, $_SESSION[$sid]);
 			}
-
+echo BLOGUPLOADDIR;
 			if (count($_FILES) > 0) {
 				foreach ($_FILES as $name => $file) {
 					if (is_array($file['tmp_name']) && count($file['tmp_name']) > 0) {
 						$c=count($file['tmp_name']);
 						for ($i=0;$i<$c;$i++) {
 							if ($file['tmp_name'][$i]) {
-								$newfile=dirname(__FILE__).'/../cache/'.$file['name'][$i];
+								$newfile=BLOGUPLOADDIR.$file['name'][$i];
 								$newfiles[]=$newfile;
 								copy($file['tmp_name'][$i],$newfile);
 								if ($file['tmp_name'][$i]) $this->post[$name][$i]='@'.$newfile;
 							}
 						}
 					} elseif ($file['tmp_name']) {
-						$newfile=dirname(__FILE__).'/../cache/'.$file['name'];
+						$newfile=BLOGUPLOADDIR.$file['name'];
 						$newfiles[]=$newfile;
 						copy($file['tmp_name'],$newfile);
 						if ($file['tmp_name']) $this->post[$name]='@'.$newfile;

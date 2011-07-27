@@ -3,13 +3,13 @@
 	<h3>Support Us</h3>
 	<p>If you like this plugin, please share it with your friends</p>
 	<div style="align:center;margin-bottom:15px;text-align:center">
-		<a style="margin-bottom:15px" href="http://www.twitter.com/choppedcode"><img align="middle" src="http://twitter-badges.s3.amazonaws.com/follow_us-a.png" alt="Follow ChoppedCode on Twitter"/></a>
+		<a style="margin-bottom:15px" href="http://www.twitter.com/zingiri"><img align="middle" src="http://twitter-badges.s3.amazonaws.com/follow_us-a.png" alt="Follow Zingiri on Twitter"/></a>
 	</div>
 	<div style="margin-bottom:15px;text-align:center">
-		<fb:share-button href="http://www.choppedcode.com/products/whmcs-bridge/" type="button" >
+		<fb:share-button href="http://www.zingiri.net/products/whmcs-bridge/" type="button" >
 	</div>
 	<p>Rate our plugin on Wordpress</p>
-	<a href="http://wordpress.org/extend/plugins/whmcs-bridge" alt="Rate our plugin"><img height="35px" src="http://www.choppedcode.com/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.choppedcode.com/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.choppedcode.com/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.choppedcode.com/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.choppedcode.com/wp/wp-content/uploads/sc-mcstars2.png"></img></a>
+	<a href="http://wordpress.org/extend/plugins/whmcs-bridge" alt="Rate our plugin"><img height="35px" src="http://www.zingiri.net/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.zingiri.net/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.zingiri.net/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.zingiri.net/wp/wp-content/uploads/sc-mcstars2.png"><img height="35px" src="http://www.zingiri.net/wp/wp-content/uploads/sc-mcstars2.png"></img></a>
 	<p>Or help us out with a small token of appreciation</p>
 	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 		<input type="hidden" name="cmd" value="_s-xclick">

@@ -1,12 +1,12 @@
 <?php
 /*
  Plugin Name: WHMCS Bridge
- Plugin URI: http://www.choppedcode.com
+ Plugin URI: http://www.zingiri.net
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
- Author: ChoppedCode
+ Author: Zingiri
  Version: 1.1.0
- Author URI: http://www.choppedcode.com/
+ Author URI: http://www.zingiri.net/
  */
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
@@ -26,6 +26,11 @@ if (!defined("CC_WHMCS_BRIDGE_PLUGIN")) {
 	$cc_whmcs_bridge_plugin=str_replace(realpath(dirname(__FILE__).'/..'),"",dirname(__FILE__));
 	$cc_whmcs_bridge_plugin=substr($cc_whmcs_bridge_plugin,1);
 	define("CC_WHMCS_BRIDGE_PLUGIN", $cc_whmcs_bridge_plugin);
+}
+
+if (!defined("BLOGUPLOADDIR")) {
+	$upload=wp_upload_dir();
+	define("BLOGUPLOADDIR",$upload['path']);
 }
 
 define("CC_WHMCS_BRIDGE_URL", WP_CONTENT_URL . "/plugins/".CC_WHMCS_BRIDGE_PLUGIN."/");
@@ -65,11 +70,15 @@ function cc_whmcs_admin_notices() {
 		if (!is_writable($file)) $errors[]='File '.$file.' is not writable, please chmod to 666';
 	}
 
-	$dirs[]=dirname(__FILE__).'/cache';
+	/*
+	$dirs[]=array();
 	foreach ($dirs as $file) {
 		if (!is_writable($file)) $errors[]='Directory '.$file.' is not writable, please chmod to 777';
 	}
+	*/
 
+	$upload=wp_upload_dir();
+	if ($upload['error']) $errors[]=$upload['error'];
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
 	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
 	if (phpversion() < '5') $warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";

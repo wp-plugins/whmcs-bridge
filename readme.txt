@@ -1,6 +1,6 @@
 === WHMCS Bridge ===
 Contributors: EBO
-Donate link: http://www.choppedcode.com/
+Donate link: http://www.zingiri.net/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.2.1
@@ -20,16 +20,15 @@ Thanks to the single sign-on feature (WHMCS Bridge SSO plugin), your customers c
 
 1. Upload the `whmcs-bridge` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Ensure the directory /whmcs-bridge/cache is writable (chmod 777)
-4. Go to the WHMCS Bridge settings menu and configure the plugin options.
-5. Install the plugin by clicking the Install button. This will create a new page titled WHMCS through which you can access the client portal of WHMCS.
-6. Activate the sidebar widget if you want the sidebar navigation
+3. Go to the WHMCS Bridge settings menu and configure the plugin options.
+4. Install the plugin by clicking the Install button. This will create a new page titled WHMCS through which you can access the client portal of WHMCS.
+5. Activate the sidebar widget if you want the sidebar navigation
 
-Please visit the [ChoppedCode](http://forums.choppedcode.com "ChoppedCode Support Forum") for more information and support.
+Please visit the [Zingiri](http://forums.zingiri.net "Zingiri Support Forum") for more information and support.
 
 == Frequently Asked Questions ==
 
-Please visit the [ChoppedCode](http://forums.choppedcode.com/forumdisplay.php?fid=56 "ChoppedCode Support Forum") for more information and support.
+Please visit the [Zingiri](http://forums.zingiri.net/forumdisplay.php?fid=56 "Zingiri Support Forum") for more information and support.
 
 == Screenshots ==
 
