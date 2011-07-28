@@ -16,10 +16,10 @@ if (!class_exists('zHttpRequest')) {
 		var $countRedirects=0;
 
 		// constructor
-		function __construct($url="",$login=false)
+		function __construct($url="",$sid='')
 		{
 			if (!$url) return;
-			$this->login=$login;
+			$this->sid=$sid;
 			$this->_url = $url;
 			$this->_scan_url();
 			$this->post=$_POST;
@@ -139,6 +139,10 @@ if (!class_exists('zHttpRequest')) {
 			cc_whmcs_log('Notification',$msg);
 		}
 
+		function getSid() {
+			return md5(__FILE__);
+		}
+		
 		// download URL to string
 		function DownloadToString($withHeaders=false,$withCookies=true)
 		{
@@ -182,7 +186,6 @@ if (!class_exists('zHttpRequest')) {
 			if (isset($_SESSION[$sid])) {
 				curl_setopt($ch, CURLOPT_COOKIE, $_SESSION[$sid]);
 			}
-echo BLOGUPLOADDIR;
 			if (count($_FILES) > 0) {
 				foreach ($_FILES as $name => $file) {
 					if (is_array($file['tmp_name']) && count($file['tmp_name']) > 0) {

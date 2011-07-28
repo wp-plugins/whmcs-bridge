@@ -5,13 +5,13 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.1.0
+ Version: 1.2.0
  Author URI: http://www.zingiri.net/
  */
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.1.0");
+define("CC_WHMCS_BRIDGE_VERSION","1.2.0");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -71,11 +71,16 @@ function cc_whmcs_admin_notices() {
 	}
 
 	/*
-	$dirs[]=array();
-	foreach ($dirs as $file) {
+	 $dirs[]=array();
+	 foreach ($dirs as $file) {
 		if (!is_writable($file)) $errors[]='Directory '.$file.' is not writable, please chmod to 777';
-	}
-	*/
+		}
+		*/
+
+	if (defined('CC_WHMCS_BRIDGE_SSO_VERSION') && get_option('cc_whmcs_bridge_version') != get_option('cc_whmcs_bridge_sso_version')) $warnings[]='The versions of the WHMCS Bridge ('.get_option('cc_whmcs_bridge_version').') and WHMCS Bridge SSO ('.get_option('cc_whmcs_bridge_sso_version').') plugins are not in sync.';
+
+	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
+	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the control panel.';
 
 	$upload=wp_upload_dir();
 	if ($upload['error']) $errors[]=$upload['error'];
@@ -118,8 +123,6 @@ function cc_whmcs_bridge_install() {
 	set_error_handler(array($zErrorLog,'log'));
 	error_reporting(E_ALL & ~E_NOTICE);
 
-	$prefix = $wpdb->prefix."cc_mybb_";
-
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if (!$cc_whmcs_bridge_version) add_option("cc_whmcs_bridge_version",CC_WHMCS_BRIDGE_VERSION);
 	else update_option("cc_whmcs_bridge_version",CC_WHMCS_BRIDGE_VERSION);
@@ -159,19 +162,21 @@ function cc_whmcs_bridge_install() {
  * @return void
  */
 function cc_whmcs_bridge_deactivate() {
-}
-
-/**
- * Uninstallation: removal of database tables
- * @return void
- */
-function cc_whmcs_bridge_uninstall() {
 	$ids=get_option("cc_whmcs_bridge_pages");
 	$ida=explode(",",$ids);
 	foreach ($ida as $id) {
 		wp_delete_post($id);
 	}
+	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
+
+	delete_option('cc_whmcs_bridge_log');
+	foreach ($cc_whmcs_bridge_options as $value) {
+		delete_option( $value['id'] );
+	}
+
 	delete_option("cc_whmcs_bridge_log");
+	delete_option("cc_whmcs_bridge_ftp_user"); //legacy
+	delete_option("cc_whmcs_bridge_ftp_password"); //legacy
 	delete_option("cc_whmcs_bridge_version");
 	delete_option("cc_whmcs_bridge_pages");
 }
@@ -302,7 +307,7 @@ function cc_whmcs_bridge_http($page="index") {
 	elseif ($_REQUEST['ccce']=='js') {
 		$http=cc_whmcs_bridge_url().'/'.$_REQUEST['js'];
 		return $http;
-	} 
+	}
 	else $http=cc_whmcs_bridge_url().'/'.$page.'.php';
 	$and="";
 	if (count($_GET) > 0) {
@@ -374,5 +379,5 @@ function cc_whmcs_bridge_url() {
 	return $url;
 }
 
-//Kept for compatibility reasons 
+//Kept for compatibility reasons
 class HTTPRequestWHMCS extends zHttpRequest {}

@@ -84,16 +84,6 @@ function cc_whmcs_bridge_add_admin() {
 			header("Location: options-general.php?page=cc-ce-bridge-cp&installed=true");
 			die;
 		}
-
-		if( isset($_REQUEST['action']) && 'uninstall' == $_REQUEST['action'] ) {
-			cc_whmcs_bridge_uninstall();
-			foreach ($cc_whmcs_bridge_options as $value) {
-				delete_option( $value['id'] );
-				update_option( $value['id'], $value['std'] );
-			}
-			header("Location: options-general.php?page=cc-ce-bridge-cp&uninstalled=true");
-			die;
-		}
 	}
 
 	add_options_page($cc_whmcs_bridge_name, $cc_whmcs_bridge_name, 'administrator', 'cc-ce-bridge-cp','cc_whmcs_bridge_admin');
@@ -106,7 +96,6 @@ function cc_whmcs_bridge_admin() {
 	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
 
 	if ( isset($_REQUEST['installed']) ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' installed.</strong></p></div>';
-	if ( isset($_REQUEST['uninstalled']) ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' uninstalled.</strong></p></div>';
 	if ( isset($_REQUEST['error']) ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
 	
 	?>
@@ -116,16 +105,7 @@ function cc_whmcs_bridge_admin() {
 
 	<?php
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
-	if (empty($cc_whmcs_bridge_version)) {
-		echo 'Please proceed with a clean install or deactivate your plugin';
-		$submit='Install';
-	} elseif ($cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) {
-		echo 'You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to upgrade your database (currently at version '.$cc_whmcs_bridge_version.') by clicking Upgrade below.';
-		$submit='Upgrade';
-	} elseif ($cc_whmcs_bridge_version == CC_WHMCS_BRIDGE_VERSION) {
-		echo 'Your version is up to date!';
-		$submit='Update';
-	}
+	$submit='Update';
 	?>
 <form method="post">
 
@@ -227,15 +207,8 @@ function cc_whmcs_bridge_admin() {
 	type="hidden" name="action" value="install"
 /></p>
 </form>
-<?php if ($cc_whmcs_bridge_version) { ?>
 <hr />
-<form method="post">
-<p class="submit"><input name="uninstall" type="submit" value="Uninstall" /> <input type="hidden"
-	name="action" value="uninstall"
-/></p>
-</form>
-<hr />
-<?php } 
+<?php  
 	if ($cc_whmcs_bridge_version && get_option('cc_whmcs_bridge_debug')) {
 		echo '<h2 style="color: green;">Debug log</h2>';
 		echo '<textarea rows=10 cols=80>';
@@ -248,10 +221,10 @@ function cc_whmcs_bridge_admin() {
 				echo $m[2].chr(13).chr(10);
 			}
 		}
-		echo '</textarea>';
+		echo '</textarea><hr />';
 	}
 ?>
-<hr />
+
 <img src="<?php echo CC_WHMCS_BRIDGE_URL?>/logo.png" height="50px" />
 <p>For more info and support, you can find us at <a href="http://www.zingiri.net">Zingiri</a>.</p>
 </div> <!-- end cc-left -->
