@@ -5,13 +5,13 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.2.0
+ Version: 1.2.1
  Author URI: http://www.zingiri.net/
  */
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.2.0");
+define("CC_WHMCS_BRIDGE_VERSION","1.2.1");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -69,15 +69,6 @@ function cc_whmcs_admin_notices() {
 	foreach ($files as $file) {
 		if (!is_writable($file)) $errors[]='File '.$file.' is not writable, please chmod to 666';
 	}
-
-	/*
-	 $dirs[]=array();
-	 foreach ($dirs as $file) {
-		if (!is_writable($file)) $errors[]='Directory '.$file.' is not writable, please chmod to 777';
-		}
-		*/
-
-	if (defined('CC_WHMCS_BRIDGE_SSO_VERSION') && get_option('cc_whmcs_bridge_version') != get_option('cc_whmcs_bridge_sso_version')) $warnings[]='The versions of the WHMCS Bridge ('.get_option('cc_whmcs_bridge_version').') and WHMCS Bridge SSO ('.get_option('cc_whmcs_bridge_sso_version').') plugins are not in sync.';
 
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the control panel.';
@@ -205,7 +196,7 @@ function cc_whmcs_bridge_output() {
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
 	cc_whmcs_log('Notification','Call: '.$http);
 	//echo '<br />'.$http.'<br />';
-	$news = new zHttpRequest($http);
+	$news = new zHttpRequest($http,'whmcs-bridge-sso');
 	if (isset($news->post['whmcsname'])) {
 		$news->post['name']=$news->post['whmcsname'];
 		unset($news->post['whmcsname']);
@@ -219,21 +210,21 @@ function cc_whmcs_bridge_output() {
 		return "A HTTP Error occured";
 	} else {
 		if ($cc_whmcs_bridge_to_include=='verifyimage') {
-			$output=$news->DownloadToString(true,false);
+			$output=$news->DownloadToString();
 			ob_end_clean();
 			header("Content-Type: image");
 			echo $news->body;
 			die();
 		} elseif ($ajax==1) {
 			ob_end_clean();
-			$output=$news->DownloadToString(true,false);
+			$output=$news->DownloadToString();
 			$body=$news->body;
 			$body=cc_whmcs_bridge_parser_ajax1($body);
 			echo $body;
 			die();
 		} elseif ($ajax==2) {
 			ob_end_clean();
-			$output=$news->DownloadToString(true,false);
+			$output=$news->DownloadToString();
 			$body=$news->body;
 			$body=cc_whmcs_bridge_parser_ajax2($body);
 			header('HTTP/1.1 200 OK');
@@ -241,7 +232,7 @@ function cc_whmcs_bridge_output() {
 			//echo 'it is ajax 2';
 			die();
 		} elseif ($news->redirect) {
-			$output=$news->DownloadToString(true,false);
+			$output=$news->DownloadToString();
 			//echo 'redirect1:'.$news->location.'<br />';
 
 			if ($wordpressPageName) $p=$wordpressPageName;
@@ -259,7 +250,7 @@ function cc_whmcs_bridge_output() {
 			header('Location:'.$output);
 			die();
 		} else {
-			$output=$news->DownloadToString(true,false);
+			$output=$news->DownloadToString();
 			return $output;
 		}
 	}

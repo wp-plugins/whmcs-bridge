@@ -139,6 +139,7 @@ function cc_whmcs_bridge_parser() {
 	//load WHMCS style.css style sheet
 	if (!get_option('cc_whmcs_bridge_style') == 'checked') {
 		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','',$buffer);
+		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/invoicestyle.css">/','',$buffer);
 	}
 
 	//replaces whmcs jquery so that it doesn't start it twice
@@ -183,21 +184,18 @@ function cc_whmcs_bridge_parser() {
 		$title=$body->find('h1',0);
 		$ret['title']=$title->innertext;
 		$title->outertext='';
-		//start change
-		//$ret['main']=$body->__toString();//$buffer;
-		$body->__toString();
-		$body=str_replace(' class="heading2"',"",$body);
-		$body=str_replace("<h1>","<h4>",$body);
-		$body=str_replace("</h1>","</h4>",$body);
-		$body=str_replace("<h2>","<h4>",$body);
-		$body=str_replace("</h2>","</h4>",$body);
-		$body=str_replace("<h3>","<h5>",$body);
-		$body=str_replace("</h3>","</h5>",$body);
-		$ret['main']=$body;//$buffer;
-		//end change
-
+		$ret['main']=$body->innertext;
+		$ret['main']=str_replace(' class="heading2"',"",$ret['main']);
+		$ret['main']=str_replace("<h1>","<h4>",$ret['main']);
+		$ret['main']=str_replace("</h1>","</h4>",$ret['main']);
+		$ret['main']=str_replace("<h2>","<h4>",$ret['main']);
+		$ret['main']=str_replace("</h2>","</h4>",$ret['main']);
+		$ret['main']=str_replace("<h3>","<h5>",$ret['main']);
+		$ret['main']=str_replace("</h3>","</h5>",$ret['main']);
+	} elseif ($body=$html->find('body',0)) {
+		$ret['main']=$body->innertext;
 	}
-	if ($head=$html->find('head',0)) $ret['head']=$head->__toString();//$buffer;
+	if ($head=$html->find('head',0)) $ret['head']=$head->innertext;//$buffer;
 
 	//start new change
 	if ($topMenu=$html->find('div[id=top_menu]',0)){
