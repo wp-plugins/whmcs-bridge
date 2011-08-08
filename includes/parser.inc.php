@@ -60,8 +60,8 @@ function cc_whmcs_bridge_parser() {
 	$f[]='/thisshouldneveroccur/';
 	$r[]='';
 
-	$f[]='/href\=\"'.preg_quote($_GET['ce_url'],'/').'\/([a-zA-Z\_]*?).php\"/';
-	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
+	//$f[]='/href\=\"'.preg_quote($_GET['ce_url'],'/').'\/([a-zA-Z\_]*?).php\"/';
+	//$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
 	$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
@@ -105,17 +105,8 @@ function cc_whmcs_bridge_parser() {
 	$f[]="(\<base\s*href\=(?:\"|\')(?:.*?)(?:\"|\')\s*/\>)";
 	$r[]='<base href="'.get_option('home').'">';
 
-	//jQuery
-	//jQuery.post("cart.php", 'ajax=1&a=add&pid=31&'+jQuery("#domainfrm").serialize(),
-
-	//$f[]="/jQuery.post\(([a-zA-Z)*?.php/";
-	//$r[]="jQuery.post\([hither.php";
-
 	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
 	$r[]="jQuery.post(\"$home?ccce=$1";
-
-	//$f[]='/function completedomain/';
-	//$r[]='function completedomain2';
 
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
