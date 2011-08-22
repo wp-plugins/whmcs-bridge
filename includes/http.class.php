@@ -1,5 +1,12 @@
 <?php
-//v0.3
+//v0.8
+//removed cc_whmcs_log call
+//need wpabspath for mailz
+//mailz returns full URL in case of redirection!!
+//made redirect generic, detect if location string contains protocol and server or not
+//added option to enable repost of $_POST variables
+//fixed issue with redirection location string 
+//added support for content-type
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
 	{
@@ -9,6 +16,8 @@ if (!class_exists('zHttpRequest')) {
 		var $_protocol;    // protocol (HTTP/HTTPS)
 		var $_uri;        // request URI
 		var $_port;        // port
+		var $_path;
+		var $params;
 		var $error;
 		var $errno=false;
 		var $post=array();	//post variables, defaults to $_POST
@@ -16,18 +25,21 @@ if (!class_exists('zHttpRequest')) {
 		var $errors=array();
 		var $countRedirects=0;
 		var $sid;
+		var $repost=false;
+		var $type; //content-type
 
 		// constructor
-		function __construct($url="",$sid='')
+		function __construct($url="",$sid='', $repost=false)
 		{
 			if (!$url) return;
 			$this->sid=$sid;
 			$this->_url = $url;
 			$this->_scan_url();
 			$this->post=$_POST;
+			$this->repost=$repost;
 		}
 
-		
+
 		private function processHeaders($headers) {
 			// split headers, one per array element
 			if ( is_string($headers) ) {
@@ -80,7 +92,7 @@ if (!class_exists('zHttpRequest')) {
 
 			return array('response' => $response, 'headers' => $newheaders, 'cookies' => $cookies);
 		}
-		
+
 		// scan url
 		private function _scan_url()
 		{
@@ -106,8 +118,12 @@ if (!class_exists('zHttpRequest')) {
 			}
 
 			$this->_uri = substr($req, $pos);
-			if($this->_uri == '')
-			$this->_uri = '/';
+			if($this->_uri == '') {
+				$this->_uri = '/';
+			} else {
+				$this->_params=substr(strrchr($this->_uri,'/'),1);
+				$this->_path=str_replace($this->_params,'',$this->_uri);
+			}
 		}
 
 		//check if server is live
@@ -133,23 +149,28 @@ if (!class_exists('zHttpRequest')) {
 
 		//error logging
 		function error($msg) {
-			cc_whmcs_log('Error',$msg);
+			echo 'Error: '.$msg;
 		}
 
 		//notification logging
 		function notify($msg) {
-			cc_whmcs_log('Notification',$msg);
+			echo 'Notification: '.$msg;
 		}
 
 		// download URL to string
 		function DownloadToString($withHeaders=true,$withCookies=false)
 		{
+			return $this->connect($this->_protocol.'://'.$this->_host.$this->_uri,$withHeaders,$withCookies);
+		}
+
+		function connect($url,$withHeaders,$withCookies)
+		{
 			$newfiles=array();
 
 			@session_start();
 			$ch = curl_init();    // initialize curl handle
-			$url=$this->_protocol.'://'.$this->_host.$this->_uri;
 			//echo '<br />call:'.$url;
+			//echo '<br />'.print_r($this->post);
 			curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -170,7 +191,7 @@ if (!class_exists('zHttpRequest')) {
 				}
 			}
 			if ($withCookies && isset($_COOKIE)) {
-				echo $cookies;die('with cookies');
+				//echo $cookies;die('with cookies');
 				$cookies="";
 				foreach ($_COOKIE as $i => $v) {
 					if ($i=='WHMCSUID' || $i=="WHMCSPW") {
@@ -268,7 +289,7 @@ if (!class_exists('zHttpRequest')) {
 			}
 
 			if ($cookies) {
-				if (!isset($_SESSION[$this->sid])) $_SESSION[$this->sid]=array(); 
+				if (!isset($_SESSION[$this->sid])) $_SESSION[$this->sid]=array();
 				$_SESSION[$this->sid]['cookies']=$cookies;
 			}
 			curl_close($ch);
@@ -284,16 +305,25 @@ if (!class_exists('zHttpRequest')) {
 			$this->data=$data;
 			$this->cookies=$cookies;
 			$this->body=$body;
+			if ($headers['content-type']) {
+				$this->type=$headers['content-type'];
+			}
 			if ($headers['location']) {
-				//echo '<br />redir:'.$headers['location'].'<br />';
-				//$this->notify('redir:'.print_r($headers,true));
-				$this->_uri='/'.$headers['location'];
-				$this->post=array();
+				//echo '<br />redirect to:'.print_r($headers,true);
+				$redir=$headers['location'];
+				if (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				if (strstr($redir,'&')) $redir.='&';
+				elseif (strstr($redir,'?')) $redir.='&';
+				else $redir.='?';
+				$redir.='wpabspath='.urlencode(ABSPATH);
+				if (!$this->repost) $this->post=array();
 				$this->countRedirects++;
-				if ($countRedirects < 10) {
-					return $this->DownloadToString($withHeaders,$withCookies);
+				if ($this->countRedirects < 10) {
+					if ($redir != $url) {
+						return $this->connect($redir,$withHeaders,$withCookies);
+					}
 				} else {
-					return 'ERROR: Too many redirects';
+					die('ERROR: Too many redirects '.$url.' > '.$headers['location']);
 				}
 			}
 			return $body;

@@ -225,7 +225,7 @@ function cc_whmcs_bridge_admin() {
 	}
 ?>
 
-<img src="<?php echo CC_WHMCS_BRIDGE_URL?>/logo.png" height="50px" />
+<img src="http://www.zingiri.net/logo.png" height="50px" />
 <p>For more info and support, you can find us at <a href="http://www.zingiri.net">Zingiri</a>.</p>
 </div> <!-- end cc-left -->
 <?php

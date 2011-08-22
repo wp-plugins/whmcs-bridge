@@ -38,6 +38,7 @@ function cc_whmcs_bridge_home(&$home,&$pid) {
 		$wordpressPageName = str_replace($homePage,"",$wordpressPageName);
 		$pid="";
 		$home=$homePage.$wordpressPageName;
+		if (substr($home,-1) != '/') $home.='/';
 	}else{
 		$pid='&page_id='.$pageID;
 		$home=get_option('home').'/';
@@ -55,14 +56,16 @@ function cc_whmcs_bridge_parser() {
 	$tmp2=explode('/',$tmp[1],2);
 	$sub=str_replace($tmp[0].'://'.$tmp2[0],'',cc_whmcs_bridge_url()).'/';
 
+	$whmcs=cc_whmcs_bridge_url().'/';
+
 	$ret['buffer']=$buffer;
 
-	$f[]='/thisshouldneveroccur/';
-	$r[]='';
+	$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
+	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-	//$f[]='/href\=\"'.preg_quote($_GET['ce_url'],'/').'\/([a-zA-Z\_]*?).php\"/';
-	//$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
-
+	$f[]='/'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php/';
+	$r[]=''.$home.'?ccce=$1'.$pid;
+	
 	$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
@@ -71,7 +74,7 @@ function cc_whmcs_bridge_parser() {
 
 	$f[]='/href\=\"([a-zA-Z\_]*?).php\"/';
 	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
-
+	
 	$f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\'/';
 	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
@@ -97,6 +100,10 @@ function cc_whmcs_bridge_parser() {
 	$f[]='#\'cart.php\?#';
 	$r[]='\''.$home.'?ccce=cart&';
 
+	//fixes the register.php
+	$f[]='/action\=\"(.|\/*?)register.php\"/';
+	$r[]='action="'.$home.'?ccce=register"';
+	
 	//remove cart heading
 	$f[]='#\<p align\=\"center\" class=\"cartheading\">(?:.*?)\<\/p\>#';
 	$r[]='';
