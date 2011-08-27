@@ -1,10 +1,10 @@
 === WHMCS Bridge ===
-Contributors: EBO
-Donate link: http://www.zingiri.net/
+Contributors: zingiri
+Donate link: http://www.zingiri.net/donations
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.2.1
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
@@ -32,13 +32,26 @@ Please visit the [Zingiri](http://forums.zingiri.net/forumdisplay.php?fid=56 "Zi
 
 == Screenshots ==
 
-None available ... yet.
+No screenshots here but have a look at [our site](http://www.zingiri.net/portal/ "our site") to see it in action.
 
 == Upgrade Notice ==
 
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 1.3.2 =
+* Added support for when WHMCS is in Maintenance Mode, the maintenance message defined in WHMCS is displayed on the WP site.
+* Fixed issue when in the shopping cart, the Continue Shopping button does not work.
+* Fixed issue with Order Summary not being displayed for certain cart templates.
+* Fixed issue with display of knowledge base articles when entering a new support ticket.
+* Updated Support Us page and donations link
+
+3. In the Submit a Ticket area, while typing a message, all of a sudden the portal header duplicates itself under the text box I’m typing in. After that happens the screen is locked up. I can press the browser back button to get back to the last portal screen. Tested twice the same. Also happens in Pre-Sales Contact Us, and while submitting a Support Ticket
+4. When I login in as a client, I get the following error on the screen above my website header: Error: HTTP Error:22/The requested URL returned error: 404 at http://www.rkehost.com/members/dologin.php. However, if I press the Back button on my browser I am logged in as the user. This happened with IE8 and FireFox.
+5. It does not work with HTTPS still. However, I have reentered https: URL back into WHMCS and all the above works the same with or without it. So at least any sales I do through the normal portal will be secure.
+6. All the above was tested using the Default Portal template. If I switch the template that is call “Portal” a whole different set of problem occur.
+
 
 = 1.3.1 =
 * Added trailing slash to pretty URL's

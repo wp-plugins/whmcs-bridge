@@ -2,24 +2,25 @@
 function cc_whmcs_bridge_parser_ajax1($buffer) {
 	cc_whmcs_bridge_home($home,$pid);
 	
-	$buffer=str_replace('templates/orderforms/slider/js/main.js',$home.'?ccce=js&ajax=2&js='.urlencode('templates/orderforms/slider/js/main.js').$pid,$buffer);
-	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
-	//$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
-	//$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
-	//$buffer=str_replace('href="includes','href="'.cc_whmcs_bridge_url().'/includes',$buffer);
+	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
+	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
+	
+	$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
+	$buffer=preg_replace($f,$r,$buffer,-1,$count);
+	
+	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
+	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
+	
 	return $buffer;
 }
 
 function cc_whmcs_bridge_parser_ajax2($buffer) {
 	cc_whmcs_bridge_home($home,$pid);
 	
-	//$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
-	//$r[]="jQuery.post(\"$home?ccce=$1";
 	$buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
 	$buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
-	//$f[]='#\'cart.php\?#';
-	//$r[]='\''.$home.'?ccce=cart&';
 
 	//$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
@@ -115,8 +116,14 @@ function cc_whmcs_bridge_parser() {
 	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
 	$r[]="jQuery.post(\"$home?ccce=$1";
 
+	$f[]="/.post\(\"submitticket.php/";
+	$r[]=".post(\"$home?ccce=submitticket&ajax=1";
+	
+	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
+	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
+	
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
-
+	
 	//name is a reserved Wordpress field name
 	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
 
@@ -191,6 +198,8 @@ function cc_whmcs_bridge_parser() {
 		$ret['main']=str_replace("<h3>","<h5>",$ret['main']);
 		$ret['main']=str_replace("</h3>","</h5>",$ret['main']);
 	} elseif ($body=$html->find('body',0)) {
+		$ret['main']=$body->innertext;
+	} elseif ($body=$html->find('div',0)) {
 		$ret['main']=$body->innertext;
 	}
 	if ($head=$html->find('head',0)) $ret['head']=$head->innertext;//$buffer;

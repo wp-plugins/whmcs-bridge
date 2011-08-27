@@ -8,7 +8,7 @@ function cc_whmcs_bridge_options() {
             "type" => "heading",
 			"desc" => "This section customizes the way WHMCS Bridge interacts with Wordpress.");
 	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS URL",
-			"desc" => "The site URL of your WHMCS installation",
+			"desc" => "The site URL of your WHMCS installation. Make sure this is exactly the same as the settings field 'WHMCS System URL' in WHMCS. If you want to use SSL (https), make sure this URL and the 'WHMCS System URL' are using the https URL. In all cases make sure the WHMCS setting 'WHMCS SSL System URL' is left blank.",
 			"id" => $cc_whmcs_bridge_shortname."_url",
 			"type" => "text");
 		$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin user",
@@ -19,7 +19,7 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The password of the WHMCS admin user.",
 			"id" => $cc_whmcs_bridge_shortname."_admin_password",
 			"type" => "password");
-	if (file_exists(dirname(__FILE__).'/../whmcs-bridge-sso')) {
+	if (file_exists(dirname(__FILE__).'/../whmcs-bridge-sso') || get_option('cc_whmcs_bridge_sso_active')) {
 		$cc_whmcs_bridge_options[] = array(	"name" => "SSO license key",
 				"desc" => 'Only required if you are using the Single Sign On extension. You can obtain a license key <a href="http://www.clientcentral.info/cart.php?gid=4">here</a>.',
 				"id" => $cc_whmcs_bridge_shortname."_sso_license_key",
