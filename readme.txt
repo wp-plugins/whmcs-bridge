@@ -47,12 +47,6 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 * Fixed issue with display of knowledge base articles when entering a new support ticket.
 * Updated Support Us page and donations link
 
-3. In the Submit a Ticket area, while typing a message, all of a sudden the portal header duplicates itself under the text box I’m typing in. After that happens the screen is locked up. I can press the browser back button to get back to the last portal screen. Tested twice the same. Also happens in Pre-Sales Contact Us, and while submitting a Support Ticket
-4. When I login in as a client, I get the following error on the screen above my website header: Error: HTTP Error:22/The requested URL returned error: 404 at http://www.rkehost.com/members/dologin.php. However, if I press the Back button on my browser I am logged in as the user. This happened with IE8 and FireFox.
-5. It does not work with HTTPS still. However, I have reentered https: URL back into WHMCS and all the above works the same with or without it. So at least any sales I do through the normal portal will be secure.
-6. All the above was tested using the Default Portal template. If I switch the template that is call “Portal” a whole different set of problem occur.
-
-
 = 1.3.1 =
 * Added trailing slash to pretty URL's
 * Updated http class to version 0.8
