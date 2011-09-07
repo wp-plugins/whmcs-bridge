@@ -19,11 +19,8 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The password of the WHMCS admin user.",
 			"id" => $cc_whmcs_bridge_shortname."_admin_password",
 			"type" => "password");
-	if (file_exists(dirname(__FILE__).'/../whmcs-bridge-sso') || get_option('cc_whmcs_bridge_sso_active')) {
-		$cc_whmcs_bridge_options[] = array(	"name" => "SSO license key",
-				"desc" => 'Only required if you are using the Single Sign On extension. You can obtain a license key <a href="http://www.clientcentral.info/cart.php?gid=4">here</a>.',
-				"id" => $cc_whmcs_bridge_shortname."_sso_license_key",
-				"type" => "text");
+	if (get_option('cc_whmcs_bridge_sso_active')) {
+		require(get_option('cc_whmcs_bridge_sso_active').'/includes/controlpanel.inc.php');
 	}
 	
 	$cc_whmcs_bridge_options[] = array(  "name" => "Styling Settings",
@@ -100,7 +97,7 @@ function cc_whmcs_bridge_admin() {
 	
 	?>
 <div class="wrap">
-<div id="cc-left" style="position:relative;float:left;width:70%">
+<div id="cc-left" style="position:relative;float:left;width:80%">
 <h2><b><?php echo $cc_whmcs_bridge_name; ?></b></h2>
 
 	<?php
@@ -214,7 +211,6 @@ function cc_whmcs_bridge_admin() {
 		echo '<textarea rows=10 cols=80>';
 		$r=get_option('cc_whmcs_bridge_log');
 		if ($r) {
-			//$v=unserialize($r);
 			$v=$r;
 			foreach ($v as $m) {
 				echo date('H:i:s',$m[0]).' '.$m[1].chr(13).chr(10);
@@ -225,12 +221,8 @@ function cc_whmcs_bridge_admin() {
 	}
 ?>
 
-<img src="http://www.zingiri.net/logo.png" height="50px" />
-<p>For more info and support, you can find us at <a href="http://www.zingiri.net">Zingiri</a>.</p>
 </div> <!-- end cc-left -->
 <?php
 	require(dirname(__FILE__).'/support-us.inc.php');
-	
-	echo '</div>'; //end wrap
 }
 add_action('admin_menu', 'cc_whmcs_bridge_add_admin'); ?>

@@ -1,5 +1,5 @@
 <?php
-//v0.8
+//v0.9
 //removed cc_whmcs_log call
 //need wpabspath for mailz
 //mailz returns full URL in case of redirection!!
@@ -7,6 +7,7 @@
 //added option to enable repost of $_POST variables
 //fixed issue with redirection location string 
 //added support for content-type
+//fixed issue with $this->$headers wrong, should be $this->headers
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
 	{
@@ -301,7 +302,7 @@ if (!class_exists('zHttpRequest')) {
 				}
 			}
 
-			$this->$headers=$headers;
+			$this->headers=$headers;
 			$this->data=$data;
 			$this->cookies=$cookies;
 			$this->body=$body;

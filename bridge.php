@@ -5,13 +5,13 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.3.2
+ Version: 1.4.0
  Author URI: http://www.zingiri.net/
  */
-//error_reporting(E_ALL & ~E_NOTICE);
-//ini_set('display_errors', '1');
+error_reporting(E_ALL & ~E_NOTICE);
+ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.3.2");
+define("CC_WHMCS_BRIDGE_VERSION","1.4.0");
 define("CC_WHMCS_VERSION","4.0");
 
 // Pre-2.6 compatibility for wp-content folder location
@@ -42,13 +42,13 @@ if ($cc_whmcs_bridge_version) {
 	add_filter('the_content', 'cc_whmcs_bridge_content', 10, 3);
 	add_filter('the_title', 'cc_whmcs_bridge_title');
 	add_action('wp_head','cc_whmcs_bridge_header');
+	add_action('admin_head','cc_whmcs_bridge_admin_header');
 	add_action("plugins_loaded", "cc_whmcs_sidebar_init");
 }
 add_action('admin_notices','cc_whmcs_admin_notices');
 register_activation_hook(__FILE__,'cc_whmcs_bridge_activate');
 register_deactivation_hook(__FILE__,'cc_whmcs_bridge_deactivate');
 
-require_once(dirname(__FILE__) . '/includes/errorlog.class.php');
 require_once(dirname(__FILE__) . '/includes/shared.inc.php');
 require_once(dirname(__FILE__) . '/includes/http.class.php');
 require_once(dirname(__FILE__) . '/includes/footer.inc.php');
@@ -65,14 +65,8 @@ function cc_whmcs_admin_notices() {
 	$files=array();
 	$dirs=array();
 
-	$files[]=dirname(__FILE__).'/log.txt';
-	foreach ($files as $file) {
-		if (!is_writable($file)) $errors[]='File '.$file.' is not writable, please chmod to 666';
-	}
-
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the control panel.';
-
 	$upload=wp_upload_dir();
 	if ($upload['error']) $errors[]=$upload['error'];
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
@@ -107,11 +101,11 @@ function cc_whmcs_bridge_activate() {
 }
 
 function cc_whmcs_bridge_install() {
-	global $wpdb,$zErrorLog,$current_user;
+	global $wpdb,$current_user;
 
 	ob_start();
-	$zErrorLog->clear();
-	set_error_handler(array($zErrorLog,'log'));
+	cc_whmcs_log();
+	set_error_handler('cc_whmcs_log');
 	error_reporting(E_ALL & ~E_NOTICE);
 
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
@@ -119,7 +113,7 @@ function cc_whmcs_bridge_install() {
 	else update_option("cc_whmcs_bridge_version",CC_WHMCS_BRIDGE_VERSION);
 
 	//create pages
-	$zErrorLog->msg('Creating pages');
+	cc_whmcs_log(0,'Creating pages');
 	if (!$cc_whmcs_bridge_version) {
 		$pages=array();
 		$pages[]=array("WHMCS","WHMCS","*",0);
@@ -216,6 +210,13 @@ function cc_whmcs_bridge_output() {
 			header("Content-Type: image");
 			echo $news->body;
 			die();
+		} elseif ($cc_whmcs_bridge_to_include=='dl') {
+			ob_end_clean();
+			$output=$news->DownloadToString();
+			header("Content-Disposition: ".$news->headers['content-disposition']);
+			header("Content-Type: ".$news->headers['content-type']);
+			echo $news->body;
+			die();
 		} elseif ($ajax==1) {
 			ob_end_clean();
 			$output=$news->DownloadToString();
@@ -288,7 +289,10 @@ function cc_whmcs_bridge_header() {
 	if (get_option('cc_whmcs_bridge_css')) {
 		echo '<style type="text/css">'.get_option('cc_whmcs_bridge_css').'</style>';
 	}
+}
 
+function cc_whmcs_bridge_admin_header() {
+	echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
 }
 
 function cc_whmcs_bridge_http($page="index") {
@@ -311,13 +315,16 @@ function cc_whmcs_bridge_http($page="index") {
 			}
 		}
 	}
-	//$vars.=$and.'cc_url='.cc_urlencode(get_option('home'));
-	//$vars.='&ce_url='.cc_urlencode(cc_whmcs_bridge_url());
-	//$vars.='&cc_site_url='.cc_urlencode(CC_WHMCS_BRIDGE_URL);
+
+	$vars.=$and.'systpl=portal';
+	$and="&";
+	
+	if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);
+
 	if ($get && $vars) $vars.='&';
 	if ($get) $vars.=$get;
 	if ($vars) $http.='?'.$vars;
-
+	
 	return $http;
 }
 
@@ -356,8 +363,9 @@ function cc_whmcs_bridge_init()
 	session_start();
 }
 
-function cc_whmcs_log($type,$msg) {
+function cc_whmcs_log($type=0,$msg='',$filename="",$linenum=0) {
 	if (get_option('cc_whmcs_bridge_debug')) {
+		if (is_array($msg)) $msg=print_r($msg,true);
 		$v=get_option('cc_whmcs_bridge_log');
 		if (!is_array($v)) $v=array();
 		array_unshift($v,array(time(),$type,$msg));

@@ -64,6 +64,9 @@ function cc_whmcs_bridge_parser() {
 	$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
 	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
+	$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
+
 	$f[]='/'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php/';
 	$r[]=''.$home.'?ccce=$1'.$pid;
 	
@@ -76,14 +79,14 @@ function cc_whmcs_bridge_parser() {
 	$f[]='/href\=\"([a-zA-Z\_]*?).php\"/';
 	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 	
+	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
+	$r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
+
 	$f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\'/';
 	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
 	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
 	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
-
-	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
-	$r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
 
 	$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
 	$r[]='window.location = \''.$home.'?ccce=$1&$2'.$pid.'\'';
