@@ -116,11 +116,15 @@ function cc_whmcs_bridge_parser() {
 	$f[]="(\<base\s*href\=(?:\"|\')(?:.*?)(?:\"|\')\s*/\>)";
 	$r[]='<base href="'.get_option('home').'">';
 
-	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
-	$r[]="jQuery.post(\"$home?ccce=$1";
-
+	$f[]="/.post\(\"announcements.php/";
+	$r[]=".post(\"$home?ccce=announcements&ajax=1";
+	
 	$f[]="/.post\(\"submitticket.php/";
 	$r[]=".post(\"$home?ccce=submitticket&ajax=1";
+	
+	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
+	$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
+	
 	
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;

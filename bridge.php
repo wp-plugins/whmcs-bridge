@@ -5,13 +5,15 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.4.1
+ Version: 1.4.2
  Author URI: http://www.zingiri.net/
  */
 //error_reporting(E_ALL & ~E_NOTICE);
 //ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.4.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.4.2");
+
+$compatibleWHMCSBridgeProVersions=array('1.4.1','1.4.2');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -43,7 +45,9 @@ if ($cc_whmcs_bridge_version) {
 	add_action('wp_head','cc_whmcs_bridge_header');
 	add_action('admin_head','cc_whmcs_bridge_admin_header');
 	add_action("plugins_loaded", "cc_whmcs_sidebar_init");
+	//add_filter("pre_update_option__site_transient_update_plugins","cc_whmcs_bridge_update_plugins",10,2);
 }
+add_action('admin_head','cc_whmcs_bridge_admin_header');
 add_action('admin_notices','cc_whmcs_admin_notices');
 register_activation_hook(__FILE__,'cc_whmcs_bridge_activate');
 register_deactivation_hook(__FILE__,'cc_whmcs_bridge_deactivate');
@@ -65,7 +69,7 @@ function cc_whmcs_admin_notices() {
 	$dirs=array();
 
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
-	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the control panel.';
+	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the <a href="options-general.php?page=cc-ce-bridge-cp">control panel</a>.';
 	$upload=wp_upload_dir();
 	if ($upload['error']) $errors[]=$upload['error'];
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
@@ -78,12 +82,12 @@ function cc_whmcs_admin_notices() {
 
 	if (count($warnings) > 0) {
 		echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
-		foreach ($warnings as $message) echo $message.'<br />';
+		foreach ($warnings as $message) echo 'WHMCS Bridge: '.$message.'<br />';
 		echo "</strong> "."</p></div>";
 	}
 	if (count($errors) > 0) {
 		echo "<div id='zing-warning' style='background-color:pink' class='updated fade'><p><strong>";
-		foreach ($errors as $message) echo $message.'<br />';
+		foreach ($errors as $message) echo 'WHMCS Bridge :'.$message.'<br />';
 		echo "</strong> "."</p></div>";
 	}
 
@@ -379,4 +383,6 @@ function cc_whmcs_bridge_url() {
 }
 
 //Kept for compatibility reasons
-class HTTPRequestWHMCS extends zHttpRequest {}
+if (class_exists('zHttpRequest')) {
+	class HTTPRequestWHMCS extends zHttpRequest {}
+}
