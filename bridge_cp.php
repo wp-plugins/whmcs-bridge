@@ -47,11 +47,11 @@ function cc_whmcs_bridge_options() {
 			"id" => $cc_whmcs_bridge_shortname."_debug",
 			"type" => "checkbox");
 	$cc_whmcs_bridge_options[] = array(	"name" => "Footer",
-			"desc" => "Specify where you want the Zingiri footer to appear. If you disable the footer here,<br />we count on you to link back to our site some other way.",
+			"desc" => "Specify where you want the Zingiri footer to appear.",
 			"id" => $cc_whmcs_bridge_shortname."_footer",
 			"std" => 'Page',
 			"type" => "select",
-			"options" => array('Site','Page','None'));
+			"options" => array('Page','Site'));
 
 	return $cc_whmcs_bridge_options;
 }
@@ -62,7 +62,7 @@ function cc_whmcs_bridge_add_admin() {
 
 	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
 
-	if ( $_GET['page'] == "cc-ce-bridge-cp" ) {
+	if (isset($_GET['page']) && ($_GET['page'] == "cc-ce-bridge-cp")) {
 		
 		if ( isset($_REQUEST['action']) && 'install' == $_REQUEST['action'] ) {
 			delete_option('cc_whmcs_bridge_log');
@@ -90,7 +90,7 @@ function cc_whmcs_bridge_admin() {
 
 	global $cc_whmcs_bridge_name, $cc_whmcs_bridge_shortname;
 
-	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
+	$controlpanelOptions=cc_whmcs_bridge_options();
 
 	if ( isset($_REQUEST['installed']) ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' installed.</strong></p></div>';
 	if ( isset($_REQUEST['error']) ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
@@ -106,99 +106,7 @@ function cc_whmcs_bridge_admin() {
 	?>
 <form method="post">
 
-<table class="optiontable">
-
-<?php if ($cc_whmcs_bridge_options) foreach ($cc_whmcs_bridge_options as $value) {
-
-	if ($value['type'] == "text" || $value['type'] == "password") { ?>
-
-	<tr align="left">
-		<th scope="row"><?php echo $value['name']; ?>:</th>
-		<td><input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>"
-			type="<?php echo $value['type']; ?>"
-			value="<?php if ( get_option( $value['id'] ) != "") { echo get_option( $value['id'] ); } else { echo $value['std']; } ?>"
-			size="40"
-		/></td>
-
-	</tr>
-	<tr>
-		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
-		</td>
-	</tr>
-
-	<?php } elseif ($value['type'] == "checkbox") { ?>
-
-	<tr align="left">
-		<th scope="row"><?php echo $value['name']; ?>:</th>
-		<td><input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>"
-			type="checkbox"
-			value="checked"
-			<?php if ( get_option( $value['id'] ) != "") { echo " checked"; } ?>
-		/></td>
-
-	</tr>
-	<tr>
-		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
-		</td>
-	</tr>
-
-
-	<?php } elseif ($value['type'] == "textarea") { ?>
-	<tr align="left">
-		<th scope="row"><?php echo $value['name']; ?>:</th>
-		<td><textarea name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>" cols="50"
-			rows="8"
-		/>
-		<?php if ( get_option( $value['id'] ) != "") { echo stripslashes (get_option( $value['id'] )); }
-		else { echo $value['std'];
-		} ?>
-</textarea></td>
-
-	</tr>
-	<tr>
-		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
-		</td>
-	</tr>
-
-	<?php } elseif ($value['type'] == "select") { ?>
-
-	<tr align="left">
-		<th scope="top"><?php echo $value['name']; ?>:</th>
-		<td><select name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>">
-		<?php foreach ($value['options'] as $option) { ?>
-			<option <?php if ( get_option( $value['id'] ) == $option) { echo ' selected="selected"'; }?>><?php echo $option; ?></option>
-			<?php } ?>
-		</select></td>
-
-	</tr>
-	<tr>
-		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
-		</td>
-	</tr>
-
-	<?php } elseif ($value['type'] == "heading") { ?>
-
-	<tr valign="top">
-		<td colspan="2" style="text-align: left;">
-		<h2 style="color: green;"><?php echo $value['name']; ?></h2>
-		</td>
-	</tr>
-	<tr>
-		<td colspan=2><small>
-		<p style="color: red; margin: 0 0;"><?php echo $value['desc']; ?></P>
-		</small>
-		<hr />
-		</td>
-	</tr>
-
-	<?php } 
-} //end foreach
-?>
-</table>
+<?php require(__DIR__.'/includes/cpedit.inc.php')?>
 
 <p class="submit"><input name="install" type="submit" value="<?php echo $submit;?>" /> <input
 	type="hidden" name="action" value="install"
@@ -223,6 +131,7 @@ function cc_whmcs_bridge_admin() {
 
 </div> <!-- end cc-left -->
 <?php
-	require(dirname(__FILE__).'/support-us.inc.php');
+	require(dirname(__FILE__).'/includes/support-us.inc.php');
+	zing_support_us('whmcs-bridge','whmcs-bridge','cc-ce-bridge-cp',CC_WHMCS_BRIDGE_VERSION);
 }
 add_action('admin_menu', 'cc_whmcs_bridge_add_admin'); ?>

@@ -143,7 +143,7 @@ function cc_whmcs_bridge_parser() {
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage',$buffer);
 
-	if ($_REQUEST['ccce']=='viewinvoice') {
+	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
 		echo $buffer;
 		die();
 	}

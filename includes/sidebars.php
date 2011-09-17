@@ -128,11 +128,11 @@ class cc_whmcs_topNav_main extends WP_Widget {
 		global $cc_whmcs_bridge_content;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
-		echo $before_widget;
-		if ( !$title ) $title=$cc_whmcs_bridge_content['mode'][0];
+		//echo $before_widget;
+		//if ( !$title ) $title=$cc_whmcs_bridge_content['mode'][0];
 		echo $before_title . $title . $after_title;
 		echo $cc_whmcs_bridge_content['topNav'];
-		echo $after_widget;
+		//echo $after_widget;
 	}
 
 	/** @see WP_Widget::update */
@@ -144,7 +144,7 @@ class cc_whmcs_topNav_main extends WP_Widget {
 
 	/** @see WP_Widget::form */
 	function form($instance) {
-		$title = esc_attr($instance['title']);
+		$title = isset($instance['title']) ? esc_attr($instance['title']) : '';
 		echo '<p>';
 		echo '<label for="'.$this->get_field_id('title').'"'._e('Title:').'</label>';
 		echo '<input class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" type="text" value="'.$title.'"/>';

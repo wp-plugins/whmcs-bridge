@@ -5,13 +5,11 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.4.2
+ Version: 1.4.3
  Author URI: http://www.zingiri.net/
  */
-//error_reporting(E_ALL & ~E_NOTICE);
-//ini_set('display_errors', '1');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.4.2");
+define("CC_WHMCS_BRIDGE_VERSION","1.4.3");
 
 $compatibleWHMCSBridgeProVersions=array('1.4.1','1.4.2');
 
@@ -71,14 +69,13 @@ function cc_whmcs_admin_notices() {
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the <a href="options-general.php?page=cc-ce-bridge-cp">control panel</a>.';
 	$upload=wp_upload_dir();
+	if (!is_writable(session_save_path())) $errors[]='PHP sessions are not properly configured on your server, the sessions save path '.session_save_path().' is not writable.';
 	if ($upload['error']) $errors[]=$upload['error'];
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
 	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
 	if (phpversion() < '5') $warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
 	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
 	if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
-	@session_start();
-	if (!session_id()) $errors[]='Sessions are not working on your installation, make sure they are turned on.';
 
 	if (count($warnings) > 0) {
 		echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
@@ -179,7 +176,7 @@ function cc_whmcs_bridge_output() {
 	$ajax=false;
 
 	$cf=get_post_custom($post->ID);
-	if (isset($_REQUEST['ccce']) && ($_REQUEST['ajax'])) {
+	if (isset($_REQUEST['ccce']) && (isset($_REQUEST['ajax']) && $_REQUEST['ajax'])) {
 		$cc_whmcs_bridge_to_include=$_REQUEST['ccce'];
 		$ajax=intval($_REQUEST['ajax']);
 	} elseif (isset($_REQUEST['ccce'])) {
@@ -272,7 +269,16 @@ function cc_whmcs_bridge_content($content) {
 	$cf=get_post_custom($post->ID);
 	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS')) {
 		if ($cc_whmcs_bridge_content) {
-			$content=$cc_whmcs_bridge_content['main'];
+			$content='';
+			ob_start();
+			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-top-page') ) : 
+			endif;
+			$content.=ob_get_clean();
+			$content.=$cc_whmcs_bridge_content['main'];
+			ob_start();
+			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-bottom-page') ) : 
+			endif;
+			$content.=ob_get_clean();
 			if (get_option('cc_whmcs_bridge_footer')=='Page') $content.=cc_footers(true);
 		}
 	}
@@ -303,7 +309,7 @@ function cc_whmcs_bridge_http($page="index") {
 
 	$vars="";
 	if ($page=='verifyimage') $http=cc_whmcs_bridge_url().'/includes/'.$page.'.php';
-	elseif ($_REQUEST['ccce']=='js') {
+	elseif (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='js')) {
 		$http=cc_whmcs_bridge_url().'/'.$_REQUEST['js'];
 		return $http;
 	}
@@ -324,8 +330,8 @@ function cc_whmcs_bridge_http($page="index") {
 	
 	if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);
 
-	if ($get && $vars) $vars.='&';
-	if ($get) $vars.=$get;
+	//if ($get && $vars) $vars.='&';
+	//if ($get) $vars.=$get;
 	if ($vars) $http.='?'.$vars;
 	
 	return $http;
@@ -334,7 +340,7 @@ function cc_whmcs_bridge_http($page="index") {
 function cc_whmcs_bridge_title($title,$id=0) {
 	global $cc_whmcs_bridge_content;
 	if (!in_the_loop()) return $title;
-	if (!cc_whmcs_bridge_default_page($post->ID) || $id==0 || ($id != $post->ID)) return $title;
+	if ($id==0) return $title;
 
 	if (isset($cc_whmcs_bridge_content['title'])) return $cc_whmcs_bridge_content['title'];
 	else return $title;
@@ -364,6 +370,8 @@ function cc_whmcs_bridge_init()
 {
 	ob_start();
 	session_start();
+	register_sidebars(1,array('name'=>'WHMCS Top Page Widget Area','id'=>'whmcs-top-page',));
+	register_sidebars(1,array('name'=>'WHMCS Bottom Page Widget Area','id'=>'whmcs-top-page',));
 }
 
 function cc_whmcs_log($type=0,$msg='',$filename="",$linenum=0) {

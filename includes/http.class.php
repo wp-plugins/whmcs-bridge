@@ -1,13 +1,25 @@
 <?php
-//v0.9
+//v1.09.15
 //removed cc_whmcs_log call
 //need wpabspath for mailz
 //mailz returns full URL in case of redirection!!
 //made redirect generic, detect if location string contains protocol and server or not
 //added option to enable repost of $_POST variables
-//fixed issue with redirection location string 
+//fixed issue with redirection location string
 //added support for content-type
 //fixed issue with $this->$headers wrong, should be $this->headers
+//fixed issue with handling of $repost
+//added check on $headers['location'] existence
+//added initialisation of $post and $apost
+//fixed issue with checkConnection()
+//added support for multiple cookies
+//check if session exists before starting a new one
+//changed return test value of checkConnection()
+//replaced display of error and notice by triggering PHP error or notice
+//added mime type info to uploaded files
+//added option to disable following redirect links
+//fixed issue with HTTP 417 errors on some web servers
+//fixed redirect link parsing issue
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
 	{
@@ -28,6 +40,7 @@ if (!class_exists('zHttpRequest')) {
 		var $sid;
 		var $repost=false;
 		var $type; //content-type
+		var $follow=true; //whether to follow redirect links or not
 
 		// constructor
 		function __construct($url="",$sid='', $repost=false)
@@ -65,6 +78,7 @@ if (!class_exists('zHttpRequest')) {
 
 			$cookies = '';
 			$newheaders = array();
+			//echo '<br /><br />HEADERS<br />'.print_r($headers,true).'===<br /><br />';
 			foreach ( $headers as $tempheader ) {
 				if ( empty($tempheader) )
 				continue;
@@ -86,10 +100,12 @@ if (!class_exists('zHttpRequest')) {
 						$newheaders[$key] = trim( $value );
 					}
 					if ( 'set-cookie' == $key ) {
-						$cookies = $value;
+						if ($cookies) $cookies.=' ;';
+						$cookies .= $value;
 					}
 				}
 			}
+			//echo '<br /><br />COOKIES:'.$cookies.'===<br /><br />';
 
 			return array('response' => $response, 'headers' => $newheaders, 'cookies' => $cookies);
 		}
@@ -135,6 +151,19 @@ if (!class_exists('zHttpRequest')) {
 			else return true;
 		}
 
+		//get mime type of uploaded file
+		function mimeType($file) {
+			$mime='';
+			if (function_exists('finfo_open')) {
+				if ($finfo = finfo_open(FILEINFO_MIME_TYPE)) {
+					$mime=finfo_file($finfo, $file);
+					finfo_close($finfo);
+				}
+			}
+			if ($mime) return ';type='.$mime;
+			else return '';
+		}
+
 		//check if cURL installed
 		function curlInstalled() {
 			if (!function_exists('curl_init')) return false;
@@ -143,19 +172,20 @@ if (!class_exists('zHttpRequest')) {
 
 		//check destination is reachable
 		function checkConnection() {
-			$output=$this->DownloadToString_curl();
-			if ($output=='zingiri') return true;
+			$this->post['checkconnection']=1;
+			$output=$this->connect($this->_protocol.'://'.$this->_host.$this->_uri);
+			if ($output=='zingiri' || $output=='connected') return true;
 			else return false;
 		}
 
 		//error logging
 		function error($msg) {
-			echo 'Error: '.$msg;
+			trigger_error($msg,E_USER_WARNING);
 		}
 
 		//notification logging
 		function notify($msg) {
-			echo 'Notification: '.$msg;
+			trigger_error($msg,E_USER_NOTICE);
 		}
 
 		// download URL to string
@@ -164,18 +194,19 @@ if (!class_exists('zHttpRequest')) {
 			return $this->connect($this->_protocol.'://'.$this->_host.$this->_uri,$withHeaders,$withCookies);
 		}
 
-		function connect($url,$withHeaders,$withCookies)
+		function connect($url,$withHeaders=true,$withCookies=true)
 		{
 			$newfiles=array();
 
-			@session_start();
+			if (!session_id()) @session_start();
 			$ch = curl_init();    // initialize curl handle
-			//echo '<br />call:'.$url;
-			//echo '<br />'.print_r($this->post);
+			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=';
 			curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); //avoid 417 errors
+			
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 60); // times out after 10s
@@ -192,7 +223,6 @@ if (!class_exists('zHttpRequest')) {
 				}
 			}
 			if ($withCookies && isset($_COOKIE)) {
-				//echo $cookies;die('with cookies');
 				$cookies="";
 				foreach ($_COOKIE as $i => $v) {
 					if ($i=='WHMCSUID' || $i=="WHMCSPW") {
@@ -202,6 +232,7 @@ if (!class_exists('zHttpRequest')) {
 				}
 				curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 			}
+			//echo '<br />cookie before='.print_r($_SESSION[$this->sid]['cookies'],true).'=';
 			if (isset($_SESSION[$this->sid]['cookies'])) {
 				curl_setopt($ch, CURLOPT_COOKIE, $_SESSION[$this->sid]['cookies']);
 			}
@@ -214,17 +245,19 @@ if (!class_exists('zHttpRequest')) {
 								$newfile=BLOGUPLOADDIR.$file['name'][$i];
 								$newfiles[]=$newfile;
 								copy($file['tmp_name'][$i],$newfile);
-								if ($file['tmp_name'][$i]) $this->post[$name][$i]='@'.$newfile;
+								if ($file['tmp_name'][$i]) $this->post[$name][$i]='@'.$newfile.$this->mimeType($newfile);
 							}
 						}
 					} elseif ($file['tmp_name']) {
 						$newfile=BLOGUPLOADDIR.$file['name'];
 						$newfiles[]=$newfile;
 						copy($file['tmp_name'],$newfile);
-						if ($file['tmp_name']) $this->post[$name]='@'.$newfile;
+						if ($file['tmp_name']) $this->post[$name]='@'.$newfile.$this->mimeType($newfile);
 					}
 				}
 			}
+			$post='';
+			$apost=array();
 			if (count($this->post) > 0) {
 				curl_setopt($ch, CURLOPT_POST, 1); // set POST method
 				$post="";
@@ -254,7 +287,7 @@ if (!class_exists('zHttpRequest')) {
 				}
 			}
 
-			if (count($post) > 0) {
+			if (count($apost) > 0) {
 				curl_setopt($ch, CURLOPT_POSTFIELDS, $apost); // add POST fields
 			}
 
@@ -293,6 +326,8 @@ if (!class_exists('zHttpRequest')) {
 				if (!isset($_SESSION[$this->sid])) $_SESSION[$this->sid]=array();
 				$_SESSION[$this->sid]['cookies']=$cookies;
 			}
+			//echo '<br />cookie after='.print_r($_SESSION[$this->sid]['cookies'],true).'=';
+
 			curl_close($ch);
 
 			//remove temporary upload files
@@ -309,14 +344,17 @@ if (!class_exists('zHttpRequest')) {
 			if ($headers['content-type']) {
 				$this->type=$headers['content-type'];
 			}
-			if ($headers['location']) {
+			if ($this->follow && isset ($headers['location']) && $headers['location']) {
 				//echo '<br />redirect to:'.print_r($headers,true);
+				//echo '<br />path='.$this->_path;
 				$redir=$headers['location'];
-				if (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				if (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$redir;
+				elseif (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				//echo '<br />redir='.$redir;
 				if (strstr($redir,'&')) $redir.='&';
 				elseif (strstr($redir,'?')) $redir.='&';
 				else $redir.='?';
-				$redir.='wpabspath='.urlencode(ABSPATH);
+				$redir.='wpabspath=0';
 				if (!$this->repost) $this->post=array();
 				$this->countRedirects++;
 				if ($this->countRedirects < 10) {
@@ -324,7 +362,7 @@ if (!class_exists('zHttpRequest')) {
 						return $this->connect($redir,$withHeaders,$withCookies);
 					}
 				} else {
-					die('ERROR: Too many redirects '.$url.' > '.$headers['location']);
+					trigger_error('ERROR: Too many redirects '.$url.' > '.$headers['location'],E_USER_ERROR);
 				}
 			}
 			return $body;
