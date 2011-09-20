@@ -5,11 +5,11 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.4.3
+ Version: 1.4.4
  Author URI: http://www.zingiri.net/
  */
 
-define("CC_WHMCS_BRIDGE_VERSION","1.4.3");
+define("CC_WHMCS_BRIDGE_VERSION","1.4.4");
 
 $compatibleWHMCSBridgeProVersions=array('1.4.1','1.4.2');
 
@@ -69,7 +69,7 @@ function cc_whmcs_admin_notices() {
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the <a href="options-general.php?page=cc-ce-bridge-cp">control panel</a>.';
 	$upload=wp_upload_dir();
-	if (!is_writable(session_save_path())) $errors[]='PHP sessions are not properly configured on your server, the sessions save path '.session_save_path().' is not writable.';
+	if (!is_writable(session_save_path())) $warnigns[]='It looks like PHP sessions are not properly configured on your server, the sessions save path <'.session_save_path().'> is not writable. This may be a false warning, contact us if in doubt.';
 	if ($upload['error']) $errors[]=$upload['error'];
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
 	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";

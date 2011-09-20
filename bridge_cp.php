@@ -106,7 +106,7 @@ function cc_whmcs_bridge_admin() {
 	?>
 <form method="post">
 
-<?php require(__DIR__.'/includes/cpedit.inc.php')?>
+<?php require(dirname(__FILE__).'/includes/cpedit.inc.php')?>
 
 <p class="submit"><input name="install" type="submit" value="<?php echo $submit;?>" /> <input
 	type="hidden" name="action" value="install"
