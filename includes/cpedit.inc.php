@@ -1,3 +1,6 @@
+<?php
+//v1.09.15
+?>
 <table class="optiontable">
 
 <?php if ($controlpanelOptions) foreach ($controlpanelOptions as $value) {
@@ -8,7 +11,7 @@
 		<th scope="row"><?php echo $value['name']; ?>:</th>
 		<td><input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>"
 			type="<?php echo $value['type']; ?>"
-			value="<?php if ( get_option( $value['id'] ) != "") { echo get_option( $value['id'] ); } else { echo $value['std']; } ?>"
+			value="<?php if ( get_option( $value['id'] ) != "") { echo get_option( $value['id'] ); } else { echo isset($value['std']) ? $value['std'] : ''; } ?>"
 			size="40"
 		/></td>
 
@@ -44,7 +47,7 @@
 			rows="8"
 		/>
 		<?php if ( get_option( $value['id'] ) != "") { echo stripslashes (get_option( $value['id'] )); }
-		else { echo $value['std'];
+		else { echo isset($value['std']) ? $value['std'] : '';
 		} ?>
 </textarea></td>
 
@@ -81,7 +84,7 @@
 			<option value="<?php echo $key;?>"
 			<?php 
 			if ( get_option($value['id']) && get_option( $value['id'] ) == $key) { echo ' selected="selected"'; }
-			elseif ( !get_option($value['id']) && $value['std'] == $key) { echo ' selected="selected"'; }
+			elseif ( !get_option($value['id']) && isset($value['std']) && $value['std'] == $key) { echo ' selected="selected"'; }
 			?>
 			><?php echo $option; ?></option>
 			<?php } ?>

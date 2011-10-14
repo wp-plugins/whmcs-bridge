@@ -5,13 +5,13 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.4.4
+ Version: 1.5.0
  Author URI: http://www.zingiri.net/
  */
 
-define("CC_WHMCS_BRIDGE_VERSION","1.4.4");
+define("CC_WHMCS_BRIDGE_VERSION","1.5.0");
 
-$compatibleWHMCSBridgeProVersions=array('1.4.1','1.4.2');
+$compatibleWHMCSBridgeProVersions=array('1.5.0');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -37,7 +37,7 @@ define("CC_WHMCS_BRIDGE_URL", WP_CONTENT_URL . "/plugins/".CC_WHMCS_BRIDGE_PLUGI
 $cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 if ($cc_whmcs_bridge_version) {
 	add_action("init","cc_whmcs_bridge_init");
-	if (get_option('cc_whmcs_bridge_footer')=='Site') add_filter('wp_footer','cc_footers');
+	if (get_option('cc_whmcs_bridge_footer')=='Site') add_filter('wp_footer','cc_whmcs_bridge_footer');
 	add_filter('the_content', 'cc_whmcs_bridge_content', 10, 3);
 	add_filter('the_title', 'cc_whmcs_bridge_title');
 	add_action('wp_head','cc_whmcs_bridge_header');
@@ -55,7 +55,7 @@ require_once(dirname(__FILE__) . '/includes/http.class.php');
 require_once(dirname(__FILE__) . '/includes/footer.inc.php');
 require_once(dirname(__FILE__) . '/includes/integrator.inc.php');
 require_once(dirname(__FILE__) . '/bridge_cp.php');
-require_once(dirname(__FILE__) . '/includes/simple_html_dom.php');
+if (!class_exists('simple_html_dom_node')) require_once(dirname(__FILE__) . '/includes/simple_html_dom.php');
 require(dirname(__FILE__).'/includes/sidebars.php');
 require(dirname(__FILE__).'/includes/parser.inc.php');
 
@@ -279,7 +279,7 @@ function cc_whmcs_bridge_content($content) {
 			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-bottom-page') ) : 
 			endif;
 			$content.=ob_get_clean();
-			if (get_option('cc_whmcs_bridge_footer')=='Page') $content.=cc_footers(true);
+			if (get_option('cc_whmcs_bridge_footer')=='Page') $content.=cc_whmcs_bridge_footer(true);
 		}
 	}
 

@@ -4,7 +4,7 @@ Donate link: http://www.zingiri.net/donations
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.2.1
-Stable tag: 1.4.4
+Stable tag: 1.5.0
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
@@ -39,6 +39,17 @@ No screenshots here but have a look at [our site](http://www.zingiri.net/portal/
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 1.5.0 =
+* Added a new sidebar navigation widget for logged in clients
+* Fixed issue with email popup windows displaying directly WHMCS pages
+* Removed WHMCS admin user and password fields from control panel (only necessary for single sign-on in Pro plugin)
+* Load simple_html_dom extension only when required
+* Fixed issue with drop down menu to change product groups not working in cart template 'Verticalsteps'
+* Removed base tag
+* Removed duplicate title tag
+* Removed meta tags from WHMCS html header
+* Renamed function cc_footers to avoid duplicates with other plugins
 
 = 1.4.4 =
 * Replaced usage of constant __DIR__ (not available in versions below PHP 5.3)

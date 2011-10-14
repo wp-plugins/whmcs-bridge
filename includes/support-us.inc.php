@@ -37,7 +37,7 @@ if (!function_exists('zing_support_us')) {
 			global $current_user;
 			$url='http://www.zingiri.net/index.php?zlistpro=register&e='.urlencode($current_user->data->user_email).'&f='.urlencode(isset($current_user->data->first_name) ? $current_user->data->first_name : '').'&l='.urlencode(isset($current_user->data->last_name) ? $current_user->data->last_name : '').'&w='.urlencode(get_option('home')).'&p='.$wpPluginName.'&v='.urlencode($version);			
 			$news = new zHttpRequest($url);
-			if ($news->live() && !$_SESSION[$wpPluginName]['news']) {
+			if ($news->live() && (!isset($_SESSION[$wpPluginName]['news']) || !$_SESSION[$wpPluginName]['news'])) {
 				update_option($wpPluginName.'_news',$news->DownloadToString());
 				$_SESSION[$wpPluginName]['news']=true;
 			}

@@ -346,6 +346,7 @@ if (!class_exists('zHttpRequest')) {
 			}
 			if ($this->follow && isset ($headers['location']) && $headers['location']) {
 				//echo '<br />redirect to:'.print_r($headers,true);
+				//echo '<br />protocol='.$this->_protocol;
 				//echo '<br />path='.$this->_path;
 				$redir=$headers['location'];
 				if (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$redir;

@@ -11,14 +11,6 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The site URL of your WHMCS installation. Make sure this is exactly the same as the settings field 'WHMCS System URL' in WHMCS. If you want to use SSL (https), make sure this URL and the 'WHMCS System URL' are using the https URL. In all cases make sure the WHMCS setting 'WHMCS SSL System URL' is left blank.",
 			"id" => $cc_whmcs_bridge_shortname."_url",
 			"type" => "text");
-		$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin user",
-			"desc" => 'This is your WHMCS admin user, used for connections, upgrades and synchronisation of new users.<br />Make sure you authorise your IP in your WHMCS portal (General Settings - Security - API IP Access Restriction).',
-			"id" => $cc_whmcs_bridge_shortname."_admin_login",
-			"type" => "text");
-	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS admin password",
-			"desc" => "The password of the WHMCS admin user.",
-			"id" => $cc_whmcs_bridge_shortname."_admin_password",
-			"type" => "password");
 	if (get_option('cc_whmcs_bridge_sso_active')) {
 		require(get_option('cc_whmcs_bridge_sso_active').'/includes/controlpanel.inc.php');
 	}

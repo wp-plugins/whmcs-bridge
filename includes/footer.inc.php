@@ -1,6 +1,6 @@
 <?php
 
-function cc_footers($nodisplay='') {
+function cc_whmcs_bridge_footer($nodisplay='') {
 	$bail_out = ( ( defined( 'WP_ADMIN' ) && WP_ADMIN == true ) || ( strpos( $_SERVER[ 'PHP_SELF' ], 'wp-admin' ) !== false ) );
 	if ( $bail_out ) return $footer;
 
