@@ -5,11 +5,11 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.5.0
+ Version: 1.5.1
  Author URI: http://www.zingiri.net/
  */
 
-define("CC_WHMCS_BRIDGE_VERSION","1.5.0");
+define("CC_WHMCS_BRIDGE_VERSION","1.5.1");
 
 $compatibleWHMCSBridgeProVersions=array('1.5.0');
 
@@ -206,26 +206,26 @@ function cc_whmcs_bridge_output() {
 	} else {
 		if ($cc_whmcs_bridge_to_include=='verifyimage') {
 			$output=$news->DownloadToString();
-			ob_end_clean();
+			while (count(ob_get_status(true)) > 0) ob_end_clean();
 			header("Content-Type: image");
 			echo $news->body;
 			die();
 		} elseif ($cc_whmcs_bridge_to_include=='dl') {
-			ob_end_clean();
+			while (count(ob_get_status(true)) > 0) ob_end_clean();
 			$output=$news->DownloadToString();
 			header("Content-Disposition: ".$news->headers['content-disposition']);
 			header("Content-Type: ".$news->headers['content-type']);
 			echo $news->body;
 			die();
 		} elseif ($ajax==1) {
-			ob_end_clean();
+			while (count(ob_get_status(true)) > 0) ob_end_clean();
 			$output=$news->DownloadToString();
 			$body=$news->body;
 			$body=cc_whmcs_bridge_parser_ajax1($body);
 			echo $body;
 			die();
 		} elseif ($ajax==2) {
-			ob_end_clean();
+			while (count(ob_get_status(true)) > 0) ob_end_clean();
 			$output=$news->DownloadToString();
 			$body=$news->body;
 			$body=cc_whmcs_bridge_parser_ajax2($body);

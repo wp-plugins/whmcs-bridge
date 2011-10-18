@@ -1,5 +1,5 @@
 <?php
-//v1.09.15
+//v1.10.15
 //removed cc_whmcs_log call
 //need wpabspath for mailz
 //mailz returns full URL in case of redirection!!
@@ -20,6 +20,7 @@
 //added option to disable following redirect links
 //fixed issue with HTTP 417 errors on some web servers
 //fixed redirect link parsing issue
+//removed check on cainfo
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
 	{
@@ -211,16 +212,10 @@ if (!class_exists('zHttpRequest')) {
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 60); // times out after 10s
 			if ($this->_protocol == "https") {
-				if (file_exists($cainfo)) {
-					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-					//curl_setopt($ch, CURLOPT_CAINFO, $cainfo);
-					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-				} else {
-					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-					curl_setopt($ch, CURLOPT_CAINFO, NULL);
-					curl_setopt($ch, CURLOPT_CAPATH, NULL);
-				}
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+				curl_setopt($ch, CURLOPT_CAINFO, NULL);
+				curl_setopt($ch, CURLOPT_CAPATH, NULL);
 			}
 			if ($withCookies && isset($_COOKIE)) {
 				$cookies="";
