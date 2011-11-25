@@ -133,6 +133,7 @@ class cc_whmcs_topNav_main extends WP_Widget {
 		//if ( !$title ) $title=$cc_whmcs_bridge_content['mode'][0];
 		echo $before_title . $title . $after_title;
 		echo '<div id="top_menu">'.$cc_whmcs_bridge_content['topNav'].'</div>';
+		echo '<div class="clear"></div>';
 		//echo $after_widget;
 	}
 
@@ -162,6 +163,7 @@ class cc_whmcs_welcomebox_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!isset($cc_whmcs_bridge_content['welcomebox'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
 		echo $before_widget;

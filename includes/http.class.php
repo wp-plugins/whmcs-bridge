@@ -42,7 +42,8 @@ if (!class_exists('zHttpRequest')) {
 		var $repost=false;
 		var $type; //content-type
 		var $follow=true; //whether to follow redirect links or not
-
+		var $httpHeaders=array('Expect:');
+		
 		// constructor
 		function __construct($url="",$sid='', $repost=false)
 		{
@@ -206,7 +207,7 @@ if (!class_exists('zHttpRequest')) {
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); //avoid 417 errors
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders); //avoid 417 errors
 			
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);

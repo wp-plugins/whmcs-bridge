@@ -5,13 +5,13 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.5.1
+ Version: 1.6.0
  Author URI: http://www.zingiri.net/
  */
 
-define("CC_WHMCS_BRIDGE_VERSION","1.5.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.6.0");
 
-$compatibleWHMCSBridgeProVersions=array('1.5.0');
+$compatibleWHMCSBridgeProVersions=array('1.6.0');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -192,6 +192,8 @@ function cc_whmcs_bridge_output() {
 	cc_whmcs_log('Notification','Call: '.$http);
 	//echo '<br />'.$http.'<br />';
 	$news = new zHttpRequest($http,'whmcs-bridge-sso');
+	if (function_exists('cc_whmcs_bridge_sso_httpHeaders')) $news->httpHeaders=cc_whmcs_bridge_sso_httpHeaders($news->httpHeaders);
+	
 	if (isset($news->post['whmcsname'])) {
 		$news->post['name']=$news->post['whmcsname'];
 		unset($news->post['whmcsname']);
@@ -253,6 +255,7 @@ function cc_whmcs_bridge_output() {
 			die();
 		} else {
 			$output=$news->DownloadToString();
+			//die($output);
 			return $output;
 		}
 	}
@@ -291,7 +294,7 @@ function cc_whmcs_bridge_header() {
 
 	$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 
-	echo $cc_whmcs_bridge_content['head'];
+	if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
 
 	echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
 	echo '<script type="text/javascript" src="'. CC_WHMCS_BRIDGE_URL . 'cc.js"></script>';
@@ -330,8 +333,6 @@ function cc_whmcs_bridge_http($page="index") {
 	
 	if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);
 
-	//if ($get && $vars) $vars.='&';
-	//if ($get) $vars.=$get;
 	if ($vars) $http.='?'.$vars;
 	
 	return $http;
