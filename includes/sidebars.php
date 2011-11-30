@@ -84,7 +84,7 @@ class cc_whmcs_sidebarAcInf_main extends WP_Widget {
 class cc_whmcs_sidebarAcSta_main extends WP_Widget {
 	/** constructor */
 	function cc_whmcs_sidebarAcSta_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Account Stats');
+		parent::WP_Widget(false, $name = 'WHMCS Account Statistics');
 	}
 
 	/** @see WP_Widget::widget */
@@ -227,7 +227,7 @@ class cc_whmcs_sidebarNav_main extends WP_Widget {
 class cc_whmcs_sidebarNav_acc extends WP_Widget {
 	/** constructor */
 	function cc_whmcs_sidebarNav_acc() {
-		parent::WP_Widget(false, $name = 'WHMCS Client Navigation');
+		parent::WP_Widget(false, $name = 'WHMCS Account information');
 	}
 
 	/** @see WP_Widget::widget */

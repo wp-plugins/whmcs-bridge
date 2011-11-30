@@ -1,12 +1,11 @@
 <?php
 function cc_whmcs_bridge_options() {
-	global $cc_whmcs_bridge_name,$cc_whmcs_bridge_shortname,$cc_login_type,$current_user;
-	$cc_whmcs_bridge_name = "WHMCS Bridge";
+	global $cc_whmcs_bridge_shortname,$cc_login_type,$current_user;
 	$cc_whmcs_bridge_shortname = "cc_whmcs_bridge";
 
 	$cc_whmcs_bridge_options[] = array(  "name" => "Integration Settings",
             "type" => "heading",
-			"desc" => "This section customizes the way WHMCS Bridge interacts with Wordpress.");
+			"desc" => "This section customizes the way ".WHMCS_BRIDGE." interacts with Wordpress.");
 	$cc_whmcs_bridge_options[] = array(	"name" => "WHMCS URL",
 			"desc" => "The site URL of your WHMCS installation. Make sure this is exactly the same as the settings field 'WHMCS System URL' in WHMCS. If you want to use SSL (https), make sure this URL and the 'WHMCS System URL' are using the https URL. In all cases make sure the WHMCS setting 'WHMCS SSL System URL' is left blank.",
 			"id" => $cc_whmcs_bridge_shortname."_url",
@@ -50,7 +49,7 @@ function cc_whmcs_bridge_options() {
 
 function cc_whmcs_bridge_add_admin() {
 
-	global $cc_whmcs_bridge_name, $cc_whmcs_bridge_shortname;
+	global $cc_whmcs_bridge_shortname;
 
 	$cc_whmcs_bridge_options=cc_whmcs_bridge_options();
 
@@ -75,22 +74,22 @@ function cc_whmcs_bridge_add_admin() {
 		}
 	}
 
-	add_options_page($cc_whmcs_bridge_name, $cc_whmcs_bridge_name, 'administrator', 'cc-ce-bridge-cp','cc_whmcs_bridge_admin');
+	add_options_page(WHMCS_BRIDGE, WHMCS_BRIDGE, 'administrator', 'cc-ce-bridge-cp','cc_whmcs_bridge_admin');
 }
 
 function cc_whmcs_bridge_admin() {
 
-	global $cc_whmcs_bridge_name, $cc_whmcs_bridge_shortname;
+	global $cc_whmcs_bridge_shortname;
 
 	$controlpanelOptions=cc_whmcs_bridge_options();
 
-	if ( isset($_REQUEST['installed']) ) echo '<div id="message" class="updated fade"><p><strong>'.$cc_whmcs_bridge_name.' installed.</strong></p></div>';
+	if ( isset($_REQUEST['installed']) ) echo '<div id="message" class="updated fade"><p><strong>'.WHMCS_BRIDGE.' installed.</strong></p></div>';
 	if ( isset($_REQUEST['error']) ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
 	
 	?>
 <div class="wrap">
 <div id="cc-left" style="position:relative;float:left;width:80%">
-<h2><b><?php echo $cc_whmcs_bridge_name; ?></b></h2>
+<h2><b><?php echo WHMCS_BRIDGE; ?></b></h2>
 
 	<?php
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");

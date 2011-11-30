@@ -146,8 +146,11 @@ function cc_whmcs_bridge_parser() {
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
+	$f[]="/>>/";
+	$r[]="&gt;&gt;";
+	
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
-
+	
 	//name is a reserved Wordpress field name
 	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
 
@@ -173,7 +176,7 @@ function cc_whmcs_bridge_parser() {
 
 	//replaces whmcs jquery so that it doesn't start it twice
 	if(get_option('cc_whmcs_bridge_jquery')=='checked'){
-		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+	//	$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
 	}
 
 	$html = new simple_html_dom();

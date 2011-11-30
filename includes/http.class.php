@@ -202,7 +202,7 @@ if (!class_exists('zHttpRequest')) {
 
 			if (!session_id()) @session_start();
 			$ch = curl_init();    // initialize curl handle
-			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=';
+			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
 			curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
