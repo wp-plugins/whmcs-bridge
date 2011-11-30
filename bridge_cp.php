@@ -10,7 +10,7 @@ function cc_whmcs_bridge_options() {
 			"desc" => "The site URL of your WHMCS installation. Make sure this is exactly the same as the settings field 'WHMCS System URL' in WHMCS. If you want to use SSL (https), make sure this URL and the 'WHMCS System URL' are using the https URL. In all cases make sure the WHMCS setting 'WHMCS SSL System URL' is left blank.",
 			"id" => $cc_whmcs_bridge_shortname."_url",
 			"type" => "text");
-	if (get_option('cc_whmcs_bridge_sso_active')) {
+	if (get_option('cc_whmcs_bridge_sso_active') && defined('WHMCS_BRIDGE_PRO')) {
 		require(get_option('cc_whmcs_bridge_sso_active').'/includes/controlpanel.inc.php');
 	}
 	

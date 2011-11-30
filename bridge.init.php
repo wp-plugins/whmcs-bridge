@@ -1,9 +1,9 @@
 <?php
 if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.6.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.6.3");
 
-$compatibleWHMCSBridgeProVersions=array('1.6.0','1.6.1','1.6.2');
+$compatibleWHMCSBridgeProVersions=array('1.6.0','1.6.1','1.6.2','1.6.3');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -35,7 +35,6 @@ if ($cc_whmcs_bridge_version) {
 	add_action('wp_head','cc_whmcs_bridge_header');
 	add_action('admin_head','cc_whmcs_bridge_admin_header');
 	add_action("plugins_loaded", "cc_whmcs_sidebar_init");
-	//add_filter("pre_update_option__site_transient_update_plugins","cc_whmcs_bridge_update_plugins",10,2);
 }
 add_action('admin_head','cc_whmcs_bridge_admin_header');
 add_action('admin_notices','cc_whmcs_admin_notices');
