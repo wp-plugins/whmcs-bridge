@@ -61,6 +61,12 @@ function cc_whmcs_bridge_parser() {
 
 	$ret['buffer']=$buffer;
 
+	$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
+	$r[]='value="'.$home.'?ccce=$1'.$pid.'"';
+	
+	$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+	$r[]='value="'.$home.'?ccce=$1&$2'.$pid.'"';
+	
 	$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
 	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
@@ -100,9 +106,15 @@ function cc_whmcs_bridge_parser() {
 	$f[]='/action\=\"([a-zA-Z\_]*?).php\"/';
 	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
+	//$f[]='/action\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
+	//$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
+	
+	//$f[]='/action\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+	//$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+	
 	$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"(.*?)>/';
 	$r[]='<form$1method="get"$2action="'.$home.$pid.'"$4><input type="hidden" name="ccce" value="$3" />';
-
+	
 	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"/';
 	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
@@ -149,6 +161,7 @@ function cc_whmcs_bridge_parser() {
 	$f[]="/>>/";
 	$r[]="&gt;&gt;";
 	
+	//$f[]="/\?"
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 	
 	//name is a reserved Wordpress field name
@@ -175,8 +188,8 @@ function cc_whmcs_bridge_parser() {
 	}
 
 	//replaces whmcs jquery so that it doesn't start it twice
-	if(get_option('cc_whmcs_bridge_jquery')=='checked'){
-	//	$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
+		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
 	}
 
 	$html = new simple_html_dom();

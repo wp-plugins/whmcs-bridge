@@ -17,10 +17,12 @@ function cc_whmcs_bridge_options() {
 	$cc_whmcs_bridge_options[] = array(  "name" => "Styling Settings",
             "type" => "heading",
 			"desc" => "This section customizes the look and feel.");
-	$cc_whmcs_bridge_options[] = array(	"name" => "Don't load jQuery",
-			"desc" => "If you have a theme using jQuery, you can avoid loading it twice by ticking this box",
+	$cc_whmcs_bridge_options[] = array(	"name" => "jQuery library",
+			"desc" => "Select the jQuery library you want to load. If you have a theme using jQuery, you may be able to solve conflicts by choosing the Wordpress library or no library.",
 			"id" => $cc_whmcs_bridge_shortname."_jquery",
-			"type" => "checkbox");
+			"options" => array('' => 'WHMCS', 'wp' => 'Wordpress', 'checked' => 'None'),
+			"default" => 'checked',
+			"type" => "selectwithkey");
 	$cc_whmcs_bridge_options[] = array(	"name" => "Custom styles",
 			"desc" => 'Enter your custom CSS styles here',
 			"id" => $cc_whmcs_bridge_shortname."_css",

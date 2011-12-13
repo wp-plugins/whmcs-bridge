@@ -21,6 +21,7 @@
 //fixed issue with HTTP 417 errors on some web servers
 //fixed redirect link parsing issue
 //removed check on cainfo
+//added redirection fix for Windows
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
 	{
@@ -43,7 +44,7 @@ if (!class_exists('zHttpRequest')) {
 		var $type; //content-type
 		var $follow=true; //whether to follow redirect links or not
 		var $httpHeaders=array('Expect:');
-		
+
 		// constructor
 		function __construct($url="",$sid='', $repost=false)
 		{
@@ -55,6 +56,11 @@ if (!class_exists('zHttpRequest')) {
 			$this->repost=$repost;
 		}
 
+
+		private function os() {
+			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') return 'WINDOWS';
+			else return 'LINUX';
+		}
 
 		private function processHeaders($headers) {
 			// split headers, one per array element
@@ -208,7 +214,7 @@ if (!class_exists('zHttpRequest')) {
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders); //avoid 417 errors
-			
+				
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 60); // times out after 10s
@@ -345,8 +351,13 @@ if (!class_exists('zHttpRequest')) {
 				//echo '<br />protocol='.$this->_protocol;
 				//echo '<br />path='.$this->_path;
 				$redir=$headers['location'];
-				if (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$redir;
-				elseif (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				if ($this->os()=='WIN') {
+					if (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$this->_path;
+					elseif (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				} else {
+					if (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$redir;
+					elseif (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				}
 				//echo '<br />redir='.$redir;
 				if (strstr($redir,'&')) $redir.='&';
 				elseif (strstr($redir,'?')) $redir.='&';

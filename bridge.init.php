@@ -1,7 +1,7 @@
 <?php
 if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.6.4");
+define("CC_WHMCS_BRIDGE_VERSION","1.6.5");
 
 $compatibleWHMCSBridgeProVersions=array('1.6.0','1.6.1','1.6.2','1.6.3','1.6.4');
 
@@ -362,7 +362,7 @@ function cc_whmcs_bridge_init()
 	session_start();
 	register_sidebars(1,array('name'=>'WHMCS Top Page Widget Area','id'=>'whmcs-top-page',));
 	register_sidebars(1,array('name'=>'WHMCS Bottom Page Widget Area','id'=>'whmcs-top-page',));
-	if(get_option('cc_whmcs_bridge_jquery')!='checked'){
+	if(get_option('cc_whmcs_bridge_jquery')=='wp'){
 		wp_enqueue_script('jquery');
 	}
 }
