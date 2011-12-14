@@ -1,7 +1,7 @@
 <?php
 if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.6.6");
+define("CC_WHMCS_BRIDGE_VERSION","1.6.7");
 
 $compatibleWHMCSBridgeProVersions=array('1.6.0','1.6.1','1.6.2','1.6.3','1.6.4');
 

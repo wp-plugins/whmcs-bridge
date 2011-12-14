@@ -46,7 +46,7 @@ if (!class_exists('zHttpRequest')) {
 		var $httpHeaders=array('Expect:');
 
 		// constructor
-		function __construct($url="",$sid='zingiri', $repost=false)
+		function __construct($url="",$sid='', $repost=false)
 		{
 			if (!$url) return;
 			$this->sid=$sid;
@@ -206,8 +206,8 @@ if (!class_exists('zHttpRequest')) {
 		{
 			$newfiles=array();
 
-			if (!session_id($this->sid)) { 
-				session_name($this->sid); 
+			if (!session_id()) { 
+				//$prevSessionName=session_name('zingiri'); 
 				@session_start(); 
 			}
 			$ch = curl_init();    // initialize curl handle
