@@ -46,7 +46,7 @@ if (!class_exists('zHttpRequest')) {
 		var $httpHeaders=array('Expect:');
 
 		// constructor
-		function __construct($url="",$sid='', $repost=false)
+		function __construct($url="",$sid='zingiri', $repost=false)
 		{
 			if (!$url) return;
 			$this->sid=$sid;
@@ -206,7 +206,10 @@ if (!class_exists('zHttpRequest')) {
 		{
 			$newfiles=array();
 
-			if (!session_id()) @session_start();
+			if (!session_id($this->sid)) { 
+				session_name($this->sid); 
+				@session_start(); 
+			}
 			$ch = curl_init();    // initialize curl handle
 			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
 			curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
