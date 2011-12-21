@@ -1,9 +1,11 @@
 <?php
 if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
+if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
+if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.6.7");
+define("CC_WHMCS_BRIDGE_VERSION","1.6.8");
 
-$compatibleWHMCSBridgeProVersions=array('1.6.0','1.6.1','1.6.2','1.6.3','1.6.4');
+$compatibleWHMCSBridgeProVersions=array('1.6.0','1.6.1','1.6.2','1.6.3','1.6.4','1.6.5');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -58,7 +60,7 @@ function cc_whmcs_admin_notices() {
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the <a href="options-general.php?page=cc-ce-bridge-cp">control panel</a>.';
 	$upload=wp_upload_dir();
-	if (!is_writable(session_save_path())) $warnigns[]='It looks like PHP sessions are not properly configured on your server, the sessions save path <'.session_save_path().'> is not writable. This may be a false warning, contact us if in doubt.';
+	if (session_save_path() && !is_writable(session_save_path())) $warnings[]='It looks like PHP sessions are not properly configured on your server, the sessions save path <'.session_save_path().'> is not writable. This may be a false warning, contact us if in doubt.';
 	if ($upload['error']) $errors[]=$upload['error'];
 	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
 	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
@@ -102,10 +104,10 @@ function cc_whmcs_bridge_install() {
 	else update_option("cc_whmcs_bridge_version",CC_WHMCS_BRIDGE_VERSION);
 
 	//create pages
-	cc_whmcs_log(0,'Creating pages');
 	if (!$cc_whmcs_bridge_version) {
+		cc_whmcs_log(0,'Creating pages');
 		$pages=array();
-		$pages[]=array("WHMCS","WHMCS","*",0);
+		$pages[]=array(WHMCS_BRIDGE_PAGE,WHMCS_BRIDGE_PAGE,"*",0);
 
 		$ids="";
 		foreach ($pages as $i =>$p)
@@ -188,6 +190,10 @@ function cc_whmcs_bridge_output() {
 		unset($news->post['whmcsname']);
 	}
 
+	$news=apply_filters('bridge_http',$news);
+	
+	$news->forceWithRedirect['systpl']=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'portal';
+	
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
 		return "cURL not installed";
@@ -266,7 +272,9 @@ function cc_whmcs_bridge_content($content) {
 			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-top-page') ) : 
 			endif;
 			$content.=ob_get_clean();
+			$content.='<div id="bridge">';
 			$content.=$cc_whmcs_bridge_content['main'];
+			$content.='</div><!--end bridge-->';
 			ob_start();
 			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-bottom-page') ) : 
 			endif;
@@ -281,7 +289,8 @@ function cc_whmcs_bridge_content($content) {
 function cc_whmcs_bridge_header() {
 	global $cc_whmcs_bridge_content;
 
-	$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+	if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
+	else $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 
 	if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
 
@@ -359,7 +368,7 @@ function cc_whmcs_bridge_mainpage() {
 function cc_whmcs_bridge_init()
 {
 	ob_start();
-	session_start();
+	if (!session_id()) @session_start();
 	register_sidebars(1,array('name'=>'WHMCS Top Page Widget Area','id'=>'whmcs-top-page',));
 	register_sidebars(1,array('name'=>'WHMCS Bottom Page Widget Area','id'=>'whmcs-top-page',));
 	if(get_option('cc_whmcs_bridge_jquery')=='wp'){

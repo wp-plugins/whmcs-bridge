@@ -55,6 +55,7 @@ class cc_whmcs_sidebarAcInf_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!isset($cc_whmcs_bridge_content['sidebarAcInf'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
 		echo $before_widget;
@@ -90,6 +91,7 @@ class cc_whmcs_sidebarAcSta_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!isset($cc_whmcs_bridge_content['sidebarAcSta'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
 		echo $before_widget;
@@ -198,6 +200,7 @@ class cc_whmcs_sidebarNav_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!isset($cc_whmcs_bridge_content['sidebarNav'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
 		echo $before_widget;

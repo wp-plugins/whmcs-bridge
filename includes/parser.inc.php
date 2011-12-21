@@ -194,12 +194,8 @@ function cc_whmcs_bridge_parser() {
 
 	$html = new simple_html_dom();
 	$html->load($buffer);
-	$sidebar=trim($html->find('div[id=side_menu]', 0)->innertext);
+	$sidebar=$html->find('div[id=side_menu]', 0) ? trim($html->find('div[id=side_menu]', 0)->innertext) : null;
 	if ($sidebar) {
-		//$ret['sidebar'][]=$sidebar->__toString();
-		//$sidebarData=str_replace()
-		//<div id="side_menu">
-		//start sidebar change
 		$pattern = '/<form.*?dologin.>/';
 		if (preg_match($pattern,$sidebar,$matches)) {
 			$loginForm=$matches[0];

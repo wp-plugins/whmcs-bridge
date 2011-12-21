@@ -1,5 +1,5 @@
 <?php
-//v1.10.15
+//v1.12.15
 //removed cc_whmcs_log call
 //need wpabspath for mailz
 //mailz returns full URL in case of redirection!!
@@ -22,6 +22,8 @@
 //fixed redirect link parsing issue
 //removed check on cainfo
 //added redirection fix for Windows
+//removed _params variable
+
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
 	{
@@ -32,11 +34,11 @@ if (!class_exists('zHttpRequest')) {
 		var $_uri;        // request URI
 		var $_port;        // port
 		var $_path;
-		var $params;
 		var $error;
 		var $errno=false;
 		var $post=array();	//post variables, defaults to $_POST
 		var $redirect=false;
+		var $forceWithRedirect=array('wpabspath' => 0);
 		var $errors=array();
 		var $countRedirects=0;
 		var $sid;
@@ -57,6 +59,15 @@ if (!class_exists('zHttpRequest')) {
 		}
 
 
+		private function forceWithRedirectToString() {
+			$s='';
+			foreach ($this->forceWithRedirect as $n => $v) {
+				if ($s) $s.='&';
+				$s.=$n.'='.$v;
+			}
+			return $s;
+		}
+		
 		private function os() {
 			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') return 'WINDOWS';
 			else return 'LINUX';
@@ -146,8 +157,8 @@ if (!class_exists('zHttpRequest')) {
 			if($this->_uri == '') {
 				$this->_uri = '/';
 			} else {
-				$this->_params=substr(strrchr($this->_uri,'/'),1);
-				$this->_path=str_replace($this->_params,'',$this->_uri);
+				$params=substr(strrchr($this->_uri,'/'),1);
+				$this->_path=str_replace($params,'',$this->_uri);
 			}
 		}
 
@@ -365,7 +376,8 @@ if (!class_exists('zHttpRequest')) {
 				if (strstr($redir,'&')) $redir.='&';
 				elseif (strstr($redir,'?')) $redir.='&';
 				else $redir.='?';
-				$redir.='wpabspath=0';
+				//$redir.='wpabspath=0';
+				$redir.=$this->forceWithRedirectToString();
 				if (!$this->repost) $this->post=array();
 				$this->countRedirects++;
 				if ($this->countRedirects < 10) {
