@@ -213,7 +213,7 @@ if (!class_exists('zHttpRequest')) {
 			return $this->connect($this->_protocol.'://'.$this->_host.$this->_uri,$withHeaders,$withCookies);
 		}
 
-		function connect($url,$withHeaders=true,$withCookies=true)
+		function connect($url,$withHeaders=true,$withCookies=false)
 		{
 			$newfiles=array();
 
@@ -238,20 +238,30 @@ if (!class_exists('zHttpRequest')) {
 				curl_setopt($ch, CURLOPT_CAINFO, NULL);
 				curl_setopt($ch, CURLOPT_CAPATH, NULL);
 			}
+			
+			$cookies="";
 			if ($withCookies && isset($_COOKIE)) {
-				$cookies="";
 				foreach ($_COOKIE as $i => $v) {
 					if ($i=='WHMCSUID' || $i=="WHMCSPW") {
 						if ($cookies) $cookies.=';';
 						$cookies.=$i.'='.$v;
 					}
 				}
+			}
+			
+			$cookies=apply_filters('zHttpRequest_pre',$cookies);
+			
+			if (isset($_SESSION[$this->sid]['cookies'])) {
+				//curl_setopt($ch, CURLOPT_COOKIE, $_SESSION[$this->sid]['cookies']);
+				if ($cookies) $cookies.=';';
+				$cookies.=$_SESSION[$this->sid]['cookies'];
+			}
+			
+			//echo '<br />cookie before='.$cookies.'=';
+			if ($cookies) {
 				curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 			}
-			//echo '<br />cookie before='.print_r($_SESSION[$this->sid]['cookies'],true).'=';
-			if (isset($_SESSION[$this->sid]['cookies'])) {
-				curl_setopt($ch, CURLOPT_COOKIE, $_SESSION[$this->sid]['cookies']);
-			}
+			
 			if (count($_FILES) > 0) {
 				foreach ($_FILES as $name => $file) {
 					if (is_array($file['tmp_name']) && count($file['tmp_name']) > 0) {
@@ -360,12 +370,16 @@ if (!class_exists('zHttpRequest')) {
 			if ($headers['content-type']) {
 				$this->type=$headers['content-type'];
 			}
+			
+			$this->cookies=apply_filters('zHttpRequest_post',$this->cookies);
+			
+			
 			if ($this->follow && isset ($headers['location']) && $headers['location']) {
 				//echo '<br />redirect to:'.print_r($headers,true);
 				//echo '<br />protocol='.$this->_protocol;
 				//echo '<br />path='.$this->_path;
 				$redir=$headers['location'];
-				if ($this->os()=='WIN') {
+				if ($this->os()=='WINDOWS') {
 					if (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$this->_path;
 					elseif (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
 				} else {
