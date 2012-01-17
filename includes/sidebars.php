@@ -19,6 +19,7 @@ class cc_whmcs_sidebar_main extends WP_Widget {
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
 		extract( $args );
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		$title = apply_filters('widget_title', $instance['title']);
 		echo $before_widget;
 		if ( !$title ) $title='WHMCS main';
@@ -55,6 +56,7 @@ class cc_whmcs_sidebarAcInf_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		if (!isset($cc_whmcs_bridge_content['sidebarAcInf'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
@@ -91,6 +93,7 @@ class cc_whmcs_sidebarAcSta_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		if (!isset($cc_whmcs_bridge_content['sidebarAcSta'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
@@ -129,14 +132,12 @@ class cc_whmcs_topNav_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
-		//echo $before_widget;
-		//if ( !$title ) $title=$cc_whmcs_bridge_content['mode'][0];
 		echo $before_title . $title . $after_title;
 		echo '<div id="top_menu">'.$cc_whmcs_bridge_content['topNav'].'</div>';
 		echo '<div class="clear"></div>';
-		//echo $after_widget;
 	}
 
 	/** @see WP_Widget::update */
@@ -165,6 +166,7 @@ class cc_whmcs_welcomebox_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		if (!isset($cc_whmcs_bridge_content['welcomebox'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
@@ -200,6 +202,7 @@ class cc_whmcs_sidebarNav_main extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		if (!isset($cc_whmcs_bridge_content['sidebarNav'])) return;
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);
@@ -236,6 +239,7 @@ class cc_whmcs_sidebarNav_acc extends WP_Widget {
 	/** @see WP_Widget::widget */
 	function widget($args, $instance) {
 		global $cc_whmcs_bridge_content;
+		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 		if (!$cc_whmcs_bridge_content['topNav']) return; 
 		extract( $args );
 		$title = apply_filters('widget_title', $instance['title']);

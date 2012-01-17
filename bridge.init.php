@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.7.0");
+define("CC_WHMCS_BRIDGE_VERSION","1.7.1");
 
-$compatibleWHMCSBridgeProVersions=array('1.7.0');
+$compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -184,16 +184,16 @@ function cc_whmcs_bridge_output() {
 	//echo '<br />'.$http.'<br />';
 	$news = new zHttpRequest($http,'whmcs-bridge-sso');
 	if (function_exists('cc_whmcs_bridge_sso_httpHeaders')) $news->httpHeaders=cc_whmcs_bridge_sso_httpHeaders($news->httpHeaders);
-	
+
 	if (isset($news->post['whmcsname'])) {
 		$news->post['name']=$news->post['whmcsname'];
 		unset($news->post['whmcsname']);
 	}
 
 	$news=apply_filters('bridge_http',$news);
-	
+
 	$news->forceWithRedirect['systpl']=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'portal';
-	
+
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
 		return "cURL not installed";
@@ -269,14 +269,14 @@ function cc_whmcs_bridge_content($content) {
 		if ($cc_whmcs_bridge_content) {
 			$content='';
 			ob_start();
-			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-top-page') ) : 
+			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-top-page') ) :
 			endif;
 			$content.=ob_get_clean();
 			$content.='<div id="bridge">';
 			$content.=$cc_whmcs_bridge_content['main'];
 			$content.='</div><!--end bridge-->';
 			ob_start();
-			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-bottom-page') ) : 
+			if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar('whmcs-bottom-page') ) :
 			endif;
 			$content.=ob_get_clean();
 			if (get_option('cc_whmcs_bridge_footer')=='Page') $content.=cc_whmcs_bridge_footer(true);
@@ -287,17 +287,20 @@ function cc_whmcs_bridge_content($content) {
 }
 
 function cc_whmcs_bridge_header() {
-	global $cc_whmcs_bridge_content;
+	global $cc_whmcs_bridge_content,$post;
 
-	if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
-	else $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+	$cf=get_post_custom($post->ID);
+	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS')) {
+		if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
+		else $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 
-	if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
+		if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
 
-	echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
-	echo '<script type="text/javascript" src="'. CC_WHMCS_BRIDGE_URL . 'cc.js"></script>';
-	if (get_option('cc_whmcs_bridge_css')) {
-		echo '<style type="text/css">'.get_option('cc_whmcs_bridge_css').'</style>';
+		echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'cc.css" media="screen" />';
+		echo '<script type="text/javascript" src="'. CC_WHMCS_BRIDGE_URL . 'cc.js"></script>';
+		if (get_option('cc_whmcs_bridge_css')) {
+			echo '<style type="text/css">'.get_option('cc_whmcs_bridge_css').'</style>';
+		}
 	}
 }
 
@@ -328,11 +331,12 @@ function cc_whmcs_bridge_http($page="index") {
 
 	$vars.=$and.'systpl=portal';
 	$and="&";
-	
+
 	if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);
 
 	if ($vars) $http.='?'.$vars;
-	
+
+	//echo '<br />'.$http.'<br />';
 	return $http;
 }
 
