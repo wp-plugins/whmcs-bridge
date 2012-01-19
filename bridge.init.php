@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.7.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.7.2");
 
-$compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1');
+$compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1','1.7.2');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -180,9 +180,10 @@ function cc_whmcs_bridge_output() {
 	}
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
-	cc_whmcs_log('Notification','Call: '.$http);
+	
 	//echo '<br />'.$http.'<br />';
 	$news = new zHttpRequest($http,'whmcs-bridge-sso');
+	$news->debugFunction='cc_whmcs_log';
 	if (function_exists('cc_whmcs_bridge_sso_httpHeaders')) $news->httpHeaders=cc_whmcs_bridge_sso_httpHeaders($news->httpHeaders);
 
 	if (isset($news->post['whmcsname'])) {
@@ -381,6 +382,7 @@ function cc_whmcs_bridge_init()
 }
 
 function cc_whmcs_log($type=0,$msg='',$filename="",$linenum=0) {
+	if ($type==0) $type='Debug';
 	if (get_option('cc_whmcs_bridge_debug')) {
 		if (is_array($msg)) $msg=print_r($msg,true);
 		$v=get_option('cc_whmcs_bridge_log');

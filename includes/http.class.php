@@ -46,6 +46,8 @@ if (!class_exists('zHttpRequest')) {
 		var $type; //content-type
 		var $follow=true; //whether to follow redirect links or not
 		var $httpHeaders=array('Expect:');
+		var $debugFunction;
+		var $time;
 
 		// constructor
 		function __construct($url="",$sid='', $repost=false)
@@ -59,6 +61,11 @@ if (!class_exists('zHttpRequest')) {
 		}
 
 
+		private function time($action) {
+			$t=function_exists('microtime') ? 'microtime' :'time';
+			if ($action=='reset') $this->time=$t(true);
+			elseif ($action=='delta') return round(($t(true)-$this->time)*100,0); 
+		}
 		private function forceWithRedirectToString() {
 			$s='';
 			foreach ($this->forceWithRedirect as $n => $v) {
@@ -66,6 +73,10 @@ if (!class_exists('zHttpRequest')) {
 				$s.=$n.'='.$v;
 			}
 			return $s;
+		}
+		
+		private function debug($type=0,$msg='',$filename="",$linenum=0) {
+			if ($f=$this->debugFunction) $f($type,$msg,$filename,$linenum);
 		}
 		
 		private function os() {
@@ -215,6 +226,9 @@ if (!class_exists('zHttpRequest')) {
 
 		function connect($url,$withHeaders=true,$withCookies=false)
 		{
+			$this->time('reset');
+
+						
 			$newfiles=array();
 
 			if (!session_id()) { 
@@ -223,6 +237,7 @@ if (!class_exists('zHttpRequest')) {
 			}
 			$ch = curl_init();    // initialize curl handle
 			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
+			$this->debug(0,'http call: '.$url.' with '.print_r($this->post,true));
 			curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -258,6 +273,7 @@ if (!class_exists('zHttpRequest')) {
 			}
 			
 			//echo '<br />cookie before='.$cookies.'=';
+			if (is_array($cookies)) $this->debug(0,'Cookie before:'.print_r($cookies,true));
 			if ($cookies) {
 				curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 			}
@@ -353,7 +369,8 @@ if (!class_exists('zHttpRequest')) {
 				$_SESSION[$this->sid]['cookies']=$cookies;
 			}
 			//echo '<br />cookie after='.print_r($_SESSION[$this->sid]['cookies'],true).'=';
-
+			if (is_array($cookies)) $this->debug(0,'Cookie after:'.print_r($cookies,true));
+			
 			curl_close($ch);
 
 			//remove temporary upload files
@@ -373,6 +390,7 @@ if (!class_exists('zHttpRequest')) {
 			
 			$this->cookies=apply_filters('zHttpRequest_post',$this->cookies);
 			
+			$this->debug(0,'Call completed in '.$this->time('delta').' microseconds');
 			
 			if ($this->follow && isset ($headers['location']) && $headers['location']) {
 				//echo '<br />redirect to:'.print_r($headers,true);
@@ -392,6 +410,7 @@ if (!class_exists('zHttpRequest')) {
 				else $redir.='?';
 				//$redir.='wpabspath=0';
 				$redir.=$this->forceWithRedirectToString();
+				$this->debug(0,'Redirect to: '.$redir);
 				if (!$this->repost) $this->post=array();
 				$this->countRedirects++;
 				if ($this->countRedirects < 10) {
