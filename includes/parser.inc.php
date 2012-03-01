@@ -12,7 +12,8 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
-
+	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
+	
 	return $buffer;
 }
 
@@ -113,7 +114,8 @@ function cc_whmcs_bridge_parser() {
 	//$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 	
 	$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"(.*?)>/';
-	$r[]='<form$1method="get"$2action="'.$home.$pid.'"$4><input type="hidden" name="ccce" value="$3" />';
+	if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
+	else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
 	
 	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"/';
 	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
@@ -122,8 +124,8 @@ function cc_whmcs_bridge_parser() {
 	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
 	//fixes the cart.php
-	$f[]='#\'cart.php\?#';
-	$r[]='\''.$home.'?ccce=cart&';
+	//$f[]='#\'cart.php\?#';
+	//$r[]='\''.$home.'?ccce=cart&';
 
 	//fixes the register.php
 	$f[]='/action\=\"(.|\/*?)register.php\"/';
@@ -154,7 +156,9 @@ function cc_whmcs_bridge_parser() {
 	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
 	$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
 
-
+	$f[]="/popupWindow\(\'([a-zA-Z]*?).php\?/";
+	$r[]="popupWindow('$home?ccce=$1&ajax=1&";
+	
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
@@ -177,6 +181,7 @@ function cc_whmcs_bridge_parser() {
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage',$buffer);
 
 	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
+		while (count(ob_get_status(true)) > 0) ob_end_clean();
 		echo $buffer;
 		die();
 	}

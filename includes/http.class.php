@@ -1,5 +1,5 @@
 <?php
-//v1.12.15
+//v2.02.06
 //removed cc_whmcs_log call
 //need wpabspath for mailz
 //mailz returns full URL in case of redirection!!
@@ -23,6 +23,9 @@
 //removed check on cainfo
 //added redirection fix for Windows
 //removed _params variable
+//fixed issue with redirect urls duplicating url path
+//added http return code
+//improvide error management
 
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
@@ -34,7 +37,7 @@ if (!class_exists('zHttpRequest')) {
 		var $_uri;        // request URI
 		var $_port;        // port
 		var $_path;
-		var $error;
+		var $error=false;
 		var $errno=false;
 		var $post=array();	//post variables, defaults to $_POST
 		var $redirect=false;
@@ -42,9 +45,12 @@ if (!class_exists('zHttpRequest')) {
 		var $errors=array();
 		var $countRedirects=0;
 		var $sid;
+		var $httpCode;
 		var $repost=false;
 		var $type; //content-type
 		var $follow=true; //whether to follow redirect links or not
+		var $noErrors=false; //whether to trigger an error in case of a curl error
+		var $errorMessage;
 		var $httpHeaders=array('Expect:');
 		var $debugFunction;
 		var $time;
@@ -210,12 +216,16 @@ if (!class_exists('zHttpRequest')) {
 
 		//error logging
 		function error($msg) {
-			trigger_error($msg,E_USER_WARNING);
+			$this->errorMsg=$msg;
+			$this->error=true;
+			if (!$this->noErrors) trigger_error($msg,E_USER_WARNING);
 		}
 
 		//notification logging
 		function notify($msg) {
-			trigger_error($msg,E_USER_NOTICE);
+			$this->errorMsg=$msg;
+			$this->error=true;
+			if (!$this->noErrors) trigger_error($msg,E_USER_NOTICE);
 		}
 
 		// download URL to string
@@ -231,10 +241,7 @@ if (!class_exists('zHttpRequest')) {
 						
 			$newfiles=array();
 
-			if (!session_id()) { 
-				//$prevSessionName=session_name('zingiri'); 
-				@session_start(); 
-			}
+			if (!session_id()) @session_start();
 			$ch = curl_init();    // initialize curl handle
 			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
 			$this->debug(0,'http call: '.$url.' with '.print_r($this->post,true));
@@ -354,14 +361,11 @@ if (!class_exists('zHttpRequest')) {
 				$headers=$head['headers'];
 				$cookies=$head['cookies'];
 			} else {
-				if ( $curl_error = curl_error($ch) )
-				return new WP_Error('http_request_failed', $curl_error);
-				if ( in_array( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), array(301, 302) ) )
-				return new WP_Error('http_request_failed', __('Too many redirects.'));
-
 				$headers=array();
 				$cookies='';
 				$body = '';
+				$this->error('An undefined error occured');
+				return false;
 			}
 
 			if ($cookies) {
@@ -418,7 +422,8 @@ if (!class_exists('zHttpRequest')) {
 						return $this->connect($redir,$withHeaders,$withCookies);
 					}
 				} else {
-					trigger_error('ERROR: Too many redirects '.$url.' > '.$headers['location'],E_USER_ERROR);
+					$this->error('ERROR: Too many redirects '.$url.' > '.$headers['location'],E_USER_ERROR);
+					return false;
 				}
 			}
 			return $body;

@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.7.2");
+define("CC_WHMCS_BRIDGE_VERSION","1.7.4");
 
 $compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1','1.7.2');
 
@@ -181,7 +181,6 @@ function cc_whmcs_bridge_output() {
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
 	
-	//echo '<br />'.$http.'<br />';
 	$news = new zHttpRequest($http,'whmcs-bridge-sso');
 	$news->debugFunction='cc_whmcs_log';
 	if (function_exists('cc_whmcs_bridge_sso_httpHeaders')) $news->httpHeaders=cc_whmcs_bridge_sso_httpHeaders($news->httpHeaders);
@@ -250,8 +249,13 @@ function cc_whmcs_bridge_output() {
 			header('Location:'.$output);
 			die();
 		} else {
+			if (isset($_REQUEST['aff'])) $news->follow=false;
 			$output=$news->DownloadToString();
-			//die($output);
+			if (isset($_REQUEST['aff']) && isset($news->headers['location'])) {
+				if (strstr($news->headers['location'],get_option('home'))) header('Location:'.$news->headers['location']);
+				else header('Location:'.get_option('home'));
+				die();
+			}
 			return $output;
 		}
 	}
