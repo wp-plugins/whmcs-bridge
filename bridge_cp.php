@@ -3,9 +3,10 @@ function cc_whmcs_bridge_options() {
 	global $cc_whmcs_bridge_shortname,$cc_login_type,$current_user;
 	$cc_whmcs_bridge_shortname = "cc_whmcs_bridge";
 
+	$is='This section customizes the way '.WHMCS_BRIDGE.' interacts with Wordpress.';
 	$cc_whmcs_bridge_options[100] = array(  "name" => "Integration Settings",
             "type" => "heading",
-			"desc" => "This section customizes the way ".WHMCS_BRIDGE." interacts with Wordpress.");
+			"desc" => $is);
 	$cc_whmcs_bridge_options[110] = array(	"name" => WHMCS_BRIDGE_PAGE." URL",
 			"desc" => "The site URL of your ".WHMCS_BRIDGE_PAGE." installation. Make sure this is exactly the same as the settings field 'WHMCS System URL'. If you want to use SSL (https), make sure this URL and the 'WHMCS System URL' are using the https URL. In all cases make sure the setting 'WHMCS SSL System URL' is left blank.",
 			"id" => $cc_whmcs_bridge_shortname."_url",
@@ -16,17 +17,17 @@ function cc_whmcs_bridge_options() {
 			"desc" => "This section customizes the look and feel.");
 	
 	$cc_whmcs_bridge_options[210] = array(	"name" => "jQuery library",
-			"desc" => "Select the jQuery library you want to load. If you have a theme using jQuery, you may be able to solve conflicts by choosing the Wordpress library or no library.",
+			"desc" => "Select the jQuery library you want to load. If you have a theme using jQuery, you may be able to solve conflicts by choosing a different library or no library. Note that ".WHMCS_BRIDGE." uses the jQuery $ function, hence it needs to be defined if you manage the loading of jQuery in your Wordpress theme.",
 			"id" => $cc_whmcs_bridge_shortname."_jquery",
 			"options" => array('' => WHMCS_BRIDGE_PAGE, 'wp' => 'Wordpress', 'checked' => 'None'),
-			"default" => 'checked',
+			"default" => 'wp',
 			"type" => "selectwithkey");
 	$cc_whmcs_bridge_options[220] = array(	"name" => "Custom styles",
 			"desc" => 'Enter your custom CSS styles here',
 			"id" => $cc_whmcs_bridge_shortname."_css",
 			"type" => "textarea");
 	$cc_whmcs_bridge_options[230] = array(	"name" => "Load ".WHMCS_BRIDGE_PAGE." styles",
-			"desc" => 'Select if you want to load the '.WHMCS_BRIDGE_PAGE.' style.css style sheet',
+			"desc" => 'Select if you want to load the '.WHMCS_BRIDGE_PAGE.' style.css style sheet. It is recommended to keep this turned off as loading those styles may have an impact on your the styling of your Wordpress site.',
 			"id" => $cc_whmcs_bridge_shortname."_style",
 			"type" => "checkbox");
 	
@@ -40,11 +41,11 @@ function cc_whmcs_bridge_options() {
 	
 	if (!get_option('cc_whmcs_bridge_sso_active')) {
 		$cc_whmcs_bridge_options[320] = array(	"name" => "Footer",
-				"desc" => "Specify where you want the ".WHMCS_BRIDGE_COMPANY." footer to appear.",
+				"desc" => "Show your support by displaying the ".WHMCS_BRIDGE_COMPANY." footer on your site.",
 				"id" => $cc_whmcs_bridge_shortname."_footer",
-				"std" => 'Page',
+				"std" => 'None',
 				"type" => "select",
-				"options" => array('Page','Site'));
+				"options" => array('Page','Site','None'));
 	}
 	
 	if (get_option('cc_whmcs_bridge_sso_active') && defined('WHMCS_BRIDGE_PRO')) {

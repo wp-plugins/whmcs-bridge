@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.7.4");
+define("CC_WHMCS_BRIDGE_VERSION","1.7.5");
 
-$compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1','1.7.2');
+$compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1','1.7.2','1.7.3','1.7.4');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -54,6 +54,7 @@ function cc_whmcs_admin_notices() {
 	global $wpdb;
 	$errors=array();
 	$warnings=array();
+	$notices=array();
 	$files=array();
 	$dirs=array();
 
@@ -68,6 +69,13 @@ function cc_whmcs_admin_notices() {
 	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
 	if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
 
+	if (cc_whmcs_bridge_mainpage() && isset($_REQUEST['page']) && ($_REQUEST['page']=='cc-ce-bridge-cp')) {
+		$link=cc_whmcs_bridge_home($home,$pid);
+		$is='A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS. ';
+		$is.='You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
+		$notices[]=$is;
+	}
+	
 	if (count($warnings) > 0) {
 		echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
 		foreach ($warnings as $message) echo WHMCS_BRIDGE.': '.$message.'<br />';
@@ -78,7 +86,12 @@ function cc_whmcs_admin_notices() {
 		foreach ($errors as $message) echo WHMCS_BRIDGE.':'.$message.'<br />';
 		echo "</strong> "."</p></div>";
 	}
-
+	if (count($notices) > 0) {
+		echo "<div id='zing-warning' style='background-color:lightyellow' class='updated fade'><p><strong>";
+		foreach ($notices as $message) echo WHMCS_BRIDGE.':'.$message.'<br />';
+		echo "</strong> "."</p></div>";
+	}
+	
 	return array('errors'=> $errors, 'warnings' => $warnings);
 }
 
@@ -307,6 +320,7 @@ function cc_whmcs_bridge_header() {
 			echo '<style type="text/css">'.get_option('cc_whmcs_bridge_css').'</style>';
 		}
 	}
+	if(get_option('cc_whmcs_bridge_jquery')=='wp') echo '<script type="text/javascript">$=jQuery;</script>';
 }
 
 function cc_whmcs_bridge_admin_header() {
@@ -341,7 +355,6 @@ function cc_whmcs_bridge_http($page="index") {
 
 	if ($vars) $http.='?'.$vars;
 
-	//echo '<br />'.$http.'<br />';
 	return $http;
 }
 
@@ -381,7 +394,7 @@ function cc_whmcs_bridge_init()
 	register_sidebars(1,array('name'=>'WHMCS Top Page Widget Area','id'=>'whmcs-top-page',));
 	register_sidebars(1,array('name'=>'WHMCS Bottom Page Widget Area','id'=>'whmcs-top-page',));
 	if(get_option('cc_whmcs_bridge_jquery')=='wp'){
-		wp_enqueue_script('jquery');
+		wp_enqueue_script(array('jquery','jquery-ui','jquery-ui-slider'));
 	}
 }
 

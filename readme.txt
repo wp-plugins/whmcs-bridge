@@ -4,7 +4,7 @@ Donate link: http://www.zingiri.net/donations
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.3.1
-Stable tag: 1.7.4
+Stable tag: 1.7.5
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
@@ -39,6 +39,18 @@ No screenshots here but have a look at [our site](http://www.zingiri.net/portal/
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 1.7.5 =
+* Verified working of Boxes, Cart, Slider, Verticalsteps, Web20cart order templates
+* Fixed issues with Ajaxcart, Comparison and Modern order templates
+* Fixed issue with remove link in cart not working
+* Added link to WHMCS page in control panel
+* Added load of Wordpress jQuery UI libraries if the Wordpress jQuery library is selected
+* Default jQuery library set to Wordpress
+* Removed loading of Zingiri news
+* Fixed issue with loading jQuery ui
+* Added option to disable the footer
+* Fixed issue when a customer tries to supply CC info and they click the "where can i find this" link about the CVV code, it takes them to the wrong link
 
 = 1.7.4 =
 * Fixed issue with popup window showing email content in v5 Default template not working

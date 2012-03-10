@@ -2,17 +2,31 @@
 function cc_whmcs_bridge_parser_ajax1($buffer) {
 	cc_whmcs_bridge_home($home,$pid);
 
+		//replaces whmcs jquery so that it doesn't start it twice
+	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
+		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
+	//	$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
+	}
+	
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
 	$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
 	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
+	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
+	$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
+
+	
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
+
+	//jQuery UI
+	$buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
 	
 	return $buffer;
 }
@@ -22,8 +36,6 @@ function cc_whmcs_bridge_parser_ajax2($buffer) {
 
 	$buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
 	$buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
-
-	//$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
 	return $buffer;
 
@@ -41,10 +53,13 @@ function cc_whmcs_bridge_home(&$home,&$pid) {
 		$pid="";
 		$home=$homePage.$wordpressPageName;
 		if (substr($home,-1) != '/') $home.='/';
+		$url=$home;
 	}else{
 		$pid='&page_id='.$pageID;
 		$home=get_option('home').'/';
+		$url=$home.'?page_id='.$pageID;
 	}
+	return $url;
 }
 
 function cc_whmcs_bridge_parser() {
@@ -99,33 +114,28 @@ function cc_whmcs_bridge_parser() {
 	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
 	$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location = \''.$home.'?ccce=$1&$2'.$pid.'\'';
+	$r[]='window.location = \''.$home.'?ccce=$1'.$pid.'&$2\'';
 
+	$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"([a-zA-Z\_]*?).php\"(.*?)>/';
+	if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
+	else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
+
+	
 	$f[]='/action\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
 	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
 	$f[]='/action\=\"([a-zA-Z\_]*?).php\"/';
 	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
-
-	//$f[]='/action\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
-	//$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
-	
-	//$f[]='/action\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
-	//$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 	
 	$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"(.*?)>/';
 	if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
 	else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
-	
+
 	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"/';
 	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
 	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
-
-	//fixes the cart.php
-	//$f[]='#\'cart.php\?#';
-	//$r[]='\''.$home.'?ccce=cart&';
 
 	//fixes the register.php
 	$f[]='/action\=\"(.|\/*?)register.php\"/';
@@ -165,7 +175,6 @@ function cc_whmcs_bridge_parser() {
 	$f[]="/>>/";
 	$r[]="&gt;&gt;";
 	
-	//$f[]="/\?"
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 	
 	//name is a reserved Wordpress field name
@@ -174,9 +183,11 @@ function cc_whmcs_bridge_parser() {
 	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
+
 	//import local images
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
-
+	$buffer=str_replace("window.open('images","window.open('".cc_whmcs_bridge_url().'/images',$buffer);
+	
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage',$buffer);
 
@@ -195,8 +206,14 @@ function cc_whmcs_bridge_parser() {
 	//replaces whmcs jquery so that it doesn't start it twice
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
 		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
+//		$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
 	}
 
+	//jQuery ui
+	$buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
+	
+	
 	$html = new simple_html_dom();
 	$html->load($buffer);
 	$sidebar=$html->find('div[id=side_menu]', 0) ? trim($html->find('div[id=side_menu]', 0)->innertext) : null;
