@@ -1,10 +1,4 @@
 <?php
-if (!function_exists('cc_urlencode')) {
-	function cc_urlencode($var) {
-		return urlencode($var);
-	}
-}
-
 if (!function_exists('assign_rand_value')) {
 	function assign_rand_value($num)
 	{

@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.7.5");
+define("CC_WHMCS_BRIDGE_VERSION","1.7.6");
 
 $compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1','1.7.2','1.7.3','1.7.4');
 
@@ -342,7 +342,12 @@ function cc_whmcs_bridge_http($page="index") {
 		foreach ($_GET as $n => $v) {
 			if ($n!="page_id" && $n!="ccce")
 			{
-				$vars.= $and.$n.'='.cc_urlencode($v);
+				if (is_array($v)) {
+					foreach ($v as $n2 => $v2) {
+						$vars.= $and.$n.'['.$n2.']'.'='.urlencode($v2);
+					}
+				}
+				else $vars.= $and.$n.'='.urlencode($v);
 				$and="&";
 			}
 		}
