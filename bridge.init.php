@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.7.6");
+define("CC_WHMCS_BRIDGE_VERSION","1.8.0");
 
-$compatibleWHMCSBridgeProVersions=array('1.7.0','1.7.1','1.7.2','1.7.3','1.7.4');
+$compatibleWHMCSBridgeProVersions=array('1.8.0');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -34,7 +34,7 @@ if ($cc_whmcs_bridge_version) {
 	if (get_option('cc_whmcs_bridge_footer')=='Site') add_filter('wp_footer','cc_whmcs_bridge_footer');
 	add_filter('the_content', 'cc_whmcs_bridge_content', 10, 3);
 	add_filter('the_title', 'cc_whmcs_bridge_title');
-	add_action('wp_head','cc_whmcs_bridge_header');
+	add_action('wp_head','cc_whmcs_bridge_header',10);
 	add_action('admin_head','cc_whmcs_bridge_admin_header');
 	add_action("plugins_loaded", "cc_whmcs_sidebar_init");
 }
@@ -105,7 +105,7 @@ function cc_whmcs_bridge_activate() {
 }
 
 function cc_whmcs_bridge_install() {
-	global $wpdb,$current_user;
+	global $wpdb,$current_user,$wp_rewrite;
 
 	ob_start();
 	cc_whmcs_log();
@@ -143,6 +143,8 @@ function cc_whmcs_bridge_install() {
 
 	restore_error_handler();
 
+	$wp_rewrite->flush_rules();
+	
 	return true;
 }
 
@@ -306,11 +308,14 @@ function cc_whmcs_bridge_content($content) {
 
 function cc_whmcs_bridge_header() {
 	global $cc_whmcs_bridge_content,$post;
-
+	
+	if (!(isset($post->ID))) return;
 	$cf=get_post_custom($post->ID);
 	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS')) {
-		if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
-		else $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+		$p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template');
+		//if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
+		//else 
+		$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 
 		if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
 
@@ -335,7 +340,7 @@ function cc_whmcs_bridge_http($page="index") {
 	elseif (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='js')) {
 		$http=cc_whmcs_bridge_url().'/'.$_REQUEST['js'];
 		return $http;
-	}
+	} elseif (substr($page,-1)=='/') $http=cc_whmcs_bridge_url().'/'.substr($page,0,-1);
 	else $http=cc_whmcs_bridge_url().'/'.$page.'.php';
 	$and="";
 	if (count($_GET) > 0) {
@@ -399,7 +404,7 @@ function cc_whmcs_bridge_init()
 	register_sidebars(1,array('name'=>'WHMCS Top Page Widget Area','id'=>'whmcs-top-page',));
 	register_sidebars(1,array('name'=>'WHMCS Bottom Page Widget Area','id'=>'whmcs-top-page',));
 	if(get_option('cc_whmcs_bridge_jquery')=='wp'){
-		wp_enqueue_script(array('jquery','jquery-ui','jquery-ui-slider'));
+		wp_enqueue_script(array('jquery','jquery-ui','jquery-ui-slider','jquery-ui-button'));
 	}
 }
 

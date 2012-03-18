@@ -5,7 +5,7 @@
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
  Author: Zingiri
- Version: 1.7.6
+ Version: 1.8.0
  Author URI: http://www.zingiri.net/
  */
 

@@ -34,6 +34,17 @@ if (!function_exists('zing_support_us')) {
 				}
 				?>
 			</div>
+			<?php if (!get_option('cc_whmcs_bridge_sso_license_key')) {?>
+			<div class="cc-support-us">
+					<h3>Discover WHMCS Bridge Pro</h3>
+					<h4>Single sign on: </h4><p>thanks to the single sign-on feature, your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.</p><br /><br />
+					<h4>Multi-lingual WHMCS support: </h4><p>fully integrated with qtranslate.</p><br /><br />
+					<h4>IP address resolution 'patch': </h4><p>shows your customer's IP address instead of your server's IP address during sign up.</p><br /><br />
+					<h4>Choose your WHMCS portal: </h4><p>fully compatible with the WHMCS v5 'default' template</p><br /><br />
+					<h4>Pretty permanlinks: </h4><p>display links like http://www.mysite.com/clientarea/ rather than http://www.mysite.com/?ccce=clientarea. Also supports knowledgebase, announcement and download links.</p><br /><br />
+					<a href="http://www.zingiri.com/portal/?ccce=cart&a=add&pid=20" target="_blank"><img src="http://www.zingiri.com/wordpress/wp-content/uploads/buy_now.png" /></a>
+				</div>
+				<?php }?>
 			<div style="text-align:center;margin-top:15px">
 				<a href="http://www.zingiri.com" target="_blank"><img width="150px" src="<?php echo $pluginUrl?>images/logo.png" /></a>
 			</div>

@@ -43,3 +43,10 @@
 	width: 100px;
 }
 
+.cc-support-us p,.cc-support-us h4 {
+	display: inline;
+}
+
+.cc-support-us h4 {
+	clear:left;
+}

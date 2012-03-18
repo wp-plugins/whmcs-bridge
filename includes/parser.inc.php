@@ -2,13 +2,13 @@
 function cc_whmcs_bridge_parser_ajax1($buffer) {
 	cc_whmcs_bridge_home($home,$pid);
 
-		//replaces whmcs jquery so that it doesn't start it twice
+	//replaces whmcs jquery so that it doesn't start it twice
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
 		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
 		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
-	//	$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
+		//	$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
 	}
-	
+
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
@@ -18,7 +18,7 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
 	$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
 
-	
+
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
@@ -27,7 +27,7 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 
 	//jQuery UI
 	$buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
-	
+
 	return $buffer;
 }
 
@@ -76,107 +76,109 @@ function cc_whmcs_bridge_parser() {
 	$whmcs=cc_whmcs_bridge_url().'/';
 
 	$ret['buffer']=$buffer;
+	if (get_option('cc_whmcs_bridge_permalinks') && function_exists('cc_whmcs_bridge_parser_with_permalinks') && !$pid) {
+		$buffer=cc_whmcs_bridge_parser_with_permalinks($buffer,$home,$pid,$whmcs,$sub);
+	} else {
+		$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
+		$r[]='value="'.$home.'?ccce=$1'.$pid.'"';
 
-	$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
-	$r[]='value="'.$home.'?ccce=$1'.$pid.'"';
-	
-	$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
-	$r[]='value="'.$home.'?ccce=$1&$2'.$pid.'"';
-	
-	$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
-	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
+		$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+		$r[]='value="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
-	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
+		$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
+		$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-	$f[]='/'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php/';
-	$r[]=''.$home.'?ccce=$1'.$pid;
+		$f[]='/href\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
-	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
+		$f[]='/'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php/';
+		$r[]=''.$home.'?ccce=$1'.$pid;
 
-	$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
-	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
+		$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/href\=\"([a-zA-Z\_]*?).php\"/';
-	$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
+		$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	$f[]='/window.open\(\'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.open(\''.$home.'?ajax=1&ccce=$1&$2'.$pid.'\'';
-	
-	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
-	$r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
+		$f[]='/href\=\"([a-zA-Z\_]*?).php\"/';
+		$r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-	$f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
+		$f[]='/window.open\(\'([a-zA-Z\_]*?).php.(.*?)\'/';
+		$r[]='window.open(\''.$home.'?ajax=1&ccce=$1&$2'.$pid.'\'';
 
-	$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
+		$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
+		$r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
 
-	$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
-	$r[]='window.location = \''.$home.'?ccce=$1'.$pid.'&$2\'';
+		$f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\'/';
+		$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
-	$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"([a-zA-Z\_]*?).php\"(.*?)>/';
-	if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
-	else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
+		$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
+		$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
-	
-	$f[]='/action\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
-	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+		$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
+		$r[]='window.location = \''.$home.'?ccce=$1'.$pid.'&$2\'';
 
-	$f[]='/action\=\"([a-zA-Z\_]*?).php\"/';
-	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
-	
-	$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"(.*?)>/';
-	if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
-	else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
+		$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"([a-zA-Z\_]*?).php\"(.*?)>/';
+		if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
+		else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
 
-	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"/';
-	$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
-	$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
-	$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+		$f[]='/action\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	//fixes the register.php
-	$f[]='/action\=\"(.|\/*?)register.php\"/';
-	$r[]='action="'.$home.'?ccce=register"';
+		$f[]='/action\=\"([a-zA-Z\_]*?).php\"/';
+		$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
-	//remove cart heading
-	$f[]='#\<p align\=\"center\" class=\"cartheading\">(?:.*?)\<\/p\>#';
-	$r[]='';
+		$f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"(.*?)>/';
+		if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
+		else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
 
-	//remove base tag
-	$f[]="(\<base\s*href\=(?:\"|\')(?:.*?)(?:\"|\')\s*/\>)";
-	$r[]='';
+		$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"/';
+		$r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
-	//remove title tag
-	$f[]="/<title>.*<\/title>/";
-	$r[]='';
+		$f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-	//remove meta tag
-	$f[]="/<meta.*>/";
-	$r[]='';
+		//fixes the register.php
+		$f[]='/action\=\"(.|\/*?)register.php\"/';
+		$r[]='action="'.$home.'?ccce=register"';
 
-	$f[]="/.post\(\"announcements.php/";
-	$r[]=".post(\"$home?ccce=announcements&ajax=1";
+		//remove cart heading
+		$f[]='#\<p align\=\"center\" class=\"cartheading\">(?:.*?)\<\/p\>#';
+		$r[]='';
 
-	$f[]="/.post\(\"submitticket.php/";
-	$r[]=".post(\"$home?ccce=submitticket&ajax=1";
+		//remove base tag
+		$f[]="(\<base\s*href\=(?:\"|\')(?:.*?)(?:\"|\')\s*/\>)";
+		$r[]='';
 
-	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
-	$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
+		//remove title tag
+		$f[]="/<title>.*<\/title>/";
+		$r[]='';
 
-	$f[]="/popupWindow\(\'([a-zA-Z]*?).php\?/";
-	$r[]="popupWindow('$home?ccce=$1&ajax=1&";
-	
-	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
-	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
+		//remove meta tag
+		$f[]="/<meta.*>/";
+		$r[]='';
 
-	$f[]="/>>/";
-	$r[]="&gt;&gt;";
-	
-	$buffer=preg_replace($f,$r,$buffer,-1,$count);
-	
+		$f[]="/.post\(\"announcements.php/";
+		$r[]=".post(\"$home?ccce=announcements&ajax=1";
+
+		$f[]="/.post\(\"submitticket.php/";
+		$r[]=".post(\"$home?ccce=submitticket&ajax=1";
+
+		$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
+		$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
+
+		$f[]="/popupWindow\(\'([a-zA-Z]*?).php\?/";
+		$r[]="popupWindow('$home?ccce=$1&ajax=1&";
+
+		$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
+		$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
+
+		$f[]="/>>/";
+		$r[]="&gt;&gt;";
+
+		$buffer=preg_replace($f,$r,$buffer,-1,$count);
+	}
 	//name is a reserved Wordpress field name
 	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
 
@@ -187,7 +189,7 @@ function cc_whmcs_bridge_parser() {
 	//import local images
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace("window.open('images","window.open('".cc_whmcs_bridge_url().'/images',$buffer);
-	
+
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage',$buffer);
 
@@ -207,13 +209,13 @@ function cc_whmcs_bridge_parser() {
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
 		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
 		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
-//		$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
+		//		$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
 	}
 
 	//jQuery ui
 	$buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
-	
-	
+
+
 	$html = new simple_html_dom();
 	$html->load($buffer);
 	$sidebar=$html->find('div[id=side_menu]', 0) ? trim($html->find('div[id=side_menu]', 0)->innertext) : null;
@@ -267,11 +269,11 @@ function cc_whmcs_bridge_parser() {
 	//start new change
 	if ($topMenu=$html->find('div[id=top_menu] ul',0)){
 
-//		foreach ($html->find('div[id=top_menu] li') as $div) {
-	//		echo 'hi';
+		//		foreach ($html->find('div[id=top_menu] li') as $div) {
+		//		echo 'hi';
 		//}
-	//die($topMenu);
-		
+		//die($topMenu);
+
 
 		//top menu here
 		$topMenu=$topMenu->__toString();
