@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.8.0");
+define("CC_WHMCS_BRIDGE_VERSION","1.8.1");
 
 $compatibleWHMCSBridgeProVersions=array('1.8.0');
 
@@ -187,7 +187,7 @@ function cc_whmcs_bridge_output() {
 		$ajax=intval($_REQUEST['ajax']);
 	} elseif (isset($_REQUEST['ccce'])) {
 		$cc_whmcs_bridge_to_include=$_REQUEST['ccce'];
-	} elseif (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS') {
+	} elseif (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE) {
 		$cc_whmcs_bridge_to_include="index";
 	} else {
 		$cc_whmcs_bridge_to_include="index";
@@ -284,8 +284,10 @@ function cc_whmcs_bridge_output() {
 function cc_whmcs_bridge_content($content) {
 	global $cc_whmcs_bridge_content,$post;
 
+	if (!is_page()) return $content;
+	
 	$cf=get_post_custom($post->ID);
-	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS')) {
+	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
 		if ($cc_whmcs_bridge_content) {
 			$content='';
 			ob_start();
@@ -311,7 +313,7 @@ function cc_whmcs_bridge_header() {
 	
 	if (!(isset($post->ID))) return;
 	$cf=get_post_custom($post->ID);
-	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]=='WHMCS')) {
+	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
 		$p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template');
 		//if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
 		//else 
@@ -364,7 +366,7 @@ function cc_whmcs_bridge_http($page="index") {
 	if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);
 
 	if ($vars) $http.='?'.$vars;
-
+	
 	return $http;
 }
 
