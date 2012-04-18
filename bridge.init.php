@@ -5,7 +5,7 @@ if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
 define("CC_WHMCS_BRIDGE_VERSION","1.8.1");
 
-$compatibleWHMCSBridgeProVersions=array('1.8.0');
+$compatibleWHMCSBridgeProVersions=array('1.8.0','1.8.1');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {

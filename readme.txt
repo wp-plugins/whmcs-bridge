@@ -40,6 +40,9 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 == Changelog ==
 
+= 1.8.2 =
+* Replaced remote image buy_now.png with local version
+
 = 1.8.1 =
 * Fixed issue with bridge content appearing on other posts on page
 
