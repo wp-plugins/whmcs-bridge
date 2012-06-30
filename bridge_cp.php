@@ -26,9 +26,13 @@ function cc_whmcs_bridge_options() {
 			"desc" => 'Enter your custom CSS styles here',
 			"id" => $cc_whmcs_bridge_shortname."_css",
 			"type" => "textarea");
-	$cc_whmcs_bridge_options[230] = array(	"name" => "Load ".WHMCS_BRIDGE_PAGE." styles",
-			"desc" => 'Select if you want to load the '.WHMCS_BRIDGE_PAGE.' style.css style sheet. It is recommended to keep this turned off as loading those styles may have an impact on your the styling of your Wordpress site.',
+	$cc_whmcs_bridge_options[230] = array(	"name" => "Load ".WHMCS_BRIDGE_PAGE." style",
+			"desc" => 'Select if you want to load the '.WHMCS_BRIDGE_PAGE.' style.css style sheet.',
 			"id" => $cc_whmcs_bridge_shortname."_style",
+			"type" => "checkbox");
+	$cc_whmcs_bridge_options[232] = array(	"name" => "Load ".WHMCS_BRIDGE_PAGE." invoice style",
+			"desc" => 'Select if you want to load the '.WHMCS_BRIDGE_PAGE.' invoicestyle.css style sheet.',
+			"id" => $cc_whmcs_bridge_shortname."_invoicestyle",
 			"type" => "checkbox");
 	
 	$cc_whmcs_bridge_options[300] = array(  "name" => "Other Settings",

@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.8.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.8.2");
 
-$compatibleWHMCSBridgeProVersions=array('1.8.0','1.8.1');
+$compatibleWHMCSBridgeProVersions=array('1.8.0','1.8.1','1.8.2');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -75,6 +75,8 @@ function cc_whmcs_admin_notices() {
 		$is.='You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
 		$notices[]=$is;
 	}
+	
+	if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $warnings[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
 	
 	if (count($warnings) > 0) {
 		echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";

@@ -1,4 +1,43 @@
 <?php
+function cc_whmcs_bridge_parser_css($css) {
+	$input=file_get_contents($css);
+	$s='';
+	$output='';
+	$comments=false;
+	for ($i=0; $i < strlen($input); $i++) {
+		if ($input[$i]=='/' && $input[$i+1]=='*') {
+			$comments=true;
+			$output.=$s;
+			$s='';
+		}
+		if ($input[$i]=='*' && $input[$i+1]=='/') {
+			$comments=false;
+			$output.=$s.'*/';
+			$i+=2;
+			$s='';
+		}
+		if (!$comments) {
+			if ($input[$i]==',') {
+				$output.='#bridge '.$s.',';
+				$s='';
+			} elseif ($input[$i]=='{') {
+				$output.='#bridge '.$s.'{';
+				$s='';
+			} elseif ($input[$i]=='}') {
+				$output.=$s.'}';
+				$s='';
+			} else {
+		$s.=$input[$i];
+				
+			}
+		} else {
+		$s.=$input[$i];
+			
+		}
+	}
+	return $output;
+}
+
 function cc_whmcs_bridge_parser_ajax1($buffer) {
 	cc_whmcs_bridge_home($home,$pid);
 
@@ -199,10 +238,31 @@ function cc_whmcs_bridge_parser() {
 		die();
 	}
 
+	//load WHMCS invoicestyle.css style sheet
+	if (!get_option('cc_whmcs_bridge_invoicestyle') == 'checked') {
+		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','',$buffer);
+	}
+
 	//load WHMCS style.css style sheet
 	if (!get_option('cc_whmcs_bridge_style') == 'checked') {
-		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','',$buffer);
 		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/invoicestyle.css">/','',$buffer);
+		//$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css".*>/','',$buffer);
+		//$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/css\/whmcs.css".*>/','',$buffer);
+	} else {
+		$matches=array();
+		if (preg_match('/<link.*href="(.*templates\/[a-zA-Z0-9_-]*\/style.css)" \/>/',$buffer,$matches)) {
+			$css=$matches[1];
+			$output=cc_whmcs_bridge_parser_css($css);
+			$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','<style type="text/css">'.$output.'</style>',$buffer);
+		}
+		/*
+		$s='/<link.*href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/';
+		if (preg_match($s,$buffer,$matches)) {
+			$css=$matches[1];
+			$output=cc_whmcs_bridge_parser_css($css);
+			$buffer=preg_replace($s,'<style type="text/css">'.$output.'</style>',$buffer);
+		}
+		*/
 	}
 
 	//replaces whmcs jquery so that it doesn't start it twice
