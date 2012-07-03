@@ -27,12 +27,12 @@ function cc_whmcs_bridge_parser_css($css) {
 				$output.=$s.'}';
 				$s='';
 			} else {
-		$s.=$input[$i];
-				
+				$s.=$input[$i];
+
 			}
 		} else {
-		$s.=$input[$i];
-			
+			$s.=$input[$i];
+				
 		}
 	}
 	return $output;
@@ -161,7 +161,6 @@ function cc_whmcs_bridge_parser() {
 		if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
 		else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
 
-
 		$f[]='/action\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
 		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
@@ -216,6 +215,9 @@ function cc_whmcs_bridge_parser() {
 		$f[]="/>>/";
 		$r[]="&gt;&gt;";
 
+		$f[]='/action\=\".*(\/modules\/gateways\/[a-zA-Z\_]*?).php\?(.*?)\"/';
+		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+
 		$buffer=preg_replace($f,$r,$buffer,-1,$count);
 	}
 	//name is a reserved Wordpress field name
@@ -232,6 +234,7 @@ function cc_whmcs_bridge_parser() {
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage',$buffer);
 
+	//if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice') && !strstr($buffer,'frmlogin')) {
 	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
 		while (count(ob_get_status(true)) > 0) ob_end_clean();
 		echo $buffer;
@@ -256,13 +259,13 @@ function cc_whmcs_bridge_parser() {
 			$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','<style type="text/css">'.$output.'</style>',$buffer);
 		}
 		/*
-		$s='/<link.*href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/';
-		if (preg_match($s,$buffer,$matches)) {
+		 $s='/<link.*href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/';
+		 if (preg_match($s,$buffer,$matches)) {
 			$css=$matches[1];
 			$output=cc_whmcs_bridge_parser_css($css);
 			$buffer=preg_replace($s,'<style type="text/css">'.$output.'</style>',$buffer);
-		}
-		*/
+			}
+			*/
 	}
 
 	//replaces whmcs jquery so that it doesn't start it twice

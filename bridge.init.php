@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.8.3");
+define("CC_WHMCS_BRIDGE_VERSION","1.8.4");
 
 $compatibleWHMCSBridgeProVersions=array('1.8.0','1.8.1','1.8.2','1.8.3');
 
@@ -69,29 +69,35 @@ function cc_whmcs_admin_notices() {
 	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
 	if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
 
-	if (cc_whmcs_bridge_mainpage() && isset($_REQUEST['page']) && ($_REQUEST['page']=='cc-ce-bridge-cp')) {
+	if (cc_whmcs_bridge_mainpage()) {
 		$link=cc_whmcs_bridge_home($home,$pid);
 		$is='A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS. ';
 		$is.='You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
 		$notices[]=$is;
 	}
 	
-	if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $warnings[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
+	if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $notices[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
 	
 	if (count($warnings) > 0) {
+		foreach ($warnings as $message) {
 		echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
-		foreach ($warnings as $message) echo WHMCS_BRIDGE.': '.$message.'<br />';
+		 echo WHMCS_BRIDGE.': '.$message.'<br />';
 		echo "</strong> "."</p></div>";
+		}
 	}
 	if (count($errors) > 0) {
-		echo "<div id='zing-warning' style='background-color:pink' class='updated fade'><p><strong>";
-		foreach ($errors as $message) echo WHMCS_BRIDGE.':'.$message.'<br />';
+		foreach ($errors as $message)  {
+			echo "<div id='zing-warning' style='background-color:pink' class='updated fade'><p><strong>";
+		echo WHMCS_BRIDGE.':'.$message.'<br />';
 		echo "</strong> "."</p></div>";
+		}
 	}
-	if (count($notices) > 0) {
+	if (isset($_REQUEST['page']) && ($_REQUEST['page']=='cc-ce-bridge-cp') && count($notices) > 0) {
+		foreach ($notices as $message) {
 		echo "<div id='zing-warning' style='background-color:lightyellow' class='updated fade'><p><strong>";
-		foreach ($notices as $message) echo WHMCS_BRIDGE.':'.$message.'<br />';
+		echo $message.'<br />';
 		echo "</strong> "."</p></div>";
+		}
 	}
 	
 	return array('errors'=> $errors, 'warnings' => $warnings);
