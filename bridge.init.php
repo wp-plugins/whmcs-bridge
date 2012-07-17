@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.8.4");
+define("CC_WHMCS_BRIDGE_VERSION","1.9.0");
 
-$compatibleWHMCSBridgeProVersions=array('1.8.0','1.8.1','1.8.2','1.8.3');
+$compatibleWHMCSBridgeProVersions=array('1.9.0');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -75,31 +75,31 @@ function cc_whmcs_admin_notices() {
 		$is.='You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
 		$notices[]=$is;
 	}
-	
+
 	if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $notices[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
-	
+
 	if (count($warnings) > 0) {
 		foreach ($warnings as $message) {
-		echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
-		 echo WHMCS_BRIDGE.': '.$message.'<br />';
-		echo "</strong> "."</p></div>";
+			echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
+			echo WHMCS_BRIDGE.': '.$message.'<br />';
+			echo "</strong> "."</p></div>";
 		}
 	}
 	if (count($errors) > 0) {
 		foreach ($errors as $message)  {
 			echo "<div id='zing-warning' style='background-color:pink' class='updated fade'><p><strong>";
-		echo WHMCS_BRIDGE.':'.$message.'<br />';
-		echo "</strong> "."</p></div>";
+			echo WHMCS_BRIDGE.':'.$message.'<br />';
+			echo "</strong> "."</p></div>";
 		}
 	}
 	if (isset($_REQUEST['page']) && ($_REQUEST['page']=='cc-ce-bridge-cp') && count($notices) > 0) {
 		foreach ($notices as $message) {
-		echo "<div id='zing-warning' style='background-color:lightyellow' class='updated fade'><p><strong>";
-		echo $message.'<br />';
-		echo "</strong> "."</p></div>";
+			echo "<div id='zing-warning' style='background-color:lightyellow' class='updated fade'><p><strong>";
+			echo $message.'<br />';
+			echo "</strong> "."</p></div>";
 		}
 	}
-	
+
 	return array('errors'=> $errors, 'warnings' => $warnings);
 }
 
@@ -152,7 +152,7 @@ function cc_whmcs_bridge_install() {
 	restore_error_handler();
 
 	$wp_rewrite->flush_rules();
-	
+
 	return true;
 }
 
@@ -203,7 +203,7 @@ function cc_whmcs_bridge_output() {
 	}
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
-	
+
 	$news = new zHttpRequest($http,'whmcs-bridge-sso');
 	$news->debugFunction='cc_whmcs_log';
 	if (function_exists('cc_whmcs_bridge_sso_httpHeaders')) $news->httpHeaders=cc_whmcs_bridge_sso_httpHeaders($news->httpHeaders);
@@ -216,6 +216,8 @@ function cc_whmcs_bridge_output() {
 	$news=apply_filters('bridge_http',$news);
 
 	$news->forceWithRedirect['systpl']=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'portal';
+
+	if (function_exists('cc_whmcs_sso_post')) cc_whmcs_sso_post($cc_whmcs_bridge_to_include,$news);
 
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
@@ -293,7 +295,7 @@ function cc_whmcs_bridge_content($content) {
 	global $cc_whmcs_bridge_content,$post;
 
 	if (!is_page()) return $content;
-	
+
 	$cf=get_post_custom($post->ID);
 	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
 		if ($cc_whmcs_bridge_content) {
@@ -318,13 +320,13 @@ function cc_whmcs_bridge_content($content) {
 
 function cc_whmcs_bridge_header() {
 	global $cc_whmcs_bridge_content,$post;
-	
+
 	if (!(isset($post->ID))) return;
 	$cf=get_post_custom($post->ID);
 	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
 		$p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template');
 		//if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
-		//else 
+		//else
 		$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 
 		if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
@@ -374,7 +376,7 @@ function cc_whmcs_bridge_http($page="index") {
 	if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);
 
 	if ($vars) $http.='?'.$vars;
-	
+
 	return $http;
 }
 

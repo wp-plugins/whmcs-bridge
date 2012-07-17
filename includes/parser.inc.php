@@ -98,6 +98,10 @@ function cc_whmcs_bridge_home(&$home,&$pid) {
 		$home=get_option('home').'/';
 		$url=$home.'?page_id='.$pageID;
 	}
+	
+	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) { 
+		$url=str_replace('http://','https://',$url);
+	}
 	return $url;
 }
 

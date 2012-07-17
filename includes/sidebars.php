@@ -185,7 +185,7 @@ class cc_whmcs_welcomebox_main extends WP_Widget {
 
 	/** @see WP_Widget::form */
 	function form($instance) {
-		$title = esc_attr($instance['title']);
+		$title = isset($instance['title']) ? esc_attr($instance['title']) : '';
 		echo '<p>';
 		echo '<label for="'.$this->get_field_id('title').'"'._e('Title:').'</label>';
 		echo '<input class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" type="text" value="'.$title.'"/>';
