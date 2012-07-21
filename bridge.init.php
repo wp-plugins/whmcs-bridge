@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.9.0");
+define("CC_WHMCS_BRIDGE_VERSION","1.9.1");
 
 $compatibleWHMCSBridgeProVersions=array('1.9.0');
 
@@ -217,8 +217,10 @@ function cc_whmcs_bridge_output() {
 
 	$news->forceWithRedirect['systpl']=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'portal';
 
-	if (function_exists('cc_whmcs_sso_post')) cc_whmcs_sso_post($cc_whmcs_bridge_to_include,$news);
-
+	if ($cc_whmcs_bridge_to_include=='dologin') {
+		$news->post['rememberme']='on';
+	}
+	
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
 		return "cURL not installed";
@@ -253,11 +255,9 @@ function cc_whmcs_bridge_output() {
 			$body=cc_whmcs_bridge_parser_ajax2($body);
 			header('HTTP/1.1 200 OK');
 			echo $body;
-			//echo 'it is ajax 2';
 			die();
 		} elseif ($news->redirect) {
 			$output=$news->DownloadToString();
-			//echo 'redirect1:'.$news->location.'<br />';
 
 			if ($wordpressPageName) $p=$wordpressPageName;
 			else $p='/';
@@ -265,17 +265,20 @@ function cc_whmcs_bridge_output() {
 			$r[]=get_option('home').$p.'?ccce=$1&$2';
 			$f[]='/([a-zA-Z\_]*?).php.(.*?)/';
 			$r[]=get_option('home').$p.'?ccce=$1&$2';
-			//echo $output.'<br />';
 
 			$output=preg_replace($f,$r,$news->location,-1,$count);
 
 			cc_whmcs_log('Notification','Redirect to: '.$output);
-			//echo 'Location:'.$output;
+			echo 'Location:'.$output;
 			header('Location:'.$output);
 			die();
 		} else {
 			if (isset($_REQUEST['aff'])) $news->follow=false;
 			$output=$news->DownloadToString();
+			if ($news->redirect) {
+				header('Location:'.$output);
+				die();
+			}
 			if (isset($_REQUEST['aff']) && isset($news->headers['location'])) {
 				if (strstr($news->headers['location'],get_option('home'))) header('Location:'.$news->headers['location']);
 				else header('Location:'.get_option('home'));
@@ -347,13 +350,16 @@ function cc_whmcs_bridge_admin_header() {
 function cc_whmcs_bridge_http($page="index") {
 	global $wpdb;
 
+	$whmcs=cc_whmcs_bridge_url();
+	if (substr($whmcs,-1)!='/') $whmcs.='/';
+	if ((strpos($whmcs,'https://')!==0) && isset($_REQUEST['sec']) && ($_REQUEST['sec']=='1')) $whmcs=str_replace('http://','https://',$whmcs); 
 	$vars="";
-	if ($page=='verifyimage') $http=cc_whmcs_bridge_url().'/includes/'.$page.'.php';
+	if ($page=='verifyimage') $http=$whmcs.'includes/'.$page.'.php';
 	elseif (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='js')) {
-		$http=cc_whmcs_bridge_url().'/'.$_REQUEST['js'];
+		$http=$whmcs.$_REQUEST['js'];
 		return $http;
-	} elseif (substr($page,-1)=='/') $http=cc_whmcs_bridge_url().'/'.substr($page,0,-1);
-	else $http=cc_whmcs_bridge_url().'/'.$page.'.php';
+	} elseif (substr($page,-1)=='/') $http=$whmcs.substr($page,0,-1);
+	else $http=$whmcs.$page.'.php';
 	$and="";
 	if (count($_GET) > 0) {
 		foreach ($_GET as $n => $v) {

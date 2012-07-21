@@ -32,7 +32,7 @@ function cc_whmcs_bridge_parser_css($css) {
 			}
 		} else {
 			$s.=$input[$i];
-				
+
 		}
 	}
 	return $output;
@@ -98,8 +98,8 @@ function cc_whmcs_bridge_home(&$home,&$pid) {
 		$home=get_option('home').'/';
 		$url=$home.'?page_id='.$pageID;
 	}
-	
-	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) { 
+
+	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) {
 		$url=str_replace('http://','https://',$url);
 	}
 	return $url;
@@ -115,8 +115,14 @@ function cc_whmcs_bridge_parser() {
 	$tmp=explode('://',cc_whmcs_bridge_url(),2);
 	$tmp2=explode('/',$tmp[1],2);
 	$sub=str_replace($tmp[0].'://'.$tmp2[0],'',cc_whmcs_bridge_url()).'/';
+	$secure='&sec=1';
+	
+	$whmcs=cc_whmcs_bridge_url();
 
-	$whmcs=cc_whmcs_bridge_url().'/';
+	if (substr($whmcs,-1) != '/') $whmcs.='/';
+
+	if (strpos($whmcs,'https://')===0) $whmcs=str_replace('https://','http://',$whmcs);
+	$whmcs2=str_replace('http://','https://',$whmcs);
 
 	$ret['buffer']=$buffer;
 	if (get_option('cc_whmcs_bridge_permalinks') && function_exists('cc_whmcs_bridge_parser_with_permalinks') && !$pid) {
@@ -136,6 +142,21 @@ function cc_whmcs_bridge_parser() {
 
 		$f[]='/'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php/';
 		$r[]=''.$home.'?ccce=$1'.$pid;
+
+		$f[]='/value\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php\"/';
+		$r[]='value="'.$home.'?ccce=$1'.$pid.$secure.'"';
+
+		$f[]='/value\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+		$r[]='value="'.$home.'?ccce=$1&$2'.$pid.$secure.'"';
+
+		$f[]='/href\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php\"/';
+		$r[]='href="'.$home.'?ccce=$1'.$pid.$secure.'"';
+
+		$f[]='/href\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.$secure.'"';
+
+		$f[]='/'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php/';
+		$r[]=''.$home.'?ccce=$1'.$pid.$secure;
 
 		$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';

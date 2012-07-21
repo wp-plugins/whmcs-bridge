@@ -399,7 +399,7 @@ if (!class_exists('zHttpRequest')) {
 			$this->debug(0,'Call completed in '.$this->time('delta').' microseconds');
 
 			if ($this->follow && isset ($headers['location']) && $headers['location']) {
-				//echo '<br />redirect to:'.print_r($headers,true);
+				echo '<br />redirect to:'.print_r($headers,true);
 				//echo '<br />protocol='.$this->_protocol;
 				//echo '<br />path='.$this->_path;
 				$redir=$headers['location'];
@@ -412,13 +412,11 @@ if (!class_exists('zHttpRequest')) {
 					if (strpos($redir,$this->_protocol.'://'.$this->_host.$this->_path)===0) {
 						//do nothing
 					} elseif (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) {
-						//echo '<hr />case1<br />';
-						//echo $this->_protocol.'://'.$this->_host.$this->_path.'<br />';
-						//echo $this->_protocol.'://'.$this->_host.$redir.'<br />';
 						$redir=$this->_protocol.'://'.$this->_host.$redir;
+					} elseif (((strpos($redir,'http://')===0) || (strpos($redir,'https://')===00)) && !strstr($redir,$this->_host)) {
+						$this->redirect=true;
+						return $redir;
 					} elseif (!strstr($redir,$this->_host)) {
-						//echo '<hr />case2:'.$this->_host.'<br />';
-						//echo $this->_host.'<br />';
 						$redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
 					}
 				}
