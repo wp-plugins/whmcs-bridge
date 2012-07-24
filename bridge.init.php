@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.9.1");
+define("CC_WHMCS_BRIDGE_VERSION","1.9.2");
 
 $compatibleWHMCSBridgeProVersions=array('1.9.0');
 

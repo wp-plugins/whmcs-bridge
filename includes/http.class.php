@@ -399,7 +399,7 @@ if (!class_exists('zHttpRequest')) {
 			$this->debug(0,'Call completed in '.$this->time('delta').' microseconds');
 
 			if ($this->follow && isset ($headers['location']) && $headers['location']) {
-				echo '<br />redirect to:'.print_r($headers,true);
+				//echo '<br />redirect to:'.print_r($headers,true);
 				//echo '<br />protocol='.$this->_protocol;
 				//echo '<br />path='.$this->_path;
 				$redir=$headers['location'];
