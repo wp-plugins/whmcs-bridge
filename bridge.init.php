@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","1.9.2");
+define("CC_WHMCS_BRIDGE_VERSION","2.0.0");
 
-$compatibleWHMCSBridgeProVersions=array('1.9.0');
+$compatibleWHMCSBridgeProVersions=array('2.0.0');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {
@@ -76,7 +76,7 @@ function cc_whmcs_admin_notices() {
 		$notices[]=$is;
 	}
 
-	if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $notices[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
+	//if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $notices[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
 
 	if (count($warnings) > 0) {
 		foreach ($warnings as $message) {
@@ -220,7 +220,7 @@ function cc_whmcs_bridge_output() {
 	if ($cc_whmcs_bridge_to_include=='dologin') {
 		$news->post['rememberme']='on';
 	}
-	
+
 	if (!$news->curlInstalled()) {
 		cc_whmcs_log('Error','CURL not installed');
 		return "cURL not installed";
@@ -242,12 +242,18 @@ function cc_whmcs_bridge_output() {
 			echo $news->body;
 			die();
 		} elseif ($ajax==1) {
-			while (count(ob_get_status(true)) > 0) ob_end_clean();
 			$output=$news->DownloadToString();
-			$body=$news->body;
-			$body=cc_whmcs_bridge_parser_ajax1($body);
-			echo $body;
-			die();
+
+			if (!$news->redirect) {
+				while (count(ob_get_status(true)) > 0) ob_end_clean();
+				$body=$news->body;
+				$body=cc_whmcs_bridge_parser_ajax1($body);
+				echo $body;
+				die();
+			} else {
+				header('Location:'.$output);
+				die();
+			}
 		} elseif ($ajax==2) {
 			while (count(ob_get_status(true)) > 0) ob_end_clean();
 			$output=$news->DownloadToString();
@@ -258,18 +264,14 @@ function cc_whmcs_bridge_output() {
 			die();
 		} elseif ($news->redirect) {
 			$output=$news->DownloadToString();
-
 			if ($wordpressPageName) $p=$wordpressPageName;
 			else $p='/';
 			$f[]='/.*\/([a-zA-Z\_]*?).php.(.*?)/';
 			$r[]=get_option('home').$p.'?ccce=$1&$2';
 			$f[]='/([a-zA-Z\_]*?).php.(.*?)/';
 			$r[]=get_option('home').$p.'?ccce=$1&$2';
-
 			$output=preg_replace($f,$r,$news->location,-1,$count);
-
 			cc_whmcs_log('Notification','Redirect to: '.$output);
-			echo 'Location:'.$output;
 			header('Location:'.$output);
 			die();
 		} else {
@@ -352,7 +354,7 @@ function cc_whmcs_bridge_http($page="index") {
 
 	$whmcs=cc_whmcs_bridge_url();
 	if (substr($whmcs,-1)!='/') $whmcs.='/';
-	if ((strpos($whmcs,'https://')!==0) && isset($_REQUEST['sec']) && ($_REQUEST['sec']=='1')) $whmcs=str_replace('http://','https://',$whmcs); 
+	if ((strpos($whmcs,'https://')!==0) && isset($_REQUEST['sec']) && ($_REQUEST['sec']=='1')) $whmcs=str_replace('http://','https://',$whmcs);
 	$vars="";
 	if ($page=='verifyimage') $http=$whmcs.'includes/'.$page.'.php';
 	elseif (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='js')) {

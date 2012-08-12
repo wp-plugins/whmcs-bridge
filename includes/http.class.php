@@ -26,6 +26,7 @@
 //fixed issue with redirect urls duplicating url path
 //added http return code
 //improvide error management
+//store remote PHP session id local session to avoid overwrite in case the session id is not returned
 
 if (!class_exists('zHttpRequest')) {
 	class zHttpRequest
@@ -54,6 +55,7 @@ if (!class_exists('zHttpRequest')) {
 		var $httpHeaders=array('Expect:');
 		var $debugFunction;
 		var $time;
+		var $cookieArray=array();
 
 		// constructor
 		function __construct($url="",$sid='', $repost=false)
@@ -140,6 +142,8 @@ if (!class_exists('zHttpRequest')) {
 					if ( 'set-cookie' == $key ) {
 						if ($cookies) $cookies.=' ;';
 						$cookies .= $value;
+						list($k,$rest)=explode('=',$value,2);
+						$this->cookieArray[trim($k)]=$value;
 					}
 				}
 			}
@@ -350,6 +354,7 @@ if (!class_exists('zHttpRequest')) {
 				return false;
 			}
 			$info=curl_getinfo($ch);
+
 			if ( !empty($data) ) {
 				$headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 				$head = trim( substr($data, 0, $headerLength) );
@@ -370,8 +375,13 @@ if (!class_exists('zHttpRequest')) {
 				return false;
 			}
 
+			if (isset($this->cookieArray['PHPSESSID']) && $this->cookieArray['PHPSESSID']) {
+				$_SESSION[$this->sid]['sessid']=$this->cookieArray['PHPSESSID'];
+			}
 			if ($cookies) {
 				if (!isset($_SESSION[$this->sid])) $_SESSION[$this->sid]=array();
+				if (!strstr($cookies,'PHPSESSID') && $cookies) $cookies.=';'.$_SESSION[$this->sid]['sessid'];
+				elseif (!strstr($cookies,'PHPSESSID')) $cookies=$_SESSION[$this->sid]['sessid'];
 				$_SESSION[$this->sid]['cookies']=$cookies;
 			}
 			//echo '<br />cookie after='.print_r($_SESSION[$this->sid]['cookies'],true).'=';
@@ -413,7 +423,7 @@ if (!class_exists('zHttpRequest')) {
 						//do nothing
 					} elseif (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) {
 						$redir=$this->_protocol.'://'.$this->_host.$redir;
-					} elseif (((strpos($redir,'http://')===0) || (strpos($redir,'https://')===00)) && !strstr($redir,$this->_host)) {
+					} elseif (((strpos($redir,'http://')===0) || (strpos($redir,'https://')===0)) && !strstr($redir,$this->_host)) {
 						$this->redirect=true;
 						return $redir;
 					} elseif (!strstr($redir,$this->_host)) {
