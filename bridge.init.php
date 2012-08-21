@@ -3,9 +3,9 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.0.0");
+define("CC_WHMCS_BRIDGE_VERSION","2.0.1");
 
-$compatibleWHMCSBridgeProVersions=array('2.0.0');
+$compatibleWHMCSBridgeProVersions=array('2.0.1');
 
 // Pre-2.6 compatibility for wp-content folder location
 if (!defined("WP_CONTENT_URL")) {

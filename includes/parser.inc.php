@@ -126,7 +126,7 @@ function cc_whmcs_bridge_parser() {
 
 	$ret['buffer']=$buffer;
 	if (get_option('cc_whmcs_bridge_permalinks') && function_exists('cc_whmcs_bridge_parser_with_permalinks') && !$pid) {
-		$buffer=cc_whmcs_bridge_parser_with_permalinks($buffer,$home,$pid,$whmcs,$sub);
+		$buffer=cc_whmcs_bridge_parser_with_permalinks($buffer,$home,$pid,$whmcs,$sub,$whmcs2);
 	} else {
 		$f[]='/value\=\"'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php\"/';
 		$r[]='value="'.$home.'?ccce=$1'.$pid.'"';
