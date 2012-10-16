@@ -204,7 +204,7 @@ function cc_whmcs_bridge_parser() {
 
 		//fixes the register.php
 		$f[]='/action\=\"(.|\/*?)register.php\"/';
-		$r[]='action="'.$home.'?ccce=register"';
+		$r[]='action="'.$home.'?ccce=register'.$pid.'"';
 
 		//remove cart heading
 		$f[]='#\<p align\=\"center\" class=\"cartheading\">(?:.*?)\<\/p\>#';
@@ -223,16 +223,16 @@ function cc_whmcs_bridge_parser() {
 		$r[]='';
 
 		$f[]="/.post\(\"announcements.php/";
-		$r[]=".post(\"$home?ccce=announcements&ajax=1";
+		$r[]=".post(\"$home?ccce=announcements&ajax=1$pid";
 
 		$f[]="/.post\(\"submitticket.php/";
-		$r[]=".post(\"$home?ccce=submitticket&ajax=1";
+		$r[]=".post(\"$home?ccce=submitticket&ajax=1$pid";
 
 		$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
-		$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
+		$r[]="jQuery.post(\"$home?ccce=$1&ajax=1$pid";
 
 		$f[]="/popupWindow\(\'([a-zA-Z]*?).php\?/";
-		$r[]="popupWindow('$home?ccce=$1&ajax=1&";
+		$r[]="popupWindow('$home?ccce=$1&ajax=1$pid&";
 
 		$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 		$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
@@ -257,7 +257,7 @@ function cc_whmcs_bridge_parser() {
 	$buffer=str_replace("window.open('images","window.open('".cc_whmcs_bridge_url().'/images',$buffer);
 
 	//verify captcha image
-	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage',$buffer);
+	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage'.$pid,$buffer);
 
 	//if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice') && !strstr($buffer,'frmlogin')) {
 	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
