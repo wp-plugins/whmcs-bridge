@@ -247,7 +247,10 @@ if (!class_exists('zHttpRequest')) {
 
 			$newfiles=array();
 
+			if (function_exists('cc_whmcsbridge_sso_session')) cc_whmcsbridge_sso_session();
 			if (!session_id()) @session_start();
+
+			$this->debug(0,'session:'.print_r($_SESSION,true));
 			$ch = curl_init();    // initialize curl handle
 			//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
 			$this->debug(0,'http call: '.$url.' with '.print_r($this->post,true));
@@ -255,10 +258,13 @@ if (!class_exists('zHttpRequest')) {
 			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 			if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
+			$this->httpHeaders[]='bridge_on: 1';
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders); //avoid 417 errors
 
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+			//CURLOPT_REFERER -  The contents of the "Referer: " header to be used in a HTTP request.
+			//CURLOPT_INTERFACE -  The name of the outgoing network interface to use. This can be an interface name, an IP address or a host name.
 			curl_setopt($ch, CURLOPT_TIMEOUT, 60); // times out after 10s
 			if ($this->_protocol == "https") {
 				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -286,8 +292,8 @@ if (!class_exists('zHttpRequest')) {
 			}
 
 			//echo '<br />cookie before='.$cookies.'=';
-			if (is_array($cookies)) $this->debug(0,'Cookie before:'.print_r($cookies,true));
 			if ($cookies) {
+				$this->debug(0,'Cookie before:'.print_r($cookies,true));
 				curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 			}
 
@@ -350,7 +356,7 @@ if (!class_exists('zHttpRequest')) {
 			if (curl_errno($ch)) {
 				$this->errno=curl_errno($ch);
 				$this->error=curl_error($ch);
-				$this->error('HTTP Error:'.$this->errno.'/'.$this->error.' at '.$this->_url);
+				$this->error('HTTP Error:'.$this->errno.'/'.$this->error.' at '.$url);
 				return false;
 			}
 			$info=curl_getinfo($ch);
@@ -379,6 +385,7 @@ if (!class_exists('zHttpRequest')) {
 				$_SESSION[$this->sid]['sessid']=$this->cookieArray['PHPSESSID'];
 			}
 			if ($cookies) {
+				$this->debug(0,'Cookie after:'.print_r($cookies,true));
 				if (!isset($_SESSION[$this->sid])) $_SESSION[$this->sid]=array();
 				if (!strstr($cookies,'PHPSESSID') && $cookies) $cookies.=';'.$_SESSION[$this->sid]['sessid'];
 				elseif (!strstr($cookies,'PHPSESSID')) $cookies=$_SESSION[$this->sid]['sessid'];

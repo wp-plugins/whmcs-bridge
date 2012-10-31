@@ -80,43 +80,59 @@ function cc_whmcs_bridge_parser_ajax2($buffer) {
 
 }
 
-function cc_whmcs_bridge_home(&$home,&$pid) {
-	global $wordpressPageName;
+function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
+	global $wordpressPageName,$post;
 
-	$pageID = cc_whmcs_bridge_mainpage();
+	$current=true;
+	
+	if (isset($post) && $current) {
+		$pageID=$post->ID;
+		$permalink=get_permalink();
+		preg_match('/(.*)\?page_id\=(.*)/',$permalink,$matches);
+		if (count($matches)==2) {
+			$pid='&page_id='.$matches[2];
+			$home=$matches[1];
+			$url=$permalink;
+		} else {
+			$pid='';
+			$url=$home=$permalink;
+		}
+	} else {
+		$pageID = cc_whmcs_bridge_mainpage();
 
-	if (get_option('permalink_structure')){
-		$homePage = get_option('home');
-		$wordpressPageName = get_permalink($pageID);
-		$wordpressPageName = str_replace($homePage,"",$wordpressPageName);
-		$pid="";
-		$home=$homePage.$wordpressPageName;
-		if (substr($home,-1) != '/') $home.='/';
-		$url=$home;
-	}else{
-		$pid='&page_id='.$pageID;
-		$home=get_option('home').'/';
-		$url=$home.'?page_id='.$pageID;
+		if (get_option('permalink_structure')){
+			$homePage = get_option('home');
+			$wordpressPageName = get_permalink($pageID);
+			$wordpressPageName = str_replace($homePage,"",$wordpressPageName);
+			$pid="";
+			$home=$homePage.$wordpressPageName;
+			if (substr($home,-1) != '/') $home.='/';
+			$url=$home;
+		}else{
+			$pid='&page_id='.$pageID;
+			$home=get_option('home').'/';
+			$url=$home.'?page_id='.$pageID;
+		}
+
 	}
-
 	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) {
 		$url=str_replace('http://','https://',$url);
 	}
 	return $url;
 }
 
-function cc_whmcs_bridge_parser() {
+function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	global $cc_whmcs_bridge_menu;
 
-	cc_whmcs_bridge_home($home,$pid);
+	cc_whmcs_bridge_home($home,$pid,$current);
 
-	$buffer=cc_whmcs_bridge_output();
+	if (!$buffer) $buffer=cc_whmcs_bridge_output();
 
 	$tmp=explode('://',cc_whmcs_bridge_url(),2);
 	$tmp2=explode('/',$tmp[1],2);
 	$sub=str_replace($tmp[0].'://'.$tmp2[0],'',cc_whmcs_bridge_url()).'/';
 	$secure='&sec=1';
-	
+
 	$whmcs=cc_whmcs_bridge_url();
 
 	if (substr($whmcs,-1) != '/') $whmcs.='/';
@@ -245,6 +261,9 @@ function cc_whmcs_bridge_parser() {
 
 		$buffer=preg_replace($f,$r,$buffer,-1,$count);
 	}
+	//patch issue with &
+	$buffer=str_replace('&#038;','&',$buffer);
+	
 	//name is a reserved Wordpress field name
 	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
 

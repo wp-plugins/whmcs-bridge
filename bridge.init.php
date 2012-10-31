@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.0.4");
+define("CC_WHMCS_BRIDGE_VERSION","2.1.0");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1');
 
@@ -72,7 +72,7 @@ function cc_whmcs_admin_notices() {
 	if (cc_whmcs_bridge_mainpage()) {
 		$link=cc_whmcs_bridge_home($home,$pid);
 		$is='A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS. ';
-		$is.='You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
+		$is.='The full url is:<code>'.$link.'</code><br />You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
 		$notices[]=$is;
 	}
 
@@ -181,7 +181,7 @@ function cc_whmcs_bridge_deactivate() {
 	delete_option('cc-ce-bridge-cp-support-us');
 }
 
-function cc_whmcs_bridge_output() {
+function cc_whmcs_bridge_output($page=null) {
 	global $post;
 	global $wpdb;
 	global $wordpressPageName;
@@ -190,7 +190,9 @@ function cc_whmcs_bridge_output() {
 	$ajax=false;
 
 	$cf=get_post_custom($post->ID);
-	if (isset($_REQUEST['ccce']) && (isset($_REQUEST['ajax']) && $_REQUEST['ajax'])) {
+	if ($page) {
+		$cc_whmcs_bridge_to_include=$page;
+	} elseif (isset($_REQUEST['ccce']) && (isset($_REQUEST['ajax']) && $_REQUEST['ajax'])) {
 		$cc_whmcs_bridge_to_include=$_REQUEST['ccce'];
 		$ajax=intval($_REQUEST['ajax']);
 	} elseif (isset($_REQUEST['ccce'])) {
@@ -199,7 +201,6 @@ function cc_whmcs_bridge_output() {
 		$cc_whmcs_bridge_to_include="index";
 	} else {
 		$cc_whmcs_bridge_to_include="index";
-		//return $content;
 	}
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
@@ -330,8 +331,6 @@ function cc_whmcs_bridge_header() {
 	$cf=get_post_custom($post->ID);
 	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
 		$p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template');
-		//if (($p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template')) && function_exists($p)) $cc_whmcs_bridge_content=$p();
-		//else
 		$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
 
 		if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
@@ -420,6 +419,7 @@ function cc_whmcs_bridge_mainpage() {
 function cc_whmcs_bridge_init()
 {
 	ob_start();
+	if (function_exists('cc_whmcsbridge_sso_session')) cc_whmcsbridge_sso_session();
 	if (!session_id()) @session_start();
 	register_sidebars(1,array('name'=>'WHMCS Top Page Widget Area','id'=>'whmcs-top-page',));
 	register_sidebars(1,array('name'=>'WHMCS Bottom Page Widget Area','id'=>'whmcs-top-page',));

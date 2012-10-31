@@ -96,13 +96,13 @@
 		<?php foreach ($value['options'] as $key => $option) { ?>
 			<option value="<?php echo $key;?>"
 			<?php 
-			if ( get_option($value['id']) && get_option( $value['id'] ) == $key) { echo ' selected="selected"'; }
+			if ( get_option( $value['id'] ) == $key) { echo ' selected="selected"'; }
 			elseif ( !get_option($value['id']) && isset($value['std']) && $value['std'] == $key) { echo ' selected="selected"'; }
 			?>
 			><?php echo $option; ?></option>
 			<?php } ?>
-		</select></td>
-
+		</select>
+		</td>
 	</tr>
 	<tr>
 		<td colspan=2><small><?php echo $value['desc']; ?> </small></td>

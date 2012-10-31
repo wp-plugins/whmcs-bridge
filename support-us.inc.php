@@ -3,6 +3,7 @@
 if (!function_exists('zing_support_us')) {
 	function zing_support_us($shareName,$wpPluginName,$adminLink,$version,$donations=true,$pluginUrl=false) {
 		if (!$pluginUrl) $pluginUrl=plugins_url().'/'.$wpPluginName.'/';
+		if (get_option('cc_whmcs_bridge_sso_license_key')) $donations=false;
 ?>
 		<div style="width:20%;float:right;position:relative">
 				<div style="margin:5px 15px;">
