@@ -18,7 +18,13 @@ if (!function_exists('zing_support_us')) {
 				</div>
 				<div style="clear:both"></div>
 			<div class="cc-support-us">
-				<p>Rate our plugin on Wordpress</p>
+			<h3>Not sure where to start?</h3>
+			<p>Download our <a href="http://go.zingiri.com/downloads.php?action=displaycat&catid=6">documentation</a></p><br /><br />
+			<p>Check out our <a href="http://forums.zingiri.com/forumdisplay.php?fid=74">forums</a></p><br /><br />
+			<p>Pro users can open a <a href="https://go.zingiri.com/submitticket.php">support ticket</a></p>
+			</div>
+			<div class="cc-support-us">
+				<h3>Support us by rating our plugin on Wordpress</h3>
 				<a href="http://wordpress.org/extend/plugins/<?php echo $wpPluginName;?>" alt="Rate our plugin">
 				<img src="<?php echo $pluginUrl?>images/5-stars-125pxw.png" />
 				</a>

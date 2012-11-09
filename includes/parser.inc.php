@@ -83,7 +83,7 @@ function cc_whmcs_bridge_parser_ajax2($buffer) {
 function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 	global $wordpressPageName,$post;
 
-	$current=true;
+	//$current=true;
 	
 	if (isset($post) && $current) {
 		$pageID=$post->ID;
@@ -110,14 +110,17 @@ function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 			$url=$home;
 		}else{
 			$pid='&page_id='.$pageID;
-			$home=get_option('home').'/';
+			$home=get_option('home');
+			if (substr($home,-1)!='/') $home.='/';
 			$url=$home.'?page_id='.$pageID;
 		}
-
 	}
 	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) {
 		$url=str_replace('http://','https://',$url);
 	}
+
+	if (function_exists('cc_whmcsbridge_sso_get_lang')) cc_whmcsbridge_sso_get_lang($home,$pid,$url,$wordpressPageName);
+	
 	return $url;
 }
 
