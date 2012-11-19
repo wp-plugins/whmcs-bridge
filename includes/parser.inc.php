@@ -118,7 +118,6 @@ function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) {
 		$url=str_replace('http://','https://',$url);
 	}
-
 	if (function_exists('cc_whmcsbridge_sso_get_lang')) cc_whmcsbridge_sso_get_lang($home,$pid,$url,$wordpressPageName);
 	
 	return $url;
@@ -273,7 +272,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
-
+	$buffer=str_replace('src="modules','src="'.cc_whmcs_bridge_url().'/modules',$buffer);
+	
 	//import local images
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace("window.open('images","window.open('".cc_whmcs_bridge_url().'/images',$buffer);
