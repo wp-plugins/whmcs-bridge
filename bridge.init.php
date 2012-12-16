@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.1.2");
+define("CC_WHMCS_BRIDGE_VERSION","2.1.3");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -72,7 +72,7 @@ function cc_whmcs_admin_notices() {
 	if (cc_whmcs_bridge_mainpage()) {
 		$link=cc_whmcs_bridge_home($home,$pid);
 		$is='A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS. ';
-		$is.='The full url is:<code>'.$link.'</code><br />You can view this page <a href="'.$link.'">here</a>. Do not delete or edit this page.';
+		$is.='The full url is:<code>'.$link.'</code>. You can view this page <a href="'.$link.'">here</a>. You can edit the page link by editing the page and changing the permalink. Do not delete this page!';
 		$notices[]=$is;
 	}
 
@@ -128,7 +128,7 @@ function cc_whmcs_bridge_install() {
 	if (!$cc_whmcs_bridge_version) {
 		cc_whmcs_log(0,'Creating pages');
 		$pages=array();
-		$pages[]=array(WHMCS_BRIDGE_PAGE,WHMCS_BRIDGE_PAGE,"*",0);
+		$pages[]=array(WHMCS_BRIDGE_PAGE.'-bridge',WHMCS_BRIDGE_PAGE,"*",0);
 
 		$ids="";
 		foreach ($pages as $i =>$p)
@@ -145,8 +145,7 @@ function cc_whmcs_bridge_install() {
 			if (empty($ids)) { $ids.=$id; } else { $ids.=",".$id; }
 			if (!empty($p[1])) add_post_meta($id,'cc_whmcs_bridge_page',$p[1]);
 		}
-		if (get_option("cc_whmcs_bridge_pages")) update_option("cc_whmcs_bridge_pages",$ids);
-		else add_option("cc_whmcs_bridge_pages",$ids);
+		update_option("cc_whmcs_bridge_pages",$ids);
 	}
 
 	restore_error_handler();
@@ -205,7 +204,7 @@ function cc_whmcs_bridge_output($page=null) {
 
 	$http=cc_whmcs_bridge_http($cc_whmcs_bridge_to_include);
 
-	$news = new zHttpRequest($http,'whmcs-bridge-sso');
+	$news = new bridgeHttpRequest($http,'whmcs-bridge-sso');
 	$news->debugFunction='cc_whmcs_log';
 	if (function_exists('cc_whmcs_bridge_sso_httpHeaders')) $news->httpHeaders=cc_whmcs_bridge_sso_httpHeaders($news->httpHeaders);
 
@@ -450,6 +449,6 @@ function cc_whmcs_bridge_url() {
 }
 
 //Kept for compatibility reasons
-if (class_exists('zHttpRequest')) {
-	class HTTPRequestWHMCS extends zHttpRequest {}
+if (class_exists('bridgeHttpRequest')) {
+	class HTTPRequestWHMCS extends bridgeHttpRequest {}
 }
