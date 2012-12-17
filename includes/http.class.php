@@ -257,7 +257,8 @@ class bridgeHttpRequest
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders);
+		$this->httpHeaders[]='bridge_on: 1';
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders); //avoid 417 errors
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
@@ -328,20 +329,20 @@ class bridgeHttpRequest
 							foreach ($v2 as $k3 => $v3) {
 								if ($post) $post.='&';
 								$post.=$k.'['.$k2.']'.'['.$k3.']'.'='.urlencode(stripslashes($v3));
-								$apost[$k.'['.$k2.']'.'['.$k3.']']=urlencode(stripslashes($v3));
+								$apost[$k.'['.$k2.']'.'['.$k3.']']=stripslashes($v3);
 							}
 						} else {
 							if ($post) $post.='&';
 							$post.=$k.'['.$k2.']'.'='.urlencode(stripslashes($v2));
 							$key='['.$k.']['.$k2.']';
-							$apost[$k.'['.$k2.']']=urlencode(stripslashes($v2));
+							$apost[$k.'['.$k2.']']=stripslashes($v2);
 						}
 					}
 
 				} else {
 					if ($post) $post.='&';
 					$post.=$k.'='.urlencode(stripslashes($v));
-					$apost[$k]=urlencode(stripslashes($v));
+					$apost[$k]=stripslashes($v);
 				}
 			}
 		}
