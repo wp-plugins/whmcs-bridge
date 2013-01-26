@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.1.5");
+define("CC_WHMCS_BRIDGE_VERSION","2.2.0");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -75,20 +75,20 @@ function cc_whmcs_admin_notices() {
 		$is.='The full url is:<code>'.$link.'</code>. You can view this page <a href="'.$link.'">here</a>. You can edit the page link by editing the page and changing the permalink. Do not delete this page!';
 		$notices[]=$is;
 	}
+	
+	if (get_option("cc_whmcs_bridge_url") && !preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', get_option("cc_whmcs_bridge_url"))) $errors[]='Your WHMCS URL '.get_option("cc_whmcs_bridge_url").' seems to be incorrect, please verify it and make sure it starts with http or https.';
 
-	//if (!get_option('whmcs_bridge_template') || (get_option('whmcs_bridge_template')=='portal')) $notices[]='The embedding of '.WHMCS_BRIDGE_PAGE.' style sheets has now been much improved and we recommend you experiment with turning these options on. See below for "Load '.WHMCS_BRIDGE_PAGE.' style" and "Load '.WHMCS_BRIDGE_PAGE.' invoice style".';
-
-	if (count($warnings) > 0) {
-		foreach ($warnings as $message) {
-			echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
-			echo WHMCS_BRIDGE.': '.$message.'<br />';
-			echo "</strong> "."</p></div>";
-		}
-	}
 	if (count($errors) > 0) {
 		foreach ($errors as $message)  {
 			echo "<div id='zing-warning' style='background-color:pink' class='updated fade'><p><strong>";
 			echo WHMCS_BRIDGE.':'.$message.'<br />';
+			echo "</strong> "."</p></div>";
+		}
+	}
+	if (count($warnings) > 0) {
+		foreach ($warnings as $message) {
+			echo "<div id='zing-warning' style='background-color:greenyellow' class='updated fade'><p><strong>";
+			echo WHMCS_BRIDGE.': '.$message.'<br />';
 			echo "</strong> "."</p></div>";
 		}
 	}
