@@ -448,9 +448,9 @@ class bridgeHttpRequest
 			if (!$this->repost) $this->post=array();
 			$this->countRedirects++;
 			if ($this->countRedirects < 10) {
-				if ($redir != $url) {
+				//if ($redir != $url) {
 					return $this->connect($redir,$withHeaders,$withCookies);
-				}
+				//}
 			} else {
 				$this->error('ERROR: Too many redirects '.$url.' > '.$headers['location'],E_USER_ERROR);
 				return false;
