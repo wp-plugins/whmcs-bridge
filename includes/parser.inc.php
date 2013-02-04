@@ -84,7 +84,7 @@ function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 	global $wordpressPageName,$post;
 
 	//$current=true;
-	
+
 	if (isset($post) && $current) {
 		$pageID=$post->ID;
 		$permalink=get_permalink();
@@ -119,7 +119,7 @@ function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 		$url=str_replace('http://','https://',$url);
 	}
 	if (function_exists('cc_whmcsbridge_sso_get_lang')) cc_whmcsbridge_sso_get_lang($home,$pid,$url,$wordpressPageName);
-	
+
 	return $url;
 }
 
@@ -161,6 +161,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]='/'.preg_quote($whmcs,'/').'([a-zA-Z\_]*?).php/';
 		$r[]=''.$home.'?ccce=$1'.$pid;
 
+		//SSL parsing
 		$f[]='/value\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php\"/';
 		$r[]='value="'.$home.'?ccce=$1'.$pid.$secure.'"';
 
@@ -175,7 +176,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 		$f[]='/'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php/';
 		$r[]=''.$home.'?ccce=$1'.$pid.$secure;
-
+		//end SSL parsing
+		
 		$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
@@ -265,7 +267,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	}
 	//patch issue with &
 	$buffer=str_replace('&#038;','&',$buffer);
-	
+
 	//name is a reserved Wordpress field name
 	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
 
@@ -273,7 +275,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	$buffer=str_replace('src="modules','src="'.cc_whmcs_bridge_url().'/modules',$buffer);
-	
+
 	//import local images
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace("window.open('images","window.open('".cc_whmcs_bridge_url().'/images',$buffer);
@@ -281,7 +283,6 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage'.$pid,$buffer);
 
-	//if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice') && !strstr($buffer,'frmlogin')) {
 	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
 		while (count(ob_get_status(true)) > 0) ob_end_clean();
 		echo $buffer;
@@ -289,15 +290,14 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	}
 
 	//load WHMCS invoicestyle.css style sheet
-	if (!get_option('cc_whmcs_bridge_invoicestyle') == 'checked') {
-		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','',$buffer);
+	if (get_option('cc_whmcs_bridge_invoicestyle') != 'checked') {
+		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/invoicestyle.css" \/>/','',$buffer);
 	}
 
 	//load WHMCS style.css style sheet
-	if (!get_option('cc_whmcs_bridge_style') == 'checked') {
-		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/invoicestyle.css">/','',$buffer);
-		//$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css".*>/','',$buffer);
-		//$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/css\/whmcs.css".*>/','',$buffer);
+	if (get_option('cc_whmcs_bridge_style') != 'checked') {
+		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css">/','',$buffer);
+		$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','',$buffer);
 	} else {
 		$matches=array();
 		if (preg_match('/<link.*href="(.*templates\/[a-zA-Z0-9_-]*\/style.css)" \/>/',$buffer,$matches)) {
@@ -305,21 +305,12 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 			$output=cc_whmcs_bridge_parser_css($css);
 			$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','<style type="text/css">'.$output.'</style>',$buffer);
 		}
-		/*
-		 $s='/<link.*href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/';
-		 if (preg_match($s,$buffer,$matches)) {
-			$css=$matches[1];
-			$output=cc_whmcs_bridge_parser_css($css);
-			$buffer=preg_replace($s,'<style type="text/css">'.$output.'</style>',$buffer);
-			}
-			*/
 	}
 
 	//replaces whmcs jquery so that it doesn't start it twice
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
 		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
 		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
-		//		$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
 	}
 
 	//jQuery ui
@@ -406,4 +397,15 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	$ret['msg']=$_SESSION;
 
 	return $ret;
+}
+
+function cc_whmcs_bridge_parse_url($redir) {
+	cc_whmcs_bridge_home($home,$pid,false);
+	$whmcs=cc_whmcs_bridge_url();
+	if (substr($whmcs,-1) != '/') $whmcs.='/';
+	$f[]='/'.preg_quote($whmcs,'/').'viewinvoice\.php\?id\=([0-9]*?)&(.*?)$/';
+	if (get_option('cc_whmcs_bridge_permalinks')) $r[]=''.$home.'viewinvoice/?id=$1'.$pid.'';
+	else $r[]=''.$home.'?ccce=viewinvoice&id=$1'.$pid.'';
+	$newRedir=preg_replace($f,$r,$redir);
+	return $newRedir;
 }

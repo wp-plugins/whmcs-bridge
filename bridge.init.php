@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.2.1");
+define("CC_WHMCS_BRIDGE_VERSION","2.2.2");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -334,7 +334,9 @@ function cc_whmcs_bridge_header() {
 	$cf=get_post_custom($post->ID);
 	if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
 		//$p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template');
-		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+		if (!$cc_whmcs_bridge_content) {
+			$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+		} 
 
 		if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
 

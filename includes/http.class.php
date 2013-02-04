@@ -239,10 +239,8 @@ class bridgeHttpRequest
 		return $this->connect($this->_protocol.'://'.$this->_host.$this->_uri,$withHeaders,$withCookies);
 	}
 
-	function connect($url,$withHeaders=true,$withCookies=false)
-	{
+	function connect($url,$withHeaders=true,$withCookies=false) {
 		$this->time('reset');
-
 
 		$newfiles=array();
 
@@ -445,11 +443,18 @@ class bridgeHttpRequest
 				$redir.=$fwd;
 			}
 			$this->debug(0,'Redirect to: '.$redir);
+			if (strstr($redir,'viewinvoice.php')) {
+				$newRedir=cc_whmcs_bridge_parse_url($redir);
+				if ($redir != $newRedir) {
+					header('Location:'.$newRedir);
+					die();
+				}
+			}
 			if (!$this->repost) $this->post=array();
 			$this->countRedirects++;
 			if ($this->countRedirects < 10) {
 				//if ($redir != $url) {
-					return $this->connect($redir,$withHeaders,$withCookies);
+				return $this->connect($redir,$withHeaders,$withCookies);
 				//}
 			} else {
 				$this->error('ERROR: Too many redirects '.$url.' > '.$headers['location'],E_USER_ERROR);
