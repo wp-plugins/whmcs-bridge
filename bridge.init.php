@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.2.2");
+define("CC_WHMCS_BRIDGE_VERSION","2.2.4");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -61,21 +61,21 @@ function cc_whmcs_admin_notices() {
 	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
 	if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') from the <a href="options-general.php?page=cc-ce-bridge-cp">control panel</a>.';
 	$upload=wp_upload_dir();
-	if (session_save_path() && !is_writable(session_save_path())) $warnings[]='It looks like PHP sessions are not properly configured on your server, the sessions save path <'.session_save_path().'> is not writable. This may be a false warning, contact us if in doubt.';
-	if ($upload['error']) $errors[]=$upload['error'];
-	if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
-	if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
-	if (phpversion() < '5') $warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
-	if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
-	if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
 
 	if (cc_whmcs_bridge_mainpage()) {
+		if (session_save_path() && !is_writable(session_save_path())) $warnings[]='It looks like PHP sessions are not properly configured on your server, the sessions save path <'.session_save_path().'> is not writable. This may be a false warning, contact us if in doubt.';
+		if ($upload['error']) $errors[]=$upload['error'];
+		if (!get_option('cc_whmcs_bridge_url')) $warnings[]="Please update your WHMCS connection settings on the plugin control panel";
+		if (get_option('cc_whmcs_bridge_debug')) $warnings[]="Debug is active, once you finished debugging, it's recommended to turn this off";
+		if (phpversion() < '5') $warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
+		if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
+		if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
 		$link=cc_whmcs_bridge_home($home,$pid);
 		$is='A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS. ';
 		$is.='The full url is:<code>'.$link.'</code>. You can view this page <a href="'.$link.'">here</a>. You can edit the page link by editing the page and changing the permalink. Do not delete this page!';
 		$notices[]=$is;
 	}
-	
+
 	if (get_option("cc_whmcs_bridge_url") && !preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', get_option("cc_whmcs_bridge_url"))) $errors[]='Your WHMCS URL '.get_option("cc_whmcs_bridge_url").' seems to be incorrect, please verify it and make sure it starts with http or https.';
 
 	if (count($errors) > 0) {
@@ -336,7 +336,7 @@ function cc_whmcs_bridge_header() {
 		//$p='cc_whmcs_bridge_parser_'.get_option('cc_whmcs_bridge_template');
 		if (!$cc_whmcs_bridge_content) {
 			$cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
-		} 
+		}
 
 		if (isset($cc_whmcs_bridge_content['head'])) echo $cc_whmcs_bridge_content['head'];
 
@@ -369,7 +369,7 @@ function cc_whmcs_bridge_http($page="index") {
 	$and="";
 	if (count($_GET) > 0) {
 		foreach ($_GET as $n => $v) {
-			if ($n!="page_id" && $n!="ccce")
+			if ($n!="page_id" && $n!="ccce" && $n!='whmcspage')
 			{
 				if (is_array($v)) {
 					foreach ($v as $n2 => $v2) {
@@ -382,6 +382,10 @@ function cc_whmcs_bridge_http($page="index") {
 		}
 	}
 
+	if (isset($_GET['whmcspage'])) {
+		$vars.=$and.'page='.$_GET['whmcspage'];
+		$and='&';
+	}
 	$vars.=$and.'systpl=portal';
 	$and="&";
 

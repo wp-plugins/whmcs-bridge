@@ -115,10 +115,13 @@ function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 			$url=$home.'?page_id='.$pageID;
 		}
 	}
+
+	if (function_exists('cc_whmcsbridge_sso_get_lang')) cc_whmcsbridge_sso_get_lang($home,$pid,$url,$wordpressPageName);
+
 	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) {
 		$url=str_replace('http://','https://',$url);
+		$home=str_replace('http://','https://',$home);
 	}
-	if (function_exists('cc_whmcsbridge_sso_get_lang')) cc_whmcsbridge_sso_get_lang($home,$pid,$url,$wordpressPageName);
 
 	return $url;
 }
@@ -177,7 +180,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]='/'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php/';
 		$r[]=''.$home.'?ccce=$1'.$pid.$secure;
 		//end SSL parsing
-		
+
 		$f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 		$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
@@ -262,6 +265,9 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 		$f[]='/action\=\".*(\/modules\/gateways\/[a-zA-Z\_]*?).php\?(.*?)\"/';
 		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+
+		$f[]='/href\=\"(.*?)&amp;page\=([0-9]?)"/';
+		$r[]='href="$1'.'&whmcspage=$2"';
 
 		$buffer=preg_replace($f,$r,$buffer,-1,$count);
 	}

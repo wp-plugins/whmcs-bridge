@@ -384,8 +384,10 @@ class bridgeHttpRequest
 		if ($cookies) {
 			$this->debug(0,'Cookie after:'.print_r($cookies,true));
 			if (!isset($_SESSION[$this->sid])) $_SESSION[$this->sid]=array();
-			if (!strstr($cookies,'PHPSESSID') && $cookies) $cookies.=';'.$_SESSION[$this->sid]['sessid'];
-			elseif (!strstr($cookies,'PHPSESSID')) $cookies=$_SESSION[$this->sid]['sessid'];
+			if (isset($_SESSION[$this->sid]['sessid'])) {
+				if (!strstr($cookies,'PHPSESSID') && $cookies) $cookies.=';'.$_SESSION[$this->sid]['sessid'];
+				elseif (!strstr($cookies,'PHPSESSID')) $cookies=$_SESSION[$this->sid]['sessid'];
+			}
 			$_SESSION[$this->sid]['cookies']=$cookies;
 		}
 		//echo '<br />cookie after='.print_r($_SESSION[$this->sid]['cookies'],true).'=';
