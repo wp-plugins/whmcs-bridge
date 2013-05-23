@@ -266,6 +266,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]='/action\=\".*(\/modules\/gateways\/[a-zA-Z\_]*?).php\?(.*?)\"/';
 		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
+		//'page' is a Wordpress reserved variable
 		$f[]='/href\=\"(.*?)&amp;page\=([0-9]?)"/';
 		$r[]='href="$1'.'&whmcspage=$2"';
 

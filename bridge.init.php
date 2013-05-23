@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','Zingiri');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","2.2.4");
+define("CC_WHMCS_BRIDGE_VERSION","2.2.8");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -70,10 +70,6 @@ function cc_whmcs_admin_notices() {
 		if (phpversion() < '5') $warnings[]="You are running PHP version ".phpversion().". We recommend you upgrade to PHP 5.3 or higher.";
 		if (ini_get("zend.ze1_compatibility_mode")) $warnings[]="You are running PHP in PHP 4 compatibility mode. We recommend you turn this option off.";
 		if (!function_exists('curl_init')) $errors[]="You need to have cURL installed. Contact your hosting provider to do so.";
-		$link=cc_whmcs_bridge_home($home,$pid);
-		$is='A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS. ';
-		$is.='The full url is:<code>'.$link.'</code>. You can view this page <a href="'.$link.'">here</a>. You can edit the page link by editing the page and changing the permalink. Do not delete this page!';
-		$notices[]=$is;
 	}
 
 	if (get_option("cc_whmcs_bridge_url") && !preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', get_option("cc_whmcs_bridge_url"))) $errors[]='Your WHMCS URL '.get_option("cc_whmcs_bridge_url").' seems to be incorrect, please verify it and make sure it starts with http or https.';

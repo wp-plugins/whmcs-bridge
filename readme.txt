@@ -1,10 +1,10 @@
 === WHMCS Bridge ===
 Contributors: zingiri
-Donate link: http://www.zingiri.net/donations
+Donate link: http://www.zingiri.com/donations
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.5.1
-Stable tag: 2.2.4
+Stable tag: 2.2.8
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
@@ -24,21 +24,25 @@ Thanks to the single sign-on feature (WHMCS Bridge Pro plugin), your customers c
 4. Install the plugin by clicking the Install button. This will create a new page titled WHMCS through which you can access the client portal of WHMCS.
 5. Activate the sidebar widget if you want the sidebar navigation
 
-Please visit the [Zingiri](http://forums.zingiri.net "Zingiri Support Forum") for more information and support.
+Please visit the [Zingiri](http://forums.zingiri.com "Zingiri Support Forum") for more information and support.
 
 == Frequently Asked Questions ==
 
-Please visit the [Zingiri](http://forums.zingiri.net/forumdisplay.php?fid=56 "Zingiri Support Forum") for more information and support.
+Please visit the [Zingiri](http://forums.zingiri.com/forumdisplay.php?fid=56 "Zingiri Support Forum") for more information and support.
 
 == Screenshots ==
 
-No screenshots here but have a look at [our site](http://www.zingiri.net/portal/ "our site") to see it in action.
+No screenshots here but have a look at [our site](http://go.zingiri.com "our site") to see it in action.
 
 == Upgrade Notice ==
 
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 2.2.8=
+* Changed references from zingiri.net to zingiri.com
+* Improved debug log
 
 = 2.2.4 =
 * Fixed pagination issue when viewing domains, invoices, etc

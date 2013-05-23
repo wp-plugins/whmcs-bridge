@@ -8,7 +8,7 @@ function cc_whmcs_bridge_footer($nodisplay='') {
 	
 	//Please contact us if you wish to remove the Zingiri logo in the footer
 	$msg='<center style="margin-top:0px;font-size:small">';
-	$msg.='Wordpress and WHMCS integration by <a href="http://www.zingiri.net" target="_blank">Zingiri</a>';
+	$msg.='Wordpress and WHMCS integration by <a href="http://www.zingiri.com" target="_blank">Zingiri</a>';
 	$msg.='</center>';
 	$cc_footer=true;
 	if ($nodisplay===true) return $msg;

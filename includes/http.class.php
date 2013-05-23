@@ -224,6 +224,7 @@ class bridgeHttpRequest
 		$this->errorMsg=$msg;
 		$this->error=true;
 		if (!$this->noErrors) trigger_error($msg,E_USER_WARNING);
+		$this->debug(E_USER_WARNING,$msg);
 	}
 
 	//notification logging
@@ -231,6 +232,7 @@ class bridgeHttpRequest
 		$this->errorMsg=$msg;
 		$this->error=true;
 		if (!$this->noErrors) trigger_error($msg,E_USER_NOTICE);
+		$this->debug(E_USER_NOTICE,$msg);
 	}
 
 	// download URL to string
@@ -247,10 +249,10 @@ class bridgeHttpRequest
 		if (function_exists('cc_whmcsbridge_sso_session')) cc_whmcsbridge_sso_session();
 		if (!session_id()) @session_start();
 
-		$this->debug(0,'session:'.print_r($_SESSION,true));
+		$this->debug(0,'session:'.print_r($_SESSION[$this->sid],true));
 		$ch = curl_init();    // initialize curl handle
 		//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
-		$this->debug(0,'http call: '.$url.' with '.print_r($this->post,true));
+		$this->debug(0,'CURL call: '.$url.(is_array($this->post) ? ' with '.print_r($this->post,true) : ''));
 		curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -283,7 +285,6 @@ class bridgeHttpRequest
 		$cookies=apply_filters('bridgeHttpRequest_pre',$cookies);
 
 		if (isset($_SESSION[$this->sid]['cookies'])) {
-			//curl_setopt($ch, CURLOPT_COOKIE, $_SESSION[$this->sid]['cookies']);
 			if ($cookies) $cookies.=';';
 			$cookies.=$_SESSION[$this->sid]['cookies'];
 		}
