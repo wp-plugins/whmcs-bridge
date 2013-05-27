@@ -249,7 +249,7 @@ class bridgeHttpRequest
 		if (function_exists('cc_whmcsbridge_sso_session')) cc_whmcsbridge_sso_session();
 		if (!session_id()) @session_start();
 
-		$this->debug(0,'session:'.print_r($_SESSION[$this->sid],true));
+		if (isset($_SESSION[$this->sid])) $this->debug(0,'session:'.print_r($_SESSION[$this->sid],true));
 		$ch = curl_init();    // initialize curl handle
 		//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
 		$this->debug(0,'CURL call: '.$url.(is_array($this->post) ? ' with '.print_r($this->post,true) : ''));

@@ -4,7 +4,7 @@ Donate link: http://www.zingiri.com/donations
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.5.1
-Stable tag: 2.2.8
+Stable tag: 2.3.0
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
@@ -12,7 +12,17 @@ WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing
 
 The WHMCS Bridge plugin integrates your WHMCS support and billing software into Wordpress providing a seamless and consistent user experience to your customers.
 
-Thanks to the theme inheritance feature, you don't need to style your WHMCS installation anymore, the integration ensures that your WHMCS installation looks and feels like your Wordpress site. 
+Thanks to the theme inheritance feature, you don't need to style your WHMCS installation anymore, the integration ensures that your WHMCS installation looks and feels like your Wordpress site.
+
+Our Pro version additionaly offers:
+* **Enhanced visual integration**: using cross-domain messaging for a smoother visual integration
+* **Shortcodes**: use Wordpress shortcodes on your pages to integrate WHMCS pages
+* **Single sign on**: thanks to the single sign-on feature, your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
+* **Multi-lingual WHMCS support**: fully integrated with qtranslate & WPML
+* **IP address resolution 'patch'**: shows your customer's IP address instead of your server's IP address during sign up
+* **Choose your WHMCS portal**:fully compatible with the WHMCS v5 'default' template
+* **Pretty permalinks**: display links like http://www.mysite.com/clientarea/ rather than http://www.mysite.com/?ccce=clientarea. Also supports knowledgebase, announcement and download links.
+ 
 
 Thanks to the single sign-on feature (WHMCS Bridge Pro plugin), your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
 
@@ -40,7 +50,10 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 == Changelog ==
 
-= 2.2.8=
+= 2.3.0 =
+* Improved readme.txt and documentation
+
+= 2.2.8 =
 * Changed references from zingiri.net to zingiri.com
 * Improved debug log
 

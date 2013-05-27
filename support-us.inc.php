@@ -36,7 +36,7 @@ if (!function_exists('zing_support_us')) {
 			<a href="http://www.zingiri.com/plugins-and-addons/remote-provisioning/" target="_blank"><h4 style="color:blue;">Remote Provisioning</h4></a>&nbsp;<p>Automatically provision Wordpress websites from WHMCS.</p><br />
 			<a href="http://www.zingiri.com/plugins-and-addons/product-images-for-whmcs/" target="_blank"><h4 style="color:blue;">Product Images</h4></a>&nbsp;<p>Add images to your WHMCS products.</p><br />
 			<a href="http://www.zingiri.com/plugins-and-addons/whmcs-backup-restore/" target="_blank"><h4 style="color:blue;">Backup &amp; Restore</h4></a>&nbsp;<p>Make it easy to backup, restore &amp; transer sites with WHMCS.</p><br />
-			<a href="http://www.zingiri.com" target="_blank"><h4 style="color:blue;">Facebook Promo</h4></a>&nbsp;<p>Automatically issue promotions to your Facebook fans.</p><br />
+			<a href="http://www.zingiri.com/plugins-and-addons/facebook-promos-for-whmcs/" target="_blank"><h4 style="color:blue;">Facebook Promo</h4></a>&nbsp;<p>Automatically issue promotions to your Facebook fans.</p><br />
 			</div>
 			<?php if (!get_option('cc_whmcs_bridge_sso_license_key')) {?>
 			<div class="cc-support-us">
