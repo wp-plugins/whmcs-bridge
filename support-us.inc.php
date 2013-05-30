@@ -5,7 +5,6 @@ if (!function_exists('zing_support_us')) {
 		if (!$pluginUrl) $pluginUrl=plugins_url().'/'.$wpPluginName.'/';
 		if (get_option('cc_whmcs_bridge_sso_license_key')) $donations=false;
 ?>
-		<div style="width:20%;float:right;position:relative">
 				<div style="margin:5px 15px;">
 					<script type="text/javascript" src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
 					<div style="float:left;">
@@ -17,19 +16,6 @@ if (!function_exists('zing_support_us')) {
 					</div>
 				</div>
 				<div style="clear:both"></div>
-			<div class="cc-support-us">
-			<h3>The bridge page</h3>
-			<p>A WHMCS front end page has been created on your Wordpress site. This page is the main interaction page between Wordpress and WHMCS.</p>
-		<p>The full url is:<a href="<?php echo cc_whmcs_bridge_home($home,$pid);?>"><code><?php echo cc_whmcs_bridge_home($home,$pid);?></code></a>. You can edit the page link by editing the page and changing the permalink.</p>
-		<p style="color:red">Do not delete this page!</p>
-			
-			</div>
-			<div class="cc-support-us">
-			<h3>Not sure where to start?</h3>
-			<p>Download our <a href="http://go.zingiri.com/downloads.php?action=displaycat&catid=6">documentation</a></p><br />
-			<p>Check out our <a href="http://forums.zingiri.com/forumdisplay.php?fid=74">forums</a></p><br />
-			<p>Pro users can open a <a href="https://go.zingiri.com/submitticket.php">support ticket</a></p>
-			</div>
 			<div class="cc-support-us">
 			<h3>Discover our other plugins & addons!</h3>
 			<a href="http://www.zingiri.com" target="_blank"><h4 style="color:blue;">WHMCS Membership</h4></a>&nbsp;<p>Create a membership website using WHMCS for billing and WordPress to manage the content.</p><br />
@@ -70,7 +56,6 @@ if (!function_exists('zing_support_us')) {
 			<div style="text-align:center;margin-top:15px">
 				<a href="http://www.zingiri.com" target="_blank"><img width="150px" src="<?php echo $pluginUrl?>images/logo.png" /></a>
 			</div>
-		</div>
 <?php 
 	}
 }

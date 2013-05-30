@@ -18,7 +18,6 @@
 	</tr>
 	<tr>
 		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
 		</td>
 	</tr>
 
@@ -31,7 +30,6 @@
 	</tr>
 	<tr>
 		<td colspan=2>&nbsp
-		<hr />
 		</td>
 	</tr>
 
@@ -48,7 +46,6 @@
 	</tr>
 	<tr>
 		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
 		</td>
 	</tr>
 
@@ -67,7 +64,6 @@
 	</tr>
 	<tr>
 		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
 		</td>
 	</tr>
 
@@ -84,7 +80,6 @@
 	</tr>
 	<tr>
 		<td colspan=2><small><?php echo $value['desc']; ?> </small>
-		<hr />
 		</td>
 	</tr>
 
@@ -112,14 +107,13 @@
 
 	<tr valign="top">
 		<td colspan="2" style="text-align: left;">
-		<h2 style="color: green;"><?php echo $value['name']; ?></h2>
+		<h3 style="color: green;"><?php echo $value['name']; ?></h3>
 		</td>
 	</tr>
 	<tr>
 		<td colspan=2><small>
 		<p style="color: red; margin: 0 0;"><?php echo $value['desc']; ?></P>
 		</small>
-		<hr />
 		</td>
 	</tr>
 

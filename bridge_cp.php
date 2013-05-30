@@ -101,51 +101,45 @@ function cc_whmcs_bridge_admin() {
 	if ( isset($_REQUEST['error']) ) echo '<div id="message" class="updated fade"><p>The following error occured: <strong>'.$_REQUEST['error'].'</strong></p></div>';
 	
 	?>
+ <script>
+jQuery(function() {
+jQuery( "#bridgetabs" ).tabs();
+});
+</script>
+
 <div class="wrap">
-<div id="cc-left" style="position:relative;float:left;width:80%">
 <h2><b><?php echo WHMCS_BRIDGE; ?></b></h2>
+<div id="bridgetabs" style="width:68%;float:left;">
 
-	<?php
-	$cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
-	$submit='Update';
-	?>
-<form method="post">
+<ul>
+<li><a href="#bridgetabs-1">Settings</a></li>
+<li><a href="#bridgetabs-2">Log</a></li>
+<li><a href="#bridgetabs-3">Sync</a></li>
+<li><a href="#bridgetabs-4">Help</a></li>
+</ul>
 
-<?php require(dirname(__FILE__).'/includes/cpedit.inc.php')?>
+<div id="bridgetabs-1">
+<?php require(dirname(__FILE__).'/pages/settings.php');?>
+</div>
+<div id="bridgetabs-2">
+<?php require(dirname(__FILE__).'/pages/log.php');?>
+</div>
+<div id="bridgetabs-3">
+<?php require(dirname(__FILE__).'/pages/sync.php');?>
+</div>
+<div id="bridgetabs-4">
+<?php require(dirname(__FILE__).'/pages/help.php');?>
+</div>
 
-<p class="submit"><input name="install" type="submit" value="<?php echo $submit;?>" /> <input
-	type="hidden" name="action" value="install"
-/></p>
-</form>
-<hr />
-<?php  
-	if ($cc_whmcs_bridge_version && get_option('cc_whmcs_bridge_debug')) {
-		echo '<h2 style="color: green;">Debug log</h2>';
-		$r=get_option('cc_whmcs_bridge_log');
-		if ($r) {
-			echo '<table style="font-size:smaller">';
-			$v=$r;
-			foreach ($v as $m) {
-				echo '<tr>';
-				echo '<td style="padding-right:10px">';
-				echo date('H:i:s',$m[0]);
-				echo '</td>';
-				echo '<td style="padding-right:10px">';
-				echo $m[1];
-				echo '</td>';
-				echo '<td>';
-				echo $m[2];
-				echo '</td>';
-				echo '</tr>';
-			}
-		echo '</table><hr />';
-		}
-	}
-?>
-
-</div> <!-- end cc-left -->
+</div> <!-- end bridgetabs -->
+<div style="width:30%;float:right;">
 <?php
 	require(dirname(__FILE__).'/support-us.inc.php');
 	zing_support_us('whmcs-bridge','whmcs-bridge','cc-ce-bridge-cp',CC_WHMCS_BRIDGE_VERSION);
+?>
+</div>
+</div> <!-- end wrap -->
+<?php 
 }
+
 add_action('admin_menu', 'cc_whmcs_bridge_add_admin'); ?>
