@@ -21,5 +21,5 @@ if ($cc_whmcs_bridge_version && get_option('cc_whmcs_bridge_debug')) {
 		echo '</table>';
 	}
 } else {
-	echo 'Activate log first.';
+	echo 'If you have problems with the plugin, activate the debug mode to generate a debug log for our support team.';
 }
