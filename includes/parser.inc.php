@@ -45,7 +45,6 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
 		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
 		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
-		//	$buffer=preg_replace('/<link.*ui.all.cs.*\/>/','',$buffer);
 	}
 
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
@@ -57,7 +56,9 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 	$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
 	$r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
 
-
+	$f[]="/window.location\='([a-zA-Z\_]*?).php.(.*?)'/";
+	$r[]="window.location='".$home."?ccce=$1&$2".$pid."'";
+	
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
@@ -75,15 +76,13 @@ function cc_whmcs_bridge_parser_ajax2($buffer) {
 
 	$buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
 	$buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
-
+	
 	return $buffer;
 
 }
 
 function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 	global $wordpressPageName,$post;
-
-	//$current=true;
 
 	if (isset($post) && $current) {
 		$pageID=$post->ID;
@@ -312,6 +311,18 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 			$output=cc_whmcs_bridge_parser_css($css);
 			$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','<style type="text/css">'.$output.'</style>',$buffer);
 		}
+		/*
+		if (preg_match('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/whmcs.css)".*>/',$buffer,$matches)) {
+			$css=$matches[1];
+			$output=cc_whmcs_bridge_parser_css($css);
+			$buffer=preg_replace('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/whmcs.css)".*>/','<style type="text/css">'.$output.'</style>',$buffer);
+		}
+		if (preg_match('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/',$buffer,$matches)) {
+			$css=$matches[1];
+			$output=cc_whmcs_bridge_parser_css($css);
+			$buffer=preg_replace('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/','<style type="text/css">'.$output.'</style>',$buffer);
+		}
+		*/
 	}
 
 	//replaces whmcs jquery so that it doesn't start it twice
@@ -376,13 +387,6 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 	//start new change
 	if ($topMenu=$html->find('div[id=top_menu] ul',0)){
-
-		//		foreach ($html->find('div[id=top_menu] li') as $div) {
-		//		echo 'hi';
-		//}
-		//die($topMenu);
-
-
 		//top menu here
 		$topMenu=$topMenu->__toString();
 		$ret['topNav']=$topMenu;

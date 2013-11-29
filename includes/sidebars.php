@@ -24,9 +24,9 @@ class cc_whmcs_sidebar_main extends WP_Widget {
 		echo $before_widget;
 		if ( !$title ) $title='WHMCS main';
 		echo $before_title . $title . $after_title;
-		echo $cc_whmcs_bridge_content['sidebarNav'];
-		echo $cc_whmcs_bridge_content['sidebarAcInf'];
-		echo $cc_whmcs_bridge_content['sidebarAcSta'];
+		if (isset($cc_whmcs_bridge_content['sidebarNav'])) echo $cc_whmcs_bridge_content['sidebarNav'];
+		if (isset($cc_whmcs_bridge_content['sidebarAcInf'])) echo $cc_whmcs_bridge_content['sidebarAcInf'];
+		if (isset($cc_whmcs_bridge_content['sidebarAcSta'])) echo $cc_whmcs_bridge_content['sidebarAcSta'];
 		echo $after_widget;
 	}
 
