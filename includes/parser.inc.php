@@ -63,6 +63,7 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
+	$buffer=str_replace('background="images','background="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 
 	//jQuery UI
@@ -284,6 +285,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 	//import local images
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
+	$buffer=str_replace('background="images','background="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace("window.open('images","window.open('".cc_whmcs_bridge_url().'/images',$buffer);
 
 	//verify captcha image

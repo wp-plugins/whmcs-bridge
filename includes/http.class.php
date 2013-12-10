@@ -55,6 +55,7 @@ class bridgeHttpRequest
 	var $debugFunction;
 	var $time;
 	var $cookieArray=array();
+	var $cookieCache='';
 
 	// constructor
 	function __construct($url="",$sid='', $repost=false)
@@ -73,10 +74,11 @@ class bridgeHttpRequest
 		if ($action=='reset') $this->time=$t(true);
 		elseif ($action=='delta') return round(($t(true)-$this->time)*100,0);
 	}
-	private function forceWithRedirectToString() {
+	private function forceWithRedirectToString($url) {
 		$s='';
 		if (count($this->forceWithRedirect)) {
 			foreach ($this->forceWithRedirect as $n => $v) {
+				if (stristr($url,$n.'=',$url)) continue;
 				if ($s) $s.='&';
 				$s.=$n.'='.$v;
 			}
@@ -143,6 +145,8 @@ class bridgeHttpRequest
 					$cookies .= $value;
 					list($k,$rest)=explode('=',$value,2);
 					$this->cookieArray[trim($k)]=$value;
+					if (stristr($value,'=deleted')) unset($_SESSION[$this->sid]['cookie-array'][trim($k)]);
+					else $_SESSION[$this->sid]['cookie-array'][trim($k)]=$value;
 				}
 			}
 		}
@@ -273,6 +277,7 @@ class bridgeHttpRequest
 		}
 
 		$cookies="";
+		/* Removed in 3.0.2
 		if ($withCookies && isset($_COOKIE)) {
 			foreach ($_COOKIE as $i => $v) {
 				if ($i=='WHMCSUID' || $i=="WHMCSPW") {
@@ -282,19 +287,26 @@ class bridgeHttpRequest
 			}
 		}
 
-		$cookies=apply_filters('bridgeHttpRequest_pre',$cookies);
-
 		if (isset($_SESSION[$this->sid]['cookies'])) {
 			if ($cookies) $cookies.=';';
 			$cookies.=$_SESSION[$this->sid]['cookies'];
 		}
-
+		*/
+		$cookies=apply_filters('bridgeHttpRequest_pre',$cookies);
+		
+		if (isset($_SESSION[$this->sid]['cookie-array']) && count($_SESSION[$this->sid]['cookie-array']) > 0) {
+			foreach ($_SESSION[$this->sid]['cookie-array'] as $n => $v) {
+				if ($cookies) $cookies.=';';
+				$cookies.=$v;
+			}
+		}
 		//echo '<br />cookie before='.$cookies.'=';
 		if ($cookies) {
 			$this->debug(0,'Cookie before:'.print_r($cookies,true));
 			curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 		}
 
+		$_SESSION['cookieCache']=$cookies;
 		if (count($_FILES) > 0) {
 			foreach ($_FILES as $name => $file) {
 				if (is_array($file['tmp_name']) && count($file['tmp_name']) > 0) {
@@ -358,7 +370,6 @@ class bridgeHttpRequest
 			return false;
 		}
 		$info=curl_getinfo($ch);
-
 		if ( !empty($data) ) {
 			$headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$head = trim( substr($data, 0, $headerLength) );
@@ -438,7 +449,7 @@ class bridgeHttpRequest
 				}
 			}
 			//echo '<br />redir='.$redir;
-			$fwd=$this->forceWithRedirectToString();
+			$fwd=$this->forceWithRedirectToString($redir);
 			if ($fwd) {
 				if (strstr($redir,'&')) $redir.='&';
 				elseif (strstr($redir,'?')) $redir.='&';
