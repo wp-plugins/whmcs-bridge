@@ -6,9 +6,3 @@
 <?php
 if (file_exists(dirname(__FILE__).'/../../whmcs-bridge-sso/pages/help.php')) require(dirname(__FILE__).'/../../whmcs-bridge-sso/pages/help.php');
 ?>
-<hr />
-<center style="color:#0073EA";>
-			Download our <a href="http://go.zingiri.com/downloads.php?action=displaycat&catid=6">documentation</a> | 
-			Check out our <a href="http://forums.zingiri.com/forumdisplay.php?fid=74">forums</a> | 
-			Pro users can open a <a href="https://go.zingiri.com/submitticket.php">support ticket</a>
-</center>

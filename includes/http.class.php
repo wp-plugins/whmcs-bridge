@@ -78,7 +78,7 @@ class bridgeHttpRequest
 		$s='';
 		if (count($this->forceWithRedirect)) {
 			foreach ($this->forceWithRedirect as $n => $v) {
-				if (stristr($url,$n.'=',$url)) continue;
+				if (stristr($url,$n.'=')) continue;
 				if ($s) $s.='&';
 				$s.=$n.'='.$v;
 			}
