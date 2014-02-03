@@ -1,12 +1,11 @@
 <?php
 /*
  Plugin Name: WHMCS Bridge
- Plugin URI: http://www.zingiri.com
+ Plugin URI: http://i-plugins.com
  Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
-
- Author: Zingiri
- Version: 3.0.3
- Author URI: http://www.zingiri.com/
+ Author: zingiri, globalprogramming
+ Version: 3.1.0
+ Author URI: http://i-plugins.com/
  */
 
 require(dirname(__FILE__).'/bridge.init.php');

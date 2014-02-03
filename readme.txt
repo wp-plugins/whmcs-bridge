@@ -1,10 +1,10 @@
 === WHMCS Bridge ===
 Contributors: zingiri, globalprogramming
-Donate link: http://www.zingiri.com/donations
+Donate link: http://i-plugins.com/donations
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.8.1
-Stable tag: 3.0.3
+Stable tag: 3.1.0
 
 WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
 
@@ -34,21 +34,24 @@ Thanks to the single sign-on feature (WHMCS Bridge Pro plugin), your customers c
 4. Install the plugin by clicking the Install button. This will create a new page titled WHMCS through which you can access the client portal of WHMCS.
 5. Activate the sidebar widget if you want the sidebar navigation
 
-Please visit the [Zingiri](http://forums.zingiri.com "Zingiri Support Forum") for more information and support.
+Please visit the [Forum](http://wordpress.org/support/plugin/whmcs-bridge "Support Forum") for more information and support.
 
 == Frequently Asked Questions ==
 
-Please visit the [Zingiri](http://forums.zingiri.com/forumdisplay.php?fid=56 "Zingiri Support Forum") for more information and support.
+Please checkout the [FAQ](http://i-plugins.com/whmcs/knowledgebase.php?action=displaycat&catid=1021 "FAQ") for more information and support.
 
 == Screenshots ==
 
-No screenshots here but have a look at [our site](http://go.zingiri.com "our site") to see it in action.
+No screenshots here but have a look at [our site](http://i-plugins.com "our site") to see it in action.
 
 == Upgrade Notice ==
 
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 3.1.0 =
+* Changed references from zingiri.com to i-plugins.com
 
 = 3.0.3 =
 * Fixed one parameter too many in stristr() function in http.class.php
