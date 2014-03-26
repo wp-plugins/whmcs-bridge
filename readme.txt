@@ -1,12 +1,12 @@
 === WHMCS Bridge ===
 Contributors: zingiri, globalprogramming
-Donate link: http://i-plugins.com/donations
+Donate link: http://i-plugins.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 3.8.1
 Stable tag: 3.1.0
 
-WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
+WHMCS Bridge is a plugin that integrates the powerful WHMCS support and billing software with Wordpress.
 
 == Description ==
 
@@ -38,7 +38,7 @@ Please visit the [Forum](http://wordpress.org/support/plugin/whmcs-bridge "Suppo
 
 == Frequently Asked Questions ==
 
-Please checkout the [FAQ](http://i-plugins.com/whmcs/knowledgebase.php?action=displaycat&catid=1021 "FAQ") for more information and support.
+Please checkout our Knowledgebase Articles (https://i-plugins.com/whmcs-bridge/knowledgebase/?action=displaycat&catid=1021) for more information and support.
 
 == Screenshots ==
 
@@ -49,6 +49,11 @@ No screenshots here but have a look at [our site](http://i-plugins.com "our site
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 3.1.1 =
+* Assigned ID of "bridge_iframe" to the iframe page to allow for style adjustments of the WHMCS Bridge IFRAME (#bridge_iframe)
+* Updated help URL references in readme
+* Set SSL version in http.class.php to stop CURL issues on certain installations
 
 = 3.1.0 =
 * Changed references from zingiri.com to i-plugins.com

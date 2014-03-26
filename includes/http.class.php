@@ -274,6 +274,7 @@ class bridgeHttpRequest
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 			curl_setopt($ch, CURLOPT_CAINFO, NULL);
 			curl_setopt($ch, CURLOPT_CAPATH, NULL);
+			curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 		}
 
 		$cookies="";
