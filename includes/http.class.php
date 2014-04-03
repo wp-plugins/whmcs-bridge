@@ -340,12 +340,16 @@ class bridgeHttpRequest
 						if (is_array($v2)) {
 							foreach ($v2 as $k3 => $v3) {
 								if ($post) $post.='&';
-								$post.=$k.'['.$k2.']'.'['.$k3.']'.'='.urlencode(stripslashes($v3));
+
+								$val = urlencode(stripslashes($v3));;
+
+								$post.=$k.'['.$k2.']'.'['.$k3.']'.'='.$val;
 								$apost[$k.'['.$k2.']'.'['.$k3.']']=stripslashes($v3);
 							}
 						} else {
 							if ($post) $post.='&';
-							$post.=$k.'['.$k2.']'.'='.urlencode(stripslashes($v2));
+							$val = urlencode(stripslashes($v2));
+							$post.=$k.'['.$k2.']'.'='.$val;
 							$key='['.$k.']['.$k2.']';
 							$apost[$k.'['.$k2.']']=stripslashes($v2);
 						}
@@ -353,7 +357,10 @@ class bridgeHttpRequest
 
 				} else {
 					if ($post) $post.='&';
-					$post.=$k.'='.urlencode(stripslashes($v));
+
+					$val = urlencode(stripslashes($v));
+
+					$post.=$k.'='.$val;
 					$apost[$k]=stripslashes($v);
 				}
 			}
