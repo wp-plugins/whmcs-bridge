@@ -353,14 +353,17 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		//Remove end paragraph and text headings
 		foreach($sidebarData as $count => $data){
 			$title='';
-			if (preg_match('/.*<\/p>/',$data,$matches)) {
-				$title=substr($matches[0],0,-4);
-				$data=str_replace($title.'</p>','',$data);
+			$text = explode('</p>', $data);
+			if (count($text) > 0) {
+				$title = $text[0];
+				unset($text[0]);
+				$data = implode('</p>', $text);
 			}
+
 			$sidebarData[$count]=$data;
 			$sidebarData['mode'][$count-1]=$title;
-
 		}
+
 		$ret['sidebarNav']=$sidebarData[1]; //QUICK NAVIGATION
 		$ret['sidebarAcInf']=$sidebarData[2]; //ACCOUNT INFORMATION
 		$ret['sidebarAcSta']=$sidebarData[3]; //ACCOUNT STATISTICS

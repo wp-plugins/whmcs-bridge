@@ -50,6 +50,9 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 == Changelog ==
 
+= 3.1.2 =
+* Replaced regex for sidebars (failing to find closing </p> tags)
+
 = 3.1.1 =
 * Assigned ID of "bridge_iframe" to the iframe page to allow for style adjustments of the WHMCS Bridge IFRAME (#bridge_iframe)
 * Updated help URL references in readme
