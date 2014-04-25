@@ -51,7 +51,7 @@ class bridgeHttpRequest
 	var $follow=true; //whether to follow redirect links or not
 	var $noErrors=false; //whether to trigger an error in case of a curl error
 	var $errorMessage;
-	var $httpHeaders=array('Expect:','bridge_on: 1'); //avoid 417 errors
+	var $httpHeaders=array('Expect:','bridgeon: 1'); //avoid 417 errors
 	var $debugFunction;
 	var $time;
 	var $cookieArray=array();
@@ -261,7 +261,7 @@ class bridgeHttpRequest
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
-		$this->httpHeaders[]='bridge_on: 1';
+		$this->httpHeaders[]='bridgeon: 1';
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders); //avoid 417 errors
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
