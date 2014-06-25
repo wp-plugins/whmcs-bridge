@@ -102,10 +102,20 @@ function cc_whmcs_bridge_home(&$home,&$pid,$current=false) {
 
 		if (get_option('permalink_structure')){
 			$homePage = get_option('home');
-			$wordpressPageName = get_permalink($pageID);
-			$wordpressPageName = str_replace($homePage,"",$wordpressPageName);
+	
+			$wordpressPageName = get_permalink($pageID);	
+	
+			if (stristr($homePage, 'http://') !== false)
+				$homePage2 = str_replace('http://', 'https://', $homePage);
+			else
+				$homePage2 = str_replace('https://', 'http://', $homePage);
+
+			$wordpressPageName = str_replace(array($homePage, $homePage2),"",$wordpressPageName);
+	
 			$pid="";
+	
 			$home=$homePage.$wordpressPageName;
+
 			if (substr($home,-1) != '/') $home.='/';
 			$url=$home;
 		}else{
