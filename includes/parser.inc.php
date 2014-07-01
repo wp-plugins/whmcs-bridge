@@ -351,10 +351,10 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	$html->load($buffer);
 	$sidebar=$html->find('div[id=side_menu]', 0) ? trim($html->find('div[id=side_menu]', 0)->innertext) : null;
 	if ($sidebar) {
-		$pattern = '/<form.*?dologin.>/';
+		$pattern = '/<form(.*?)dologin(.*?)>/';
 		if (preg_match($pattern,$sidebar,$matches)) {
 			$loginForm=$matches[0];
-			$sidebar=preg_replace('/(<form.*?dologin.>)(\s*)(<p class.*>)/','$3$1',$sidebar); //swap around the <form> and <p> tags
+			$sidebar=preg_replace('/(<form(.*?)dologin(.*?)>)(\s*)(<p class.*>)/','$3$1',$sidebar); //swap around the <form> and <p> tags
 			$ret['sidebar'][]=$sidebar;
 		}
 		$sidebarSearch='<p class="header">';
@@ -378,6 +378,11 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$ret['sidebarAcInf']=$sidebarData[2]; //ACCOUNT INFORMATION
 		$ret['sidebarAcSta']=$sidebarData[3]; //ACCOUNT STATISTICS
 		$ret['mode']=$sidebarData['mode'];
+
+		if (stristr($ret['sidebarAcInf'], 'type="password"') !== false) {
+			$ret['sidebarAcInf'] = $loginForm.$ret['sidebarAcInf'].'</form>';
+		}
+
 	};
 	if ($body=$html->find('div[id=content_left]',0)) {
 		$title=$body->find('h1',0);
