@@ -247,7 +247,6 @@ class bridgeHttpRequest
 
 	function connect($url,$withHeaders=true,$withCookies=false) {
 		$this->time('reset');
-
 		$newfiles=array();
 
 		if (function_exists('cc_whmcsbridge_sso_session')) cc_whmcsbridge_sso_session();
@@ -257,7 +256,7 @@ class bridgeHttpRequest
 		$ch = curl_init();    // initialize curl handle
 		//echo '<br />call:'.$url;echo '<br />post='.print_r($this->post,true).'=<br />headers='.print_r($this->httpHeaders,true).'<br />';
 		$this->debug(0,'CURL call: '.$url.(is_array($this->post) ? ' with '.print_r($this->post,true) : ''));
-		curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
+        curl_setopt($ch, CURLOPT_URL,$url); // set url to post to
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 

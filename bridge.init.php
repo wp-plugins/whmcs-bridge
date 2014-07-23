@@ -273,13 +273,25 @@ function cc_whmcs_bridge_output($page=null) {
 		} else {
 			if (isset($_REQUEST['aff'])) $news->follow=false;
 			$output=$news->DownloadToString();
+
 			if ($news->redirect) {
 				header('Location:'.$output);
 				die();
 			}
 			if (isset($_REQUEST['aff']) && isset($news->headers['location'])) {
-				if (strstr($news->headers['location'],get_option('home'))) header('Location:'.$news->headers['location']);
-				else header('Location:'.get_option('home'));
+                if ($wordpressPageName) $p=$wordpressPageName;
+                else $p='/';
+                $f[]='/.*\/([a-zA-Z\_]*?).php.(.*?)/';
+                $r[]=get_option('home').$p.'?ccce=$1&$2';
+                $f[]='/([a-zA-Z\_]*?).php.(.*?)/';
+                $r[]=get_option('home').$p.'?ccce=$1&$2';
+                $output=preg_replace($f,$r,$news->headers['location'],-1,$count);
+                cc_whmcs_log('Notification','Redirect to: '.$output);
+                header('Location:'.$output);
+
+				//if (strstr($news->headers['location'],get_option('home')))
+                //    header('Location:'.$news->headers['location']);
+				//else header('Location:'.get_option('home'));
 				die();
 			}
 			return $output;

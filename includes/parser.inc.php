@@ -50,6 +50,12 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 	$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 	$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
+    ## BootWHMCS
+    $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/static\/app.js/";
+    $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/static/app.js'.$pid;
+    ## BootWHMCS
+
+
 	$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
 	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
@@ -269,6 +275,11 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 		$f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
 		$r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
+
+        ## BootWHMCS
+        $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/static\/app.js/";
+        $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/static/app.js'.$pid;
+        ## BootWHMCS
 
 		$f[]="/>>/";
 		$r[]="&gt;&gt;";

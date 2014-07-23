@@ -51,7 +51,9 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 == Changelog ==
 
 = 3.1.5 =
-* Fixed Account Info widget login form bug. Form now works when not logged in. 
+* Fixed Account Info widget login form bug. Form now works when not logged in.
+* Fixed Affiliate link redirect
+* Fixed BootWHMCS JS conflict issue.
 
 = 3.1.4 =
 * Fixed double URL issue with SSL
