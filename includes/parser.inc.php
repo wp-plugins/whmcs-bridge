@@ -297,7 +297,11 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	$buffer=str_replace('&#038;','&',$buffer);
 
 	//name is a reserved Wordpress field name
-	$buffer=str_replace('name="name"','name="whmcsname"',$buffer);
+	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
+		// not in invoice 
+	} else {
+		$buffer=str_replace('name="name"','name="whmcsname"',$buffer);		
+	}
 
 	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
