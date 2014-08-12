@@ -3,8 +3,8 @@ Contributors: zingiri, globalprogramming
 Donate link: http://i-plugins.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
-Tested up to: 3.9.1
-Stable tag: 3.1.4
+Tested up to: 3.9.2
+Stable tag: 3.1.5
 
 WHMCS Bridge is a plugin that integrates the powerful WHMCS support and billing software with Wordpress.
 
@@ -55,6 +55,7 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 * Fixed Affiliate link redirect
 * Fixed BootWHMCS JS conflict issue.
 * Fixed issue with "name" form value on invoice page (payment gateways).
+* Fixed issue with auto-redirect to payment gateway.
 
 = 3.1.4 =
 * Fixed double URL issue with SSL

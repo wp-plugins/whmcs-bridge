@@ -303,6 +303,11 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$buffer=str_replace('name="name"','name="whmcsname"',$buffer);		
 	}
 
+    // Fix auto forward to payment gateway issue
+    $buffer = str_replace('$("#submitfrm").', 'jQuery("#submitfrm").', $buffer);
+    $buffer = str_replace("\$('#submitfrm').", "jQuery('#submitfrm').", $buffer);
+    // end fix auto forward
+
 	$buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
