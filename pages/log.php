@@ -3,7 +3,6 @@ if ($cc_whmcs_bridge_version && get_option('cc_whmcs_bridge_debug')) {
 	echo '<h2>Debug Log</h2>';
 	$r=get_option('cc_whmcs_bridge_log');
 	if ($r) {
-		//echo '<table style="font-size:smaller; width:100%; max-width: 400px;">';
 		$v=$r;
 		foreach ($v as $m) {
             echo '<h4 style="width:100%;background:#f7f7f7"><strong>'.date('H:i:s',$m[0]).'</strong>: <em>'.$m[1].'</em></h4>';
