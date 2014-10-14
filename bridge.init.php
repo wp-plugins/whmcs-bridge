@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.2.0");
+define("CC_WHMCS_BRIDGE_VERSION","3.2.1");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -151,16 +151,7 @@ function cc_whmcs_bridge_install() {
     return true;
 }
 
-/**
- * Deactivation: nothing to do
- * @return void
- */
-function cc_whmcs_bridge_deactivate() {
-    $ids=get_option("cc_whmcs_bridge_pages");
-    $ida=explode(",",$ids);
-    foreach ($ida as $id) {
-        wp_delete_post($id);
-    }
+function cc_whmcs_bridge_uninstall() {
     $cc_whmcs_bridge_options=cc_whmcs_bridge_options();
 
     delete_option('cc_whmcs_bridge_log');
@@ -174,6 +165,18 @@ function cc_whmcs_bridge_deactivate() {
     delete_option("cc_whmcs_bridge_version");
     delete_option("cc_whmcs_bridge_pages");
     delete_option('cc-ce-bridge-cp-support-us');
+}
+
+/**
+ * Deactivation: nothing to do
+ * @return void
+ */
+function cc_whmcs_bridge_deactivate() {
+    $ids=get_option("cc_whmcs_bridge_pages");
+    $ida=explode(",",$ids);
+    foreach ($ida as $id) {
+        wp_delete_post($id);
+    }
 }
 
 function cc_whmcs_bridge_output($page=null) {

@@ -55,7 +55,6 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
     $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/static/app.js'.$pid;
     ## BootWHMCS
 
-
 	$f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
 	$r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
@@ -279,8 +278,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
         ## BootWHMCS
         $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/static\/app.js/";
         $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/static/app.js'.$pid;
-        ## BootWHMCS
-
+        ## BootWHMCS		
+		
 		$f[]="/>>/";
 		$r[]="&gt;&gt;";
 
@@ -343,19 +342,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 			$output=cc_whmcs_bridge_parser_css($css);
 			$buffer=preg_replace('/<link.*templates\/[a-zA-Z0-9_-]*\/style.css" \/>/','<style type="text/css">'.$output.'</style>',$buffer);
 		}
-		/*
-		if (preg_match('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/whmcs.css)".*>/',$buffer,$matches)) {
-			$css=$matches[1];
-			$output=cc_whmcs_bridge_parser_css($css);
-			$buffer=preg_replace('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/whmcs.css)".*>/','<style type="text/css">'.$output.'</style>',$buffer);
-		}
-		if (preg_match('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/',$buffer,$matches)) {
-			$css=$matches[1];
-			$output=cc_whmcs_bridge_parser_css($css);
-			$buffer=preg_replace('/<link.href="(.*templates\/[a-zA-Z0-9_-]*\/css\/bootstrap.css)".*>/','<style type="text/css">'.$output.'</style>',$buffer);
-		}
-		*/
-	}
+	}	
 
 	//replaces whmcs jquery so that it doesn't start it twice
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
