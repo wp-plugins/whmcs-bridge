@@ -52,6 +52,7 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 = 3.2.1 =
 * Utilised uninstall hook
+* Fix for announcements RSS feed 
 
 = 3.2.0 =
 * Admin panel style update.

@@ -320,7 +320,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage'.$pid,$buffer);
 
-	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
+	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice' || $_REQUEST['ccce']=='announcementsrss')) {
 		while (count(ob_get_status(true)) > 0) ob_end_clean();
 		echo $buffer;
 		die();
