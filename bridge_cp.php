@@ -93,13 +93,17 @@ function cc_whmcs_bridge_add_admin() {
         if ( isset($_REQUEST['action']) && 'install' == $_REQUEST['action'] ) {
             delete_option('cc_whmcs_bridge_log');
             foreach ($cc_whmcs_bridge_options as $value) {
-                update_option( $value['id'], $_REQUEST[ $value['id'] ] );
+                if (isset($value['id']))
+                    update_option( $value['id'], $_REQUEST[ $value['id'] ] );
             }
 
             foreach ($cc_whmcs_bridge_options as $value) {
-                if( isset( $_REQUEST[ $value['id'] ] ) ) {
-                    update_option( $value['id'], $_REQUEST[ $value['id'] ]  );
-                } else { delete_option( $value['id'] );
+                if (isset($value['id'])) {
+                    if (isset($_REQUEST[$value['id']])) {
+                        update_option($value['id'], $_REQUEST[$value['id']]);
+                    } else {
+                        delete_option($value['id']);
+                    }
                 }
             }
             cc_whmcs_bridge_install();

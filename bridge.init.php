@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.2.1");
+define("CC_WHMCS_BRIDGE_VERSION","3.2.2");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -120,8 +120,28 @@ function cc_whmcs_bridge_install() {
     if (!$cc_whmcs_bridge_version) add_option("cc_whmcs_bridge_version",CC_WHMCS_BRIDGE_VERSION);
     else update_option("cc_whmcs_bridge_version",CC_WHMCS_BRIDGE_VERSION);
 
+    $cc_whmcs_bridge_page=get_option("cc_whmcs_bridge_pages");
+    $create_page = false;
+    if (is_numeric($cc_whmcs_bridge_page) && $cc_whmcs_bridge_page > 0) {
+        $query = '';
+        $pages = get_pages(array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+        ));
+        $found = false;
+        foreach ($pages as $p) {
+            if ($p->ID == $cc_whmcs_bridge_page) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) $create_page = true;
+    } else {
+        $create_page = true;
+    }
+
     //create pages
-    if (!$cc_whmcs_bridge_version) {
+    if ($create_page) {
         cc_whmcs_log(0,'Creating pages');
         $pages=array();
         $pages[]=array(WHMCS_BRIDGE_PAGE.'-bridge',WHMCS_BRIDGE_PAGE,"*",0);
@@ -159,6 +179,8 @@ function cc_whmcs_bridge_uninstall() {
         delete_option( $value['id'] );
     }
 
+    delete_option("cc_whmcs_bridge_page");
+    delete_option("cc_whmcs_bridge_pages");
     delete_option("cc_whmcs_bridge_log");
     delete_option("cc_whmcs_bridge_ftp_user"); //legacy
     delete_option("cc_whmcs_bridge_ftp_password"); //legacy
@@ -224,8 +246,8 @@ function cc_whmcs_bridge_output($page=null) {
         cc_whmcs_log('Error','CURL not installed');
         return "cURL not installed";
     } elseif (!$news->live()) {
-        cc_whmcs_log('Error','A HTTP Error occured');
-        return "A HTTP Error occured";
+        cc_whmcs_log('Error','A HTTP Error occurred');
+        return "A HTTP Error occurred";
     } else {
         if ($cc_whmcs_bridge_to_include=='verifyimage') {
             $output=$news->DownloadToString();

@@ -123,40 +123,6 @@ class cc_whmcs_sidebarAcSta_main extends WP_Widget {
 	}
 }
 
-class cc_whmcs_topNav_main extends WP_Widget {
-	/** constructor */
-	function cc_whmcs_topNav_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Top Nav');
-	}
-
-	/** @see WP_Widget::widget */
-	function widget($args, $instance) {
-		global $cc_whmcs_bridge_content;
-		if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
-		extract( $args );
-		$title = apply_filters('widget_title', $instance['title']);
-		echo $before_title . $title . $after_title;
-		echo '<div id="top_menu">'.$cc_whmcs_bridge_content['topNav'].'</div>';
-		echo '<div class="clear"></div>';
-	}
-
-	/** @see WP_Widget::update */
-	function update($new_instance, $old_instance) {
-		$instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
-		return $instance;
-	}
-
-	/** @see WP_Widget::form */
-	function form($instance) {
-		$title = isset($instance['title']) ? esc_attr($instance['title']) : '';
-		echo '<p>';
-		echo '<label for="'.$this->get_field_id('title').'"'._e('Title:').'</label>';
-		echo '<input class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" type="text" value="'.$title.'"/>';
-		echo '</p>';
-	}
-}
-
 class cc_whmcs_welcomebox_main extends WP_Widget {
 	/** constructor */
 	function cc_whmcs_welcomebox_main() {
@@ -233,7 +199,7 @@ class cc_whmcs_sidebarNav_main extends WP_Widget {
 class cc_whmcs_sidebarNav_acc extends WP_Widget {
 	/** constructor */
 	function cc_whmcs_sidebarNav_acc() {
-		parent::WP_Widget(false, $name = 'WHMCS Account information');
+		parent::WP_Widget(false, $name = 'WHMCS Client Navigation');
 	}
 
 	/** @see WP_Widget::widget */
@@ -265,4 +231,39 @@ class cc_whmcs_sidebarNav_acc extends WP_Widget {
 		echo '<input class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" type="text" value="'.$title.'"/>';
 		echo '</p>';
 	}
+}
+
+
+class cc_whmcs_topNav_main extends WP_Widget {
+    /** constructor */
+    function cc_whmcs_topNav_main() {
+        parent::WP_Widget(false, $name = 'WHMCS Client Navigation (Top)');
+    }
+
+    /** @see WP_Widget::widget */
+    function widget($args, $instance) {
+        global $cc_whmcs_bridge_content;
+        if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+        extract( $args );
+        $title = apply_filters('widget_title', $instance['title']);
+        echo $before_title . $title . $after_title;
+        echo '<div id="top_menu">'.$cc_whmcs_bridge_content['topNav'].'</div>';
+        echo '<div class="clear"></div>';
+    }
+
+    /** @see WP_Widget::update */
+    function update($new_instance, $old_instance) {
+        $instance = $old_instance;
+        $instance['title'] = strip_tags($new_instance['title']);
+        return $instance;
+    }
+
+    /** @see WP_Widget::form */
+    function form($instance) {
+        $title = isset($instance['title']) ? esc_attr($instance['title']) : '';
+        echo '<p>';
+        echo '<label for="'.$this->get_field_id('title').'"'._e('Title:').'</label>';
+        echo '<input class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" type="text" value="'.$title.'"/>';
+        echo '</p>';
+    }
 }

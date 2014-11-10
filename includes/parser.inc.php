@@ -69,7 +69,8 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace('background="images','background="'.cc_whmcs_bridge_url().'/images',$buffer);
-	$buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
+    $buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
+    $buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
 
 	//jQuery UI
 	$buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
@@ -208,6 +209,14 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]='/window.open\(\'([a-zA-Z\_]*?).php.(.*?)\'/';
 		$r[]='window.open(\''.$home.'?ajax=1&ccce=$1&$2'.$pid.'\'';
 
+        // quotations using location.href with single quote
+        $f[]='/location.href\=\''.'([a-zA-Z\_]*?).php\'/';
+        $r[]='location.href=\''.$home.'?ccce=$1'.$pid.'\'';
+
+        $f[]='/location.href\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
+        $r[]='location.href=\''.$home.'?ccce=$1&$2'.$pid.'\'';
+        // end
+
 		$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
 		$r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
 
@@ -283,8 +292,10 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]="/>>/";
 		$r[]="&gt;&gt;";
 
-		$f[]='/action\=\".*(\/modules\/gateways\/[a-zA-Z\_]*?).php\?(.*?)\"/';
-		$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+        // payment gateway modules issue
+		//$f[]='/action\=\".*(\/modules\/gateways\/[a-zA-Z\_]*?).php\?(.*?)\"/';
+		//$r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+        // end
 
 		//'page' is a Wordpress reserved variable
 		$f[]='/href\=\"(.*?)&amp;page\=([0-9]?)"/';
