@@ -49,12 +49,16 @@ function cc_whmcs_bridge_options() {
         "id" => $cc_whmcs_bridge_shortname."_invoicestyle",
         "type" => "checkbox"
     );
+
+    /** Not working just yet
     $cc_whmcs_bridge_options[232] = array(
         "name" => "Use ".WHMCS_BRIDGE_PAGE." page titles as headings",
         "desc" => 'Select if you want to load the '.WHMCS_BRIDGE_PAGE.' page titles (meta titles) as the <strong>headings</strong> within your WordPress pages.',
         "id" => $cc_whmcs_bridge_shortname."_whmcs_titles",
         "type" => "checkbox"
     );
+     **/
+
     $cc_whmcs_bridge_options[300] = array(
         "name" => "Other Settings",
         "type" => "heading",
