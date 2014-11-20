@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.2.3");
+define("CC_WHMCS_BRIDGE_VERSION","3.2.4");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -431,24 +431,26 @@ function cc_whmcs_bridge_http($page="index") {
     return $http;
 }
 
-function cc_whmcs_bridge_meta_title() {
+/*function cc_whmcs_bridge_meta_title() {
     global $cc_whmcs_bridge_content;
 
     cc_whmcs_log(0, 'Bridge Title: '.print_r($cc_whmcs_bridge_content['page_title'], true));
 
     if (isset($cc_whmcs_bridge_content['page_title'])) return $cc_whmcs_bridge_content['page_title'];
     else return '';
-}
+}*/
 
 function cc_whmcs_bridge_title($title,$id=0) {
     global $cc_whmcs_bridge_content;
 
+    if (!in_the_loop()) return $title;
+    if ($id==0) return $title;
+
+    /** Not working just yet.
     if (get_option('cc_whmcs_bridge_whmcs_titles') == 'checked') {
         if (isset($cc_whmcs_bridge_content['page_title'])) return $cc_whmcs_bridge_content['page_title'];
     }
-
-    if (!in_the_loop()) return $title;
-    if ($id==0) return $title;
+     */
 
     if (isset($cc_whmcs_bridge_content['title'])) return $cc_whmcs_bridge_content['title'];
     else return $title;
