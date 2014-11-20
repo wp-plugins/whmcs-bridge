@@ -1,10 +1,10 @@
 === WHMCS Bridge ===
-Contributors: zingiri, globalprogramming
+Contributors: globalprogramming, zingiri
 Donate link: http://i-plugins.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
-Tested up to: 4.0
-Stable tag: 3.2.2
+Tested up to: 4.0.1
+Stable tag: 3.2.3
 
 WHMCS Bridge is a plugin that integrates the powerful WHMCS support and billing software with Wordpress.
 
@@ -49,6 +49,12 @@ No screenshots here but have a look at [our site](http://i-plugins.com "our site
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 3.2.3 =
+* Fixed issue with order confirmation page (eg: Stripe) rendering without WordPress layout.
+* Fixed invoice email link not showing WordPress layout if not logged in.
+* Updated Simple HTML DOM class to latest version.
+* Added option in Settings to use WHMCS page titles as headings on WP pages.
 
 = 3.2.2 =
 * Payment gateway module issue (eg: 2Checkout recurring payments) fixed.

@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.2.2");
+define("CC_WHMCS_BRIDGE_VERSION","3.2.3");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -34,6 +34,8 @@ if ($cc_whmcs_bridge_version) {
     if (get_option('cc_whmcs_bridge_footer')=='Site') add_filter('wp_footer','cc_whmcs_bridge_footer');
     add_filter('the_content', 'cc_whmcs_bridge_content', 10, 3);
     add_filter('the_title', 'cc_whmcs_bridge_title');
+    #add_filter('wp_title', 'cc_whmcs_bridge_meta_title', 10, 2 );
+
     add_action('wp_head','cc_whmcs_bridge_header',10);
     add_action('admin_head','cc_whmcs_bridge_admin_header');
     add_action("plugins_loaded", "cc_whmcs_sidebar_init");
@@ -429,8 +431,22 @@ function cc_whmcs_bridge_http($page="index") {
     return $http;
 }
 
+function cc_whmcs_bridge_meta_title() {
+    global $cc_whmcs_bridge_content;
+
+    cc_whmcs_log(0, 'Bridge Title: '.print_r($cc_whmcs_bridge_content['page_title'], true));
+
+    if (isset($cc_whmcs_bridge_content['page_title'])) return $cc_whmcs_bridge_content['page_title'];
+    else return '';
+}
+
 function cc_whmcs_bridge_title($title,$id=0) {
     global $cc_whmcs_bridge_content;
+
+    if (get_option('cc_whmcs_bridge_whmcs_titles') == 'checked') {
+        if (isset($cc_whmcs_bridge_content['page_title'])) return $cc_whmcs_bridge_content['page_title'];
+    }
+
     if (!in_the_loop()) return $title;
     if ($id==0) return $title;
 

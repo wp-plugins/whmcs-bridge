@@ -161,6 +161,11 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	if (strpos($whmcs,'https://')===0) $whmcs=str_replace('https://','http://',$whmcs);
 	$whmcs2=str_replace('http://','https://',$whmcs);
 
+    $html = new simple_html_dom();
+    $html->load($buffer);
+    $page_title = $html->find('title', 0);
+    $ret['page_title'] = $page_title->plaintext;
+
 	$ret['buffer']=$buffer;
 	if (get_option('cc_whmcs_bridge_permalinks') && function_exists('cc_whmcs_bridge_parser_with_permalinks') && !$pid) {
 		$buffer=cc_whmcs_bridge_parser_with_permalinks($buffer,$home,$pid,$whmcs,$sub,$whmcs2);
@@ -331,7 +336,11 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	//verify captcha image
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage'.$pid,$buffer);
 
-	if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice' || $_REQUEST['ccce']=='announcementsrss')) {
+	if (isset($_REQUEST['ccce']) &&
+        (($_REQUEST['ccce']=='viewinvoice' && strstr($buffer, 'invoicestyle'))
+            || $_REQUEST['ccce']=='announcementsrss')
+
+    ) {
 		while (count(ob_get_status(true)) > 0) ob_end_clean();
 		echo $buffer;
 		die();
