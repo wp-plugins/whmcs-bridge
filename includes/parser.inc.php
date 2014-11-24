@@ -401,10 +401,10 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 			$sidebarData['mode'][$count-1]=$title;
 		}
 
-		$ret['sidebarNav']=$sidebarData[1]; //QUICK NAVIGATION
-		$ret['sidebarAcInf']=$sidebarData[2]; //ACCOUNT INFORMATION
-		$ret['sidebarAcSta']=$sidebarData[3]; //ACCOUNT STATISTICS
-		$ret['mode']=$sidebarData['mode'];
+		$ret['sidebarNav']=@$sidebarData[1]; //QUICK NAVIGATION
+		$ret['sidebarAcInf']=@$sidebarData[2]; //ACCOUNT INFORMATION
+		$ret['sidebarAcSta']=@$sidebarData[3]; //ACCOUNT STATISTICS
+		$ret['mode']=@$sidebarData['mode'];
 
 		if (stristr($ret['sidebarAcInf'], 'type="password"') !== false) {
 			$ret['sidebarAcInf'] = $loginForm.$ret['sidebarAcInf'].'</form>';
