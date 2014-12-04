@@ -66,6 +66,7 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 	
 	$buffer=preg_replace($f,$r,$buffer,-1,$count);
 
+    $buffer=str_replace('url(images', 'url('.cc_whmcs_bridge_url().'/images', $buffer);
 	$buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
 	$buffer=str_replace('src="images','src="'.cc_whmcs_bridge_url().'/images',$buffer);
 	$buffer=str_replace('background="images','background="'.cc_whmcs_bridge_url().'/images',$buffer);
@@ -81,9 +82,15 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 function cc_whmcs_bridge_parser_ajax2($buffer) {
 	cc_whmcs_bridge_home($home,$pid);
 
+    // promo code ajax
+    $f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
+    $r[]="jQuery.post(\"$home?ccce=$1&ajax=2";
+    $buffer=preg_replace($f,$r,$buffer,-1,$count);
+
+
 	$buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
 	$buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
-	
+
 	return $buffer;
 
 }
