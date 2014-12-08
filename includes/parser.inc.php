@@ -458,7 +458,17 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$welcomebox=$welcomebox."</div>";
 		$ret['welcomebox']=$welcomebox;
 	}
-	//end new change
+    // contribution northgatewebhosting.co.uk
+    if ($carttotal=$html->find('div[id=cart-total]',0)){
+        //top menu here
+        $carttotal=$carttotal->__toString();
+        $carttotal=str_replace('<div id="cart-total">','<div id="cart-total-widget">',$carttotal);
+        $ret['carttotal']=$carttotal;
+    }
+    // contribution northgatewebhosting.co.uk
+
+    //end new change
+
 	$ret['msg']=$_SESSION;
 
 	return $ret;

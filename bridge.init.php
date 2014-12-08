@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.2.6");
+define("CC_WHMCS_BRIDGE_VERSION","3.2.7");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -211,7 +211,16 @@ function cc_whmcs_bridge_output($page=null) {
 
     $ajax=false;
 
-    $cf=get_post_custom($post->ID);
+    // contribution northgatewebhosting.co.uk
+    if (isset($post)) {
+        $post_id = $post->ID;
+    } else {
+        $post_id = 1;
+    }
+    // contribution northgatewebhosting.co.uk
+
+    $cf=get_post_custom($post_id);
+
     if ($page) {
         $cc_whmcs_bridge_to_include=$page;
     } elseif (isset($_REQUEST['ccce']) && (isset($_REQUEST['ajax']) && $_REQUEST['ajax'])) {
@@ -257,7 +266,10 @@ function cc_whmcs_bridge_output($page=null) {
             header("Content-Type: image");
             echo $news->body;
             die();
-        } elseif ($cc_whmcs_bridge_to_include=='dl') {
+        } elseif ($cc_whmcs_bridge_to_include=='dl' ||
+            (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && isset($_REQUEST['action']) && $_REQUEST['action'] == 'dl') ||
+            (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && stristr($cc_whmcs_bridge_to_include, '.css') !== false)
+        ) {
             while (count(ob_get_status(true)) > 0) ob_end_clean();
             $output=$news->DownloadToString();
             header("Content-Disposition: ".$news->headers['content-disposition']);
@@ -395,23 +407,29 @@ function cc_whmcs_bridge_http($page="index") {
     if (substr($whmcs,-1)!='/') $whmcs.='/';
     if ((strpos($whmcs,'https://')!==0) && isset($_REQUEST['sec']) && ($_REQUEST['sec']=='1')) $whmcs=str_replace('http://','https://',$whmcs);
     $vars="";
-    if ($page=='verifyimage') $http=$whmcs.'includes/'.$page.'.php';
-    elseif (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='js')) {
+
+    if ($page=='verifyimage') {
+        $http=$whmcs.'includes/'.$page.'.php';
+    } elseif (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='js')) {
         $http=$whmcs.$_REQUEST['js'];
         return $http;
-    } elseif (substr($page,-1)=='/') $http=$whmcs.substr($page,0,-1);
-    else $http=$whmcs.$page.'.php';
+    } elseif (substr($page,-1)=='/') {
+        $http=$whmcs.substr($page,0,-1);
+    } else {
+        $http=$whmcs.$page.'.php';
+    }
+
     $and="";
     if (count($_GET) > 0) {
         foreach ($_GET as $n => $v) {
-            if ($n!="page_id" && $n!="ccce" && $n!='whmcspage')
-            {
+            if ($n!="page_id" && $n!="ccce" && $n!='whmcspage')  {
                 if (is_array($v)) {
                     foreach ($v as $n2 => $v2) {
                         $vars.= $and.$n.'['.$n2.']'.'='.urlencode($v2);
                     }
+                } else {
+                    $vars.= $and.$n.'='.urlencode($v);
                 }
-                else $vars.= $and.$n.'='.urlencode($v);
                 $and="&";
             }
         }

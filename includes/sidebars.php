@@ -7,6 +7,9 @@ function cc_whmcs_sidebar_init() {
 	add_action('widgets_init', create_function('', 'return register_widget("cc_whmcs_welcomebox_main");'));
 	add_action('widgets_init', create_function('', 'return register_widget("cc_whmcs_sidebarNav_main");'));
 	add_action('widgets_init', create_function('', 'return register_widget("cc_whmcs_sidebarNav_Acc");'));
+    // contribution northgatewebhosting.co.uk
+    add_action('widgets_init', create_function('', 'return register_widget("cc_whmcs_carttotal_main");'));
+    // contribution northgatewebhosting.co.uk
 }
 
 class cc_whmcs_sidebar_main extends WP_Widget {
@@ -267,3 +270,41 @@ class cc_whmcs_topNav_main extends WP_Widget {
         echo '</p>';
     }
 }
+
+// contribution northgatewebhosting.co.uk
+class cc_whmcs_carttotal_main extends WP_Widget {
+    /** constructor */
+    function cc_whmcs_carttotal_main() {
+        parent::WP_Widget(false, $name = 'WHMCS Cart Total');
+    }
+
+    /** @see WP_Widget::widget */
+    function widget($args, $instance) {
+        global $cc_whmcs_bridge_content;
+        if (!$cc_whmcs_bridge_content) $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
+        if (!isset($cc_whmcs_bridge_content['carttotal'])) return;
+        extract( $args );
+        $title = apply_filters('widget_title', $instance['title']);
+        echo $before_widget;
+        if ( $title ) echo $before_title . $title . $after_title;
+        echo $cc_whmcs_bridge_content['carttotal'];
+        echo $after_widget;
+    }
+
+    /** @see WP_Widget::update */
+    function update($new_instance, $old_instance) {
+        $instance = $old_instance;
+        $instance['title'] = strip_tags($new_instance['title']);
+        return $instance;
+    }
+
+    /** @see WP_Widget::form */
+    function form($instance) {
+        $title = isset($instance['title']) ? esc_attr($instance['title']) : '';
+        echo '<p>';
+        echo '<label for="'.$this->get_field_id('title').'"'._e('Title:').'</label>';
+        echo '<input class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" type="text" value="'.$title.'"/>';
+        echo '</p>';
+    }
+}
+// contribution northgatewebhosting.co.uk
