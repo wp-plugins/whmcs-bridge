@@ -61,7 +61,7 @@ function cc_whmcs_admin_notices() {
     $dirs=array();
 
     $cc_whmcs_bridge_version=get_option("cc_whmcs_bridge_version");
-    if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') by verifying your settings and clicking update on the <a href="options-general.php?page=cc-ce-bridge-cp">control panel</a>.';
+    if ($cc_whmcs_bridge_version && $cc_whmcs_bridge_version != CC_WHMCS_BRIDGE_VERSION) $warnings[]='You downloaded version '.CC_WHMCS_BRIDGE_VERSION.' and need to update your settings (currently at version '.$cc_whmcs_bridge_version.') by verifying your settings and clicking the "Save Settings" button on the <a href="options-general.php?page=cc-ce-bridge-cp">bridge control panel</a>.';
     $upload=wp_upload_dir();
 
     if (cc_whmcs_bridge_mainpage()) {
@@ -378,9 +378,9 @@ function cc_whmcs_bridge_header() {
     global $cc_whmcs_bridge_content,$post;
 
     if (!(isset($post->ID))) return;
+
     $cf=get_post_custom($post->ID);
     if (isset($_REQUEST['ccce']) || (isset($cf['cc_whmcs_bridge_page']) && $cf['cc_whmcs_bridge_page'][0]==WHMCS_BRIDGE_PAGE)) {
-//		echo '<link rel="stylesheet" type="text/css" href="' . CC_WHMCS_BRIDGE_URL . 'reset.css" media="screen" />';
         if (!$cc_whmcs_bridge_content) {
             $cc_whmcs_bridge_content=cc_whmcs_bridge_parser();
         }

@@ -43,7 +43,8 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 
 	//replaces whmcs jquery so that it doesn't start it twice
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
-		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+        $buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+        $buffer=preg_replace('/<script.*jquery.min.js"><\/script>/','',$buffer);
 		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
 	}
 
@@ -290,6 +291,9 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
 		$r[]="jQuery.post(\"$home?ccce=$1&ajax=1$pid";
 
+        $f[]="/jQuery.post\(\'([a-zA-Z]*?).php/";
+        $r[]="jQuery.post('$home?ccce=$1&ajax=1$pid";
+
 		$f[]="/popupWindow\(\'([a-zA-Z]*?).php\?/";
 		$r[]="popupWindow('$home?ccce=$1&ajax=1$pid&";
 
@@ -344,7 +348,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	$buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage'.$pid,$buffer);
 
 	if (isset($_REQUEST['ccce']) &&
-        (($_REQUEST['ccce']=='viewinvoice' && strstr($buffer, 'invoicestyle'))
+        (($_REQUEST['ccce']=='viewinvoice' && strstr($buffer, 'invoice.css'))
             || $_REQUEST['ccce']=='announcementsrss')
 
     ) {
@@ -373,7 +377,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 	//replaces whmcs jquery so that it doesn't start it twice
 	if(in_array(get_option('cc_whmcs_bridge_jquery'),array('checked','wp'))) {
-		$buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+        $buffer=preg_replace('/<script.*jquery.js"><\/script>/','',$buffer);
+        $buffer=preg_replace('/<script.*jquery.min.js"><\/script>/','',$buffer);
 		$buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
 	}
 

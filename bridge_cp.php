@@ -103,15 +103,15 @@ function cc_whmcs_bridge_add_admin() {
             delete_option('cc_whmcs_bridge_log');
             foreach ($cc_whmcs_bridge_options as $value) {
                 if (isset($value['id']))
-                    update_option( $value['id'], $_REQUEST[ $value['id'] ] );
+                    @update_option( $value['id'], $_REQUEST[ $value['id'] ] );
             }
 
             foreach ($cc_whmcs_bridge_options as $value) {
                 if (isset($value['id'])) {
                     if (isset($_REQUEST[$value['id']])) {
-                        update_option($value['id'], $_REQUEST[$value['id']]);
+                        @update_option($value['id'], $_REQUEST[$value['id']]);
                     } else {
-                        delete_option($value['id']);
+                        @delete_option($value['id']);
                     }
                 }
             }

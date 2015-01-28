@@ -119,7 +119,7 @@ class bridgeHttpRequest
 
 		$cookies = '';
 		$newheaders = array();
-		//echo '<br /><br />HEADERS<br />'.print_r($headers,true).'===<br /><br />';
+
 		foreach ( $headers as $tempheader ) {
 			if ( empty($tempheader) )
 			continue;
@@ -150,8 +150,6 @@ class bridgeHttpRequest
 				}
 			}
 		}
-		//echo '<br /><br />COOKIES:'.$cookies.'===<br /><br />';
-
 		return array('response' => $response, 'headers' => $newheaders, 'cookies' => $cookies);
 	}
 
@@ -169,12 +167,9 @@ class bridgeHttpRequest
 		$pos = strlen($req);
 		$host = substr($req, 0, $pos);
 
-		if(strpos($host, ':') !== false)
-		{
+		if(strpos($host, ':') !== false)  {
 			list($this->_host, $this->_port) = explode(':', $host);
-		}
-		else
-		{
+		} else {
 			$this->_host = $host;
 			$this->_port = ($this->_protocol == 'https') ? 443 : 80;
 		}
@@ -190,6 +185,7 @@ class bridgeHttpRequest
 
 	//check if server is live
 	function live() {
+        //return true;
 		if (ip2long($this->_host)) return true; //in case using an IP instead of a host name
 		$url=$this->_host;
 		if (gethostbyname($url) == $url) return false;
