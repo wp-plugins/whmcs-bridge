@@ -86,8 +86,17 @@ function cc_whmcs_bridge_parser_ajax2($buffer) {
     // promo code ajax
     $f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
     $r[]="jQuery.post(\"$home?ccce=$1&ajax=2";
+
+    $f[]='/document.location\=\"([a-zA-Z\_]*?).php.(.*?)\"/';
+    $r[]='document.location="'.$home.'?ccce=$1&$2'.$pid.'"';
+
+    $f[]='/window.open\(\"([a-zA-Z\_]*?).php.(.*?)\"/';
+    $r[]='window.open("'.$home.'?ajax=1&ccce=$1&$2'.$pid.'"';
+
     $buffer=preg_replace($f,$r,$buffer,-1,$count);
 
+    $buffer=str_replace('wbteampro.php?', $home.'?ccce=wbteampro&', $buffer);
+    $buffer=str_replace('wbteampro.php', $home.'?ccce=wbteampro', $buffer);
 
 	$buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
 	$buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
@@ -197,6 +206,22 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]='/value\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php\"/';
 		$r[]='value="'.$home.'?ccce=$1'.$pid.$secure.'"';
 
+        # custom paths
+        $custom_paths = explode("\n", str_replace("\r\n", "\n", get_option('cc_whmcs_bridge_custom_rules')));
+        if (is_array($custom_paths)) {
+            foreach ($custom_paths as $pth) {
+                if (trim($pth) == '') continue;
+
+                $f[] = "\${$pth}(.*?).js\$";
+                $r[] = $home . "?ccce=js&ajax=2&js=" . $pth . '$1.js' . $pid;
+            }
+        }
+
+        # wbteampro
+        $f[]='/img src\=\"([a-zA-Z]*?).php.(.*?)\"/';
+        $r[]="img src=\"$home"."$1/?$2&ajax=2\"";
+
+
 		$f[]='/value\=\"'.preg_quote($whmcs2,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
 		$r[]='value="'.$home.'?ccce=$1&$2'.$pid.$secure.'"';
 
@@ -237,7 +262,10 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
 		$f[]='/window.location\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
-		$r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
+        $r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
+
+        $f[]='/img src\=\"([a-zA-Z]*?).php.(.*?)\"/';
+        $r[]="img src=\"$home"."$1/?$2&ajax=2\"";
 
 		$f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
 		$r[]='window.location = \''.$home.'?ccce=$1'.$pid.'&$2\'';
@@ -317,6 +345,17 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 		$f[]='/href\=\"(.*?)&amp;page\=([0-9]?)"/';
 		$r[]='href="$1'.'&whmcspage=$2"';
 
+        /*
+         * jQuery("#customFields").load(
+                "submitticket.php",
+         */
+
+        $f[]='/.load\(\"submitticket.php/';
+        $r[]='.load("'.$home.'?ccce=submitticket&ajax=1'.$pid;
+
+        $f[]='/"submitticket.php/';
+        $r[]='"'.$home.'?ccce=submitticket&ajax=1'.$pid;
+
 		$buffer=preg_replace($f,$r,$buffer,-1,$count);
 	}
 	//patch issue with &
@@ -384,6 +423,13 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
 	//jQuery ui
 	$buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
+
+    // Fix url issues
+    $surl = str_replace(array('http:', 'https:'), '', $whmcs);
+    $buffer=str_replace($surl.$home, $home, $buffer);
+    $buffer=str_replace($home.'index/', $home, $buffer);
+    $buffer=str_replace($home.'cart/cart.php', $home.'cart', $buffer);
+    $buffer=str_replace($home.'serverstatus/serverstatus.php', $home.'serverstatus', $buffer);
 
 
 	$html = new simple_html_dom();

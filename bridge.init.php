@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.3.0");
+define("CC_WHMCS_BRIDGE_VERSION","3.3.1");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -260,7 +260,7 @@ function cc_whmcs_bridge_output($page=null) {
         cc_whmcs_log('Error','A HTTP Error occurred');
         return "A HTTP Error occurred";
     } else {
-        cc_whmcs_log(0, 'Headers: '.$news->headers['content-type'].' - Disposition: '.$news->headers['content-disposition']);
+        @cc_whmcs_log(0, 'Headers: '.$news->headers['content-type'].' - Disposition: '.$news->headers['content-disposition']);
 
         if ($cc_whmcs_bridge_to_include=='verifyimage') {
             $output=$news->DownloadToString();
@@ -269,9 +269,10 @@ function cc_whmcs_bridge_output($page=null) {
             echo $news->body;
             die();
         } elseif ($cc_whmcs_bridge_to_include=='dl' ||
+            (stristr($cc_whmcs_bridge_to_include, 'wbteampro') !== false && isset($_REQUEST['act']) && $_REQUEST['act'] == 'download') ||
             (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && isset($_REQUEST['action']) && $_REQUEST['action'] == 'dl') ||
             (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && stristr($cc_whmcs_bridge_to_include, '.css') !== false) ||
-            stristr($news->headers['content-type'], 'pdf') !== false
+            @stristr($news->headers['content-type'], 'pdf') !== false
         ) {
             while (count(ob_get_status(true)) > 0) ob_end_clean();
             $output=$news->DownloadToString();
