@@ -323,8 +323,9 @@ class bridgeHttpRequest
 				}
 			}
 		}
-		$post='';
+
 		$apost=array();
+
 		if (count($this->post) > 0) {
 			curl_setopt($ch, CURLOPT_POST, 1); // set POST method
 			$post="";
@@ -336,45 +337,30 @@ class bridgeHttpRequest
 							foreach ($v2 as $k3 => $v3) {
                                 if (is_array($v3)) {
                                     foreach ($v3 as $k4 => $v4) {
-                                        if ($post) $post .= '&';
-
-                                        $val = rawurlencode(stripslashes($v4));;
-
-                                        $post .= $k . '[' . $k2 . ']' . '[' . $k3 . ']['.$k4.']' . '=' . $val;
                                         $apost[$k . '[' . $k2 . ']' . '[' . $k3 . ']['.$k4.']'] = $v4;
                                     }
                                 } else {
-                                    if ($post) $post .= '&';
-
-                                    $val = rawurlencode(stripslashes($v3));;
-
-                                    $post .= $k . '[' . $k2 . ']' . '[' . $k3 . ']' . '=' . $val;
                                     $apost[$k . '[' . $k2 . ']' . '[' . $k3 . ']'] = $v3;
                                 }
 							}
 						} else {
-							if ($post) $post.='&';
-							$val = rawurlencode(stripslashes($v2));
-							$post.=$k.'['.$k2.']'.'='.$val;
-							$key='['.$k.']['.$k2.']';
 							$apost[$k.'['.$k2.']']= $v2;
 						}
 					}
 
 				} else {
-					if ($post) $post.='&';
-
-					$val = rawurlencode(stripslashes($v));
-
-					$post.=$k.'='.$val;
 					$apost[$k]=$v;
 				}
 			}
 		}
 
 		if (count($apost) > 0) {
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($apost)); // add POST fields
-		}
+            // waiting for php 5.5's curlfiles support to be standard
+            if (count($newfiles) > 0)
+			    curl_setopt($ch, CURLOPT_POSTFIELDS, $apost);
+            else
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($apost));
+        }
 
 		$data = curl_exec($ch); // run the whole process
 		if (curl_errno($ch)) {

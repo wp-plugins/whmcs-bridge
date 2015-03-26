@@ -50,6 +50,10 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 
 == Changelog ==
 
+= 3.3.2 =
+* Fixes to avoid simple_html_dom conflicts
+* Fixes for file uploads
+
 = 3.3.1 =
 * Additional support fixes for wbteampro
 * Solved PHP Notice issues with headers

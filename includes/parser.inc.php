@@ -178,7 +178,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 	if (strpos($whmcs,'https://')===0) $whmcs=str_replace('https://','http://',$whmcs);
 	$whmcs2=str_replace('http://','https://',$whmcs);
 
-    $html = new simple_html_dom();
+    $html = new iplug_simple_html_dom();
     $html->load($buffer);
     $page_title = $html->find('title', 0);
     $ret['page_title'] = $page_title->plaintext;
@@ -432,7 +432,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
     $buffer=str_replace($home.'serverstatus/serverstatus.php', $home.'serverstatus', $buffer);
 
 
-	$html = new simple_html_dom();
+	$html = new iplug_simple_html_dom();
 	$html->load($buffer);
 	$sidebar=$html->find('div[id=side_menu]', 0) ? trim($html->find('div[id=side_menu]', 0)->innertext) : null;
 	if ($sidebar) {

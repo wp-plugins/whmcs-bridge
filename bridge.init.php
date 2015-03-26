@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.3.1");
+define("CC_WHMCS_BRIDGE_VERSION","3.3.2");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -48,7 +48,7 @@ require_once(dirname(__FILE__) . '/includes/http.class.php');
 require_once(dirname(__FILE__) . '/includes/footer.inc.php');
 require_once(dirname(__FILE__) . '/includes/integrator.inc.php');
 require_once(dirname(__FILE__) . '/bridge_cp.php');
-if (!class_exists('simple_html_dom_node')) require_once(dirname(__FILE__) . '/includes/simple_html_dom.php');
+if (!class_exists('iplug_simple_html_dom_node')) require_once(dirname(__FILE__) . '/includes/simple_html_dom.php');
 require(dirname(__FILE__).'/includes/sidebars.php');
 require(dirname(__FILE__).'/includes/parser.inc.php');
 
