@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.3.2");
+define("CC_WHMCS_BRIDGE_VERSION","3.3.3");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -262,7 +262,7 @@ function cc_whmcs_bridge_output($page=null) {
     } else {
         @cc_whmcs_log(0, 'Headers: '.$news->headers['content-type'].' - Disposition: '.$news->headers['content-disposition']);
 
-        if ($cc_whmcs_bridge_to_include=='verifyimage') {
+        if ($cc_whmcs_bridge_to_include=='verifyimage' || (isset($_REQUEST['showqrimage']) && $_REQUEST['showqrimage'] ==1)) {
             $output=$news->DownloadToString();
             while (count(ob_get_status(true)) > 0) ob_end_clean();
             header("Content-Type: image");

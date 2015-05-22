@@ -15,10 +15,5 @@ if (defined("CC_WHMCS_BRIDGE_SSO_PLUGIN") && file_exists(dirname(__FILE__).'/../
     require(dirname(__FILE__).'/../../whmcs-bridge-sso/pages/help.php');
 else:
     ?>
-    <h2>We Recommend</h2>
-
-    <p><a target="_blank" href="https://billing.stablehost.com/aff.php?aff=3284">
-        <img src="http://www.stablehost.com/images/banner40-3.gif" border="0"></a>
-    <br/>Use the coupon code <strong>IPLUGINS</strong> and get 40% off your order!</p>
 
 <?php endif ?>

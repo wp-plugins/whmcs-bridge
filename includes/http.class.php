@@ -261,6 +261,11 @@ class bridgeHttpRequest
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+		
+		//cloudflare debug
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+		
 		//CURLOPT_REFERER -  The contents of the "Referer: " header to be used in a HTTP request.
 		//CURLOPT_INTERFACE -  The name of the outgoing network interface to use. This can be an interface name, an IP address or a host name.
 		curl_setopt($ch, CURLOPT_TIMEOUT, 60); // times out after 10s
@@ -434,8 +439,15 @@ class bridgeHttpRequest
 			if ($this->os()=='WINDOWS') {
 				if (strpos($redir,$this->_protocol.'://'.$this->_host.$this->_path)===0) {
 					//do nothing
-				} elseif (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) $redir=$this->_protocol.'://'.$this->_host.$this->_path;
-				elseif (!strstr($redir,$this->_host)) $redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				} elseif (strstr($this->_protocol.'://'.$this->_host.$redir,$this->_protocol.'://'.$this->_host.$this->_path)) {
+					$new_redir=$this->_protocol.'://'.$this->_host.$this->_path;
+					if (strstr($new_redir, $redir) === false) {
+						$new_redir .= $redir;
+					}
+					$redir = $new_redir;
+				} elseif (!strstr($redir,$this->_host)) {
+					$redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
+				}
 			} else {
 				if (strpos($redir,$this->_protocol.'://'.$this->_host.$this->_path)===0) {
 					//do nothing
@@ -448,7 +460,6 @@ class bridgeHttpRequest
 					$redir=$this->_protocol.'://'.$this->_host.$this->_path.$redir;
 				}
 			}
-			//echo '<br />redir='.$redir;
 			$fwd=$this->forceWithRedirectToString($redir);
 			if ($fwd) {
 				if (strstr($redir,'&')) $redir.='&';
