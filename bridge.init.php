@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.3.3");
+define("CC_WHMCS_BRIDGE_VERSION","3.3.3.1");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -287,6 +287,13 @@ function cc_whmcs_bridge_output($page=null) {
                 while (count(ob_get_status(true)) > 0) ob_end_clean();
                 $body=$news->body;
                 $body=cc_whmcs_bridge_parser_ajax1($body);
+
+                if (stristr($_REQUEST['js'], '.css') !== false) {
+                    header('Content-Type: text/css');
+                } else if (stristr($_REQUEST['js'], '.js') !== false) {
+                    header('Content-Type: application/javascript');
+                }
+
                 echo $body;
                 die();
             } else {
