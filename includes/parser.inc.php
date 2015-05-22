@@ -390,6 +390,9 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
     
     // some JS not being closed correctly
     $buffer = str_replace("&,", '&",', $buffer);
+    $buffer = str_replace("&>", '&">', $buffer);
+    $buffer = str_replace("&/>", '&"/>', $buffer);
+    $buffer = str_replace("& />", '&" />', $buffer);
 
     //name is a reserved Wordpress field name
     if (isset($_REQUEST['ccce']) && ($_REQUEST['ccce']=='viewinvoice')) {
@@ -419,6 +422,10 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
     $buffer = str_replace($whmcs_path.'http', 'http', $buffer);
     $buffer = str_replace($whmcs_path.'://', '://', $buffer);
+
+	$buffer=str_replace('http:http', 'http', $buffer);
+	$buffer=str_replace('https:http', 'http', $buffer);
+
 
     if (isset($_REQUEST['ccce']) &&
         (($_REQUEST['ccce']=='viewinvoice' && strstr($buffer, 'invoice.css'))
@@ -464,7 +471,6 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
     $buffer=str_replace($home.'index/', $home, $buffer);
     $buffer=str_replace($home.'cart/cart.php', $home.'cart', $buffer);
     $buffer=str_replace($home.'serverstatus/serverstatus.php', $home.'serverstatus', $buffer);
-
 
     $html = new iplug_simple_html_dom();
     $html->load($buffer);
