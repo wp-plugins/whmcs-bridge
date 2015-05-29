@@ -21,7 +21,7 @@ Our Pro version additionaly offers:
 * **Multi-lingual WHMCS support**: fully integrated with qtranslate & WPML
 * **IP address resolution 'patch'**: shows your customer's IP address instead of your server's IP address during sign up
 * **Choose your WHMCS portal**:fully compatible with the WHMCS v5 'default' template
-* **Pretty permalinks**: display links like http://www.mysite.com/clientarea/ rather than http://www.mysite.com/?ccce=clientarea. Also supports knowledgebase, announcement and download links.
+* **Pretty permalinks**: display links like http://www.mysite.tld/clientarea/ rather than http://www.mysite.tld/?ccce=clientarea. Also supports knowledgebase, announcement and download links.
  
 
 Thanks to the single sign-on feature (WHMCS Bridge Pro plugin), your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
