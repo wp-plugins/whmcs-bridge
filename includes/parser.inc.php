@@ -380,17 +380,17 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
         // orderforms
             $f[]="/src=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z]*?).js/";
-            $r[]="src=\"{$home}js/?ajax=1&js=".'templates/orderforms/$1/js/$2.js'.$pid;
+            $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/orderforms/$1/js/$2.js'.$pid;
 
             $f[]="/href=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/([a-zA-Z]*?).css/";
-            $r[]="href=\"{$home}js/?ajax=1&js=".'templates/orderforms/$1/$2.css'.$pid;
+            $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'templates/orderforms/$1/$2.css'.$pid;
 
         // templates css/js
             $f[]="/src=\"templates\/([a-zA-Z]*?)\/js\/([a-zA-Z0-9]*?).js/";
-            $r[]="src=\"{$home}js/?ajax=1&js=".'templates/$1/js/$2.js'.$pid;
+            $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/js/$2.js'.$pid;
 
             $f[]="/href=\"templates\/([a-zA-Z]*?)\/css\/([a-zA-Z0-9]*?).css/";
-            $r[]="href=\"{$home}js/?ajax=1&js=".'templates/$1/css/$2.css'.$pid;
+            $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/css/$2.css'.$pid;
 
         ## BootWHMCS
             $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/static\/app.js/";
