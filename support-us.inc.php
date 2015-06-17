@@ -23,7 +23,7 @@ if (!function_exists('zing_support_us')) {
                 <h4>Multi-lingual WHMCS support: </h4><p>fully integrated with qtranslate.</p><br /><br />
                 <h4>IP address resolution 'patch': </h4><p>shows your customer's IP address instead of your server's IP address during sign up.</p><br /><br />
                 <h4>Choose your WHMCS portal: </h4><p>fully compatible with the WHMCS v5 'default' template</p><br /><br />
-                <h4>Pretty permalinks: </h4><p>display links like http://www.mysite.com/clientarea/ rather than http://www.mysite.com/?ccce=clientarea. Also supports knowledgebase, announcement and download links.</p><br /><br />
+                <h4>Pretty permalinks: </h4><p>display links like http://www.mysite.tld/clientarea/ rather than http://www.mysite.tld/?ccce=clientarea. Also supports knowledgebase, announcement and download links.</p><br /><br />
                 <a href="http://i-plugins.com/whmcs-bridge-wordpress-plugin/" target="_blank"><img src="<?php echo plugins_url().'/whmcs-bridge/images/buy_now.png'?>" /></a>
             </div>
         <?php }?>

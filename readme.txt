@@ -4,7 +4,7 @@ Donate link: http://i-plugins.com/
 Tags: WHMCS, hosting, support, billing, integration
 Requires at least: 2.1.7
 Tested up to: 4.2.2
-Stable tag: 3.3.3.2
+Stable tag: 3.3.4
 
 WHMCS Bridge is a plugin that integrates the powerful WHMCS support and billing software with Wordpress.
 
@@ -21,7 +21,7 @@ Our Pro version additionaly offers:
 * **Multi-lingual WHMCS support**: fully integrated with qtranslate & WPML
 * **IP address resolution 'patch'**: shows your customer's IP address instead of your server's IP address during sign up
 * **Choose your WHMCS portal**:fully compatible with the WHMCS v5 'default' template
-* **Pretty permalinks**: display links like http://www.mysite.com/clientarea/ rather than http://www.mysite.com/?ccce=clientarea. Also supports knowledgebase, announcement and download links.
+* **Pretty permalinks**: display links like http://www.mysite.tld/clientarea/ rather than http://www.mysite.tld/?ccce=clientarea. Also supports knowledgebase, announcement and download links.
  
 
 Thanks to the single sign-on feature (WHMCS Bridge Pro plugin), your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
@@ -33,6 +33,7 @@ Thanks to the single sign-on feature (WHMCS Bridge Pro plugin), your customers c
 3. Go to the WHMCS Bridge settings menu and configure the plugin options.
 4. Install the plugin by clicking the Install button. This will create a new page titled WHMCS through which you can access the client portal of WHMCS.
 5. Activate the sidebar widget if you want the sidebar navigation
+6. In your WHMCS "General Settings", if you are using SSL please enter the HTTPS URL into your "WHMCS System URL" and leave "WHMCS SSL System URL" blank, having both set can cause problems with URL structuring.
 
 Please visit the [Forum](http://wordpress.org/support/plugin/whmcs-bridge "Support Forum") for more information and support.
 
@@ -49,6 +50,11 @@ No screenshots here but have a look at [our site](http://i-plugins.com "our site
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 3.3.4 =
+* Fix URL issues.
+* JS/CSS parsing fixes.
+* Misc bug fixes.
 
 = 3.3.3.2 =
 * PayPal bug

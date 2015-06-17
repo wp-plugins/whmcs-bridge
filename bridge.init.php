@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.3.3.2");
+define("CC_WHMCS_BRIDGE_VERSION","3.3.4");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -271,8 +271,11 @@ function cc_whmcs_bridge_output($page=null) {
         } elseif ($cc_whmcs_bridge_to_include=='dl' ||
             (stristr($cc_whmcs_bridge_to_include, 'wbteampro') !== false && isset($_REQUEST['act']) && $_REQUEST['act'] == 'download') ||
             (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && isset($_REQUEST['action']) && $_REQUEST['action'] == 'dl') ||
-            (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && stristr($cc_whmcs_bridge_to_include, '.css') !== false) ||
-            @stristr($news->headers['content-type'], 'pdf') !== false
+            (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && stristr($cc_whmcs_bridge_to_include, '.css') !== false)
+            //||
+//            @stristr($news->headers['content-type'], 'pdf') !== false || (
+  //              isset($_REQUEST['modop'], $_REQUEST['do'], $_REQUEST['page']) && !isset($_REQUEST['a'])
+    //        )
         ) {
             while (count(ob_get_status(true)) > 0) ob_end_clean();
             $output=$news->DownloadToString();
@@ -513,7 +516,7 @@ function cc_whmcs_bridge_init()
     }
     if (is_admin() && isset($_REQUEST['page']) && ($_REQUEST['page']=='cc-ce-bridge-cp')) {
         wp_enqueue_script(array('jquery-ui-tabs'));
-        wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/flick/jquery-ui.css');
+        wp_enqueue_style('jquery-style', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/flick/jquery-ui.css');
     }
 }
 
