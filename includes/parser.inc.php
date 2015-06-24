@@ -592,6 +592,14 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
     //end new change
 
+    foreach ($ret as $key => $val) {
+        if (stristr($key, 'sidebar') !== false || stristr($key, 'welcomebox') !== false) {
+            if (!is_array($val) && stristr($val, '<form') !== false && stristr($val, '</form') === false) {
+                $ret[$key] = $val.'</form>';
+            }
+        }
+    }
+
     $ret['msg']=$_SESSION;
 
     return $ret;
