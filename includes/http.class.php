@@ -243,6 +243,7 @@ class bridgeHttpRequest
 
 	function connect($url,$withHeaders=true,$withCookies=false) {
 		$this->time('reset');
+        global $wordpressPageName;
 		$newfiles=array();
 
 		if (function_exists('cc_whmcsbridge_sso_session')) cc_whmcsbridge_sso_session();
@@ -474,7 +475,18 @@ class bridgeHttpRequest
 					header('Location:'.$newRedir);
 					die();
 				}
-			}
+			} else if (strstr($redir,'custom_page=reissue')) {
+                $newRedir=cc_whmcs_bridge_parse_url($redir);
+                if ($wordpressPageName) $p=$wordpressPageName;
+                else $p='/';
+                $f[]='/.*\/([a-zA-Z\_]*?).php.(.*?)/';
+                $r[]=get_option('home').$p.'?ccce=$1&$2';
+                $f[]='/([a-zA-Z\_]*?).php.(.*?)/';
+                $r[]=get_option('home').$p.'?ccce=$1&$2';
+                $newRedir=preg_replace($f,$r,$newRedir,-1,$count);
+                header('Location:'.$newRedir);
+                die();
+            }
 			if (!$this->repost) $this->post=array();
 			$this->countRedirects++;
 			if ($this->countRedirects < 10) {

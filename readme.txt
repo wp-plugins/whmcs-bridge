@@ -20,7 +20,7 @@ Our Pro version additionaly offers:
 * **Single sign on**: thanks to the single sign-on feature, your customers can sign in once on your site and comment on your blog postings, share information with their peers, order hosting plans and pay their bills.
 * **Multi-lingual WHMCS support**: fully integrated with qtranslate & WPML
 * **IP address resolution 'patch'**: shows your customer's IP address instead of your server's IP address during sign up
-* **Choose your WHMCS portal**:fully compatible with the WHMCS v5 'default' template
+* **Choose your WHMCS portal**:fully compatible with the WHMCS 'six' responsive template
 * **Pretty permalinks**: display links like http://www.mysite.tld/clientarea/ rather than http://www.mysite.tld/?ccce=clientarea. Also supports knowledgebase, announcement and download links.
  
 
@@ -50,6 +50,11 @@ No screenshots here but have a look at [our site](http://i-plugins.com "our site
 Simply go to the Wordpress Settings page for the plugins and click the Upgrade button.
 
 == Changelog ==
+
+= 3.4.0 =
+* IMPORTANT: WHMCS Bridge "Free" version now defaults to "five" as the template. The "portal" is still an option, please note that there are incompatibilities with the domain checker on WHMCS 6 when using "portal".
+* Fixed WHMCS SSL certificate management issue (client area).
+* First release of WHMCS 6 compatibility - code enhancements for PRO version.
 
 = 3.3.5 =
 * Fixed sidebar widget issue.

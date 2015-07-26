@@ -2,9 +2,9 @@
 /*
  Plugin Name: WHMCS Bridge
  Plugin URI: http://i-plugins.com
- Description: WHMCS Bridge is a plugin that integrates the powerfull WHMCS support and billing software with Wordpress.
+ Description: WHMCS Bridge is a plugin that integrates the powerful WHMCS support and billing software with WordPress.
  Author: globalprogramming
- Version: 3.3.5
+ Version: 3.4.0
  Author URI: http://i-plugins.com/
  */
 

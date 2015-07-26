@@ -48,6 +48,18 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
         $buffer=preg_replace('/<script.*jqueryui.js"><\/script>/','',$buffer);
     }
 
+    $whmcs_path = parse_url(cc_whmcs_bridge_url(), PHP_URL_PATH);
+    if (substr($whmcs_path, -1) != '/')
+        $whmcs_path .= '/';
+
+    // six
+    $f[]="/src=\"".preg_quote($whmcs_path, '/')."assets\//";
+    $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'assets/$1'.$pid;
+
+    $f[]="/href=\"".preg_quote($whmcs_path, '/')."assets\//";
+    $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'assets/$1'.$pid;
+
+
     $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
     $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
@@ -65,7 +77,27 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
     $f[]="/window.location\='([a-zA-Z\_]*?).php.(.*?)'/";
     $r[]="window.location='".$home."?ccce=$1&$2".$pid."'";
 
+    // six
+    $f[]="/window.location\ \=\ '([a-zA-Z\_]*?).php.(.*?)'/";
+    $r[]="window.location='".$home."?ccce=$1&$2".$pid."'";
+
+    $f[]="/'([a-zA-Z\_]*?).php'/";
+    $r[]="'".$home."?ccce=$1".$pid."'";
+
+    $f[]="/\"([a-zA-Z\_]*?).php\"/";
+    $r[]="\"".$home."?ccce=$1".$pid."\"";
+
+    $f[]="/'([a-zA-Z\_]*?).php.(.*?)'/";
+    $r[]="'".$home."?ccce=$1&$2".$pid."'";
+
+    $f[]="/\"([a-zA-Z\_]*?).php.(.*?)\"/";
+    $r[]="\"".$home."?ccce=$1&$2".$pid."\"";
+    // six
+
     $buffer=preg_replace($f,$r,$buffer,-1,$count);
+
+    //verify captcha image
+    $buffer=str_replace('"includes/verifyimage.php?', '"'.$home.'?ccce=verifyimage'.$pid.'&',$buffer);
 
     $buffer=str_replace('url(images', 'url('.cc_whmcs_bridge_url().'/images', $buffer);
     $buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
@@ -73,6 +105,13 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
     $buffer=str_replace('background="images','background="'.cc_whmcs_bridge_url().'/images',$buffer);
     $buffer=str_replace('href="templates','href="'.cc_whmcs_bridge_url().'/templates',$buffer);
     $buffer=str_replace('src="templates','src="'.cc_whmcs_bridge_url().'/templates',$buffer);
+    // six
+    if (stristr($_REQUEST['js'], 'assets') !== false && stristr($_REQUEST['js'], '.css') !== false)
+        $buffer=str_replace('../fonts/', cc_whmcs_bridge_url().'/assets/fonts/',$buffer);
+
+    $buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
+    $buffer=str_replace('"cart.php?','"'.$home.'?ccce=cart'.$pid.'&"',$buffer);
+    $buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
 
     //jQuery UI
     $buffer=str_replace('href="includes/jscript/css/ui.all.css','href="'.cc_whmcs_bridge_url().'/includes/jscript/css/ui.all.css',$buffer);
@@ -233,8 +272,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php\"/';
             $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
-            $r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
+            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9]*?).php\"/';
+            $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
             $f[]='/'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php/';
             $r[]=''.$home.'?ccce=$1'.$pid;
@@ -378,6 +417,33 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $f[]="/.post\(\"([a-zA-Z]*?).php/";
             $r[]=".post(\"$home?ccce=$1&ajax=1$pid";
 
+        // six
+            $f[]="/src=\"".preg_quote($whmcs_path, '/')."assets\//";
+            $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'assets/$1'.$pid;
+
+            $f[]="/href=\"".preg_quote($whmcs_path, '/')."assets\//";
+            $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'assets/$1'.$pid;
+
+        // six modules
+            $f[]="/src=\"".preg_quote($whmcs_path, '/')."modules\//";
+            $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'modules/$1'.$pid;
+
+            $f[]="/href=\"".preg_quote($whmcs_path, '/')."modules\//";
+            $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'modules/$1'.$pid;
+
+            $f[]="/src=\"modules\//";
+            $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'modules/$1'.$pid;
+
+            $f[]="/href=\"modules\//";
+            $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'modules/$1'.$pid;
+
+        // six templates css/js
+            $f[]="/src=\"".preg_quote($whmcs_path, '/')."templates\/([a-zA-Z]*?)\/js\/([a-zA-Z0-9]*?).js/";
+            $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/js/$2.js'.$pid;
+
+            $f[]="/href=\"".preg_quote($whmcs_path, '/')."templates\/([a-zA-Z]*?)\/css\/([a-zA-Z0-9]*?).css/";
+            $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/css/$2.css'.$pid;
+
         // orderforms
             $f[]="/src=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z]*?).js/";
             $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/orderforms/$1/js/$2.js'.$pid;
@@ -405,6 +471,20 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $f[]='/href\=\"(.*?)&amp;page\=([0-9]?)"/';
             $r[]='href="$1'.'&whmcspage=$2"';
 
+        // six js links
+            $f[]="/'([a-zA-Z\_]*?).php'/";
+            $r[]="'".$home."?ccce=$1".$pid."'";
+
+            $f[]="/\"([a-zA-Z\_]*?).php\"/";
+            $r[]="\"".$home."?ccce=$1".$pid."\"";
+
+            $f[]="/'([a-zA-Z\_]*?).php.(.*?)'/";
+            $r[]="'".$home."?ccce=$1&$2".$pid."'";
+
+            $f[]="/\"([a-zA-Z\_]*?).php.(.*?)\"/";
+            $r[]="\"".$home."?ccce=$1&$2".$pid."\"";
+
+        // run regex
         $buffer=preg_replace($f,$r,$buffer,-1,$count);
     }
 
@@ -437,6 +517,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
     $buffer=str_replace('href="includes','href="'.cc_whmcs_bridge_url().'/includes',$buffer);
     $buffer=str_replace('src="includes','src="'.cc_whmcs_bridge_url().'/includes',$buffer);
     $buffer=str_replace('src="modules','src="'.cc_whmcs_bridge_url().'/modules',$buffer);
+    // six
+    $buffer=str_replace('src="assets','src="'.cc_whmcs_bridge_url().'/assets',$buffer);
 
     // proxmox
 	$buffer=str_replace('src=\"modules','src=\"'.cc_whmcs_bridge_url().'/modules',$buffer);
@@ -449,13 +531,6 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
 
     //verify captcha image
     $buffer=str_replace(cc_whmcs_bridge_url().'/includes/verifyimage.php',$home.'?ccce=verifyimage'.$pid,$buffer);
-
-    // fix double url problems
-    $buffer = str_replace($whmcs_path.'http', 'http', $buffer);
-    $buffer = str_replace($whmcs_path.'://', '://', $buffer);
-    $buffer = str_replace(cc_whmcs_bridge_url().'http', 'http', $buffer);
-	$buffer=str_replace('http:http', 'http', $buffer);
-	$buffer=str_replace('https:http', 'http', $buffer);
 
     if (isset($_REQUEST['ccce']) &&
         (($_REQUEST['ccce']=='viewinvoice' && strstr($buffer, 'invoice.css'))
@@ -501,6 +576,19 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
     $buffer=str_replace($home.'index/', $home, $buffer);
     $buffer=str_replace($home.'cart/cart.php', $home.'cart', $buffer);
     $buffer=str_replace($home.'serverstatus/serverstatus.php', $home.'serverstatus', $buffer);
+    $buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
+    $buffer=str_replace('"cart.php?','"'.$home.'?ccce=cart'.$pid.'&',$buffer);
+    
+
+    // fix double url problems
+    $buffer=str_replace('http:http', 'http', $buffer);
+    $buffer=str_replace('https:http', 'http', $buffer);
+    $buffer=str_replace('https://http//', 'http://', $buffer);
+    $buffer = str_replace($whmcs_path.'http', 'http', $buffer);
+    $buffer = str_replace($whmcs_path.'://', '://', $buffer);
+    $buffer = str_replace(cc_whmcs_bridge_url().'http', 'http', $buffer);
+    $buffer=str_replace('http:http', 'http', $buffer);
+    $buffer=str_replace('https:http', 'http', $buffer);
 
     $html = new iplug_simple_html_dom();
     $html->load($buffer);

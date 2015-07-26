@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.3.5");
+define("CC_WHMCS_BRIDGE_VERSION","3.4.0");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -247,7 +247,10 @@ function cc_whmcs_bridge_output($page=null) {
 
     $news=apply_filters('bridge_http',$news);
 
-    $news->forceWithRedirect['systpl']=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'portal';
+    $news->forceWithRedirect['systpl']=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'five';
+    if (!function_exists('cc_whmcs_bridge_parser_with_permalinks') && !in_array($news->forceWithRedirect['systpl'], array('portal', 'five'))) {
+        $news->forceWithRedirect['systpl'] = 'five';
+    }
 
     if ($cc_whmcs_bridge_to_include=='dologin') {
         $news->post['rememberme']='on';
@@ -269,13 +272,10 @@ function cc_whmcs_bridge_output($page=null) {
             echo $news->body;
             die();
         } elseif ($cc_whmcs_bridge_to_include=='dl' ||
+            (isset($_REQUEST['a']) && $_REQUEST['a'] == 'CreateEmailAccount') ||
             (stristr($cc_whmcs_bridge_to_include, 'wbteampro') !== false && isset($_REQUEST['act']) && $_REQUEST['act'] == 'download') ||
             (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && isset($_REQUEST['action']) && $_REQUEST['action'] == 'dl') ||
             (stristr($cc_whmcs_bridge_to_include, 'project_management') !== false && stristr($cc_whmcs_bridge_to_include, '.css') !== false)
-            //||
-//            @stristr($news->headers['content-type'], 'pdf') !== false || (
-  //              isset($_REQUEST['modop'], $_REQUEST['do'], $_REQUEST['page']) && !isset($_REQUEST['a'])
-    //        )
         ) {
             while (count(ob_get_status(true)) > 0) ob_end_clean();
             $output=$news->DownloadToString();
@@ -283,7 +283,10 @@ function cc_whmcs_bridge_output($page=null) {
             header("Content-Type: ".$news->headers['content-type']);
             echo $news->body;
             die();
-        } elseif ($ajax==1) {
+        } elseif ($ajax == 1 ||
+            (isset($_REQUEST['check'], $_REQUEST['addtocart'], $_REQUEST['domain']) && strtolower(filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest') ||
+            (isset($_REQUEST['responseType']) && $_REQUEST['responseType'] == 'json')
+        ) {
             $output=$news->DownloadToString();
 
             if (!$news->redirect) {
@@ -308,7 +311,15 @@ function cc_whmcs_bridge_output($page=null) {
             $output=$news->DownloadToString();
             $body=$news->body;
             $body=cc_whmcs_bridge_parser_ajax2($body);
-            header('HTTP/1.1 200 OK');
+
+            if (stristr($_REQUEST['js'], '.css') !== false) {
+                header('Content-Type: text/css');
+            } else if (stristr($_REQUEST['js'], '.js') !== false) {
+                header('Content-Type: application/javascript');
+            } else {
+                header('HTTP/1.1 200 OK');
+            }
+
             echo $body;
             die();
         } elseif ($news->redirect) {
@@ -453,7 +464,11 @@ function cc_whmcs_bridge_http($page="index") {
         $vars.=$and.'page='.$_GET['whmcspage'];
         $and='&';
     }
-    $vars.=$and.'systpl=portal';
+    $systpl=get_option('cc_whmcs_bridge_template') ? get_option('cc_whmcs_bridge_template') : 'five';
+    if (!function_exists('cc_whmcs_bridge_parser_with_permalinks') && !in_array($systpl, array('portal', 'five'))) {
+        $systpl = 'five';
+    }
+    $vars.=$and.'systpl='.$systpl;
     $and="&";
 
     if (function_exists('cc_whmcs_bridge_sso_http')) cc_whmcs_bridge_sso_http($vars,$and);

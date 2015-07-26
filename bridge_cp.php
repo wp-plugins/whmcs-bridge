@@ -72,6 +72,15 @@ function cc_whmcs_bridge_options() {
     );
 
     if (!get_option('cc_whmcs_bridge_sso_active')) {
+        $cc_whmcs_bridge_options[250] = array(
+            "name" => "Template",
+            "desc" => "Choose which template you would like to use. If you are running WHMCS v5 you can select \"portal\", WHMCS 6 no longer supports the \"portal\" template.",
+            "id" => $cc_whmcs_bridge_shortname."_template",
+            "std" => 'five',
+            "type" => "select",
+            "options" => array("five", "portal"),
+        );
+
         $cc_whmcs_bridge_options[320] = array(
             "name" => "Footer",
             "desc" => "Show your support by displaying the ".WHMCS_BRIDGE_COMPANY." footer on your site.",
