@@ -55,6 +55,7 @@ Simply go to the Wordpress Settings page for the plugins and click the Upgrade b
 * IMPORTANT: WHMCS Bridge "Free" version now defaults to "five" as the template. The "portal" is still an option, please note that there are incompatibilities with the domain checker on WHMCS 6 when using "portal".
 * Fixed WHMCS SSL certificate management issue (client area).
 * First release of WHMCS 6 compatibility - code enhancements for PRO version.
+* Please read https://i-plugins.com/whmcs-bridge/announcements/35/WHMCS-Bridge---Notes-on-WHMCS-6.html/
 
 = 3.3.5 =
 * Fixed sidebar widget issue.
