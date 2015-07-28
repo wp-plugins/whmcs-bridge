@@ -259,6 +259,8 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $loop[] = $whmcs2;
         if (!is_null($whmcs3))
             $loop[] = $whmcs3;
+		if ($whmcs_path != '/')
+			$loop[] = $whmcs_path;
 
         // FULL URLS
 
