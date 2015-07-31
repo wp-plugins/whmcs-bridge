@@ -284,6 +284,7 @@ function cc_whmcs_bridge_output($page=null) {
             echo $news->body;
             die();
         } elseif ($ajax == 1 ||
+            (isset($_REQUEST['action'])	&& $_REQUEST['action'] == 'getcustomfields') ||
             (isset($_REQUEST['check'], $_REQUEST['addtocart'], $_REQUEST['domain']) && strtolower(filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest') ||
             (isset($_REQUEST['responseType']) && $_REQUEST['responseType'] == 'json')
         ) {
