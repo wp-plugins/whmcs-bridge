@@ -257,7 +257,11 @@ class bridgeHttpRequest
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if ($withHeaders) curl_setopt($ch, CURLOPT_HEADER, 1);
 
-		$this->httpHeaders[]='bridgeon: 1';
+        if (get_option("cc_whmcs_bridge_affiliate_id") && is_numeric(get_option("cc_whmcs_bridge_affiliate_id")) && get_option("cc_whmcs_bridge_affiliate_id") > 0) {
+            $this->httpHeaders[]='bridgeaffiliate: '.get_option("cc_whmcs_bridge_affiliate_id");
+        }
+
+        $this->httpHeaders[]='bridgeon: 1';
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->httpHeaders); //avoid 417 errors
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
@@ -279,23 +283,8 @@ class bridgeHttpRequest
 		}
 
 		$cookies="";
-		/* Removed in 3.0.2
-		if ($withCookies && isset($_COOKIE)) {
-			foreach ($_COOKIE as $i => $v) {
-				if ($i=='WHMCSUID' || $i=="WHMCSPW") {
-					if ($cookies) $cookies.=';';
-					$cookies.=$i.'='.$v;
-				}
-			}
-		}
-
-		if (isset($_SESSION[$this->sid]['cookies'])) {
-			if ($cookies) $cookies.=';';
-			$cookies.=$_SESSION[$this->sid]['cookies'];
-		}
-		*/
 		$cookies=apply_filters('bridgeHttpRequest_pre',$cookies);
-		
+
 		if (isset($_SESSION[$this->sid]['cookie-array']) && count($_SESSION[$this->sid]['cookie-array']) > 0) {
 			foreach ($_SESSION[$this->sid]['cookie-array'] as $n => $v) {
 				if ($cookies) $cookies.=';';

@@ -271,6 +271,12 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $f[]='/value\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
             $r[]='value="'.$home.'?ccce=$1&$2'.$pid.'"';
 
+            $f[]='/action\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+            $r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
+
+            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php\"/';
+            $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
+
             $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
             $r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
