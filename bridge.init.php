@@ -3,7 +3,7 @@ if (!defined('WHMCS_BRIDGE')) define('WHMCS_BRIDGE','WHMCS Bridge');
 if (!defined('WHMCS_BRIDGE_COMPANY')) define('WHMCS_BRIDGE_COMPANY','i-Plugins');
 if (!defined('WHMCS_BRIDGE_PAGE')) define('WHMCS_BRIDGE_PAGE','WHMCS');
 
-define("CC_WHMCS_BRIDGE_VERSION","3.4.4");
+define("CC_WHMCS_BRIDGE_VERSION","3.4.5");
 
 $compatibleWHMCSBridgeProVersions=array('2.0.1'); //kept for compatibility with older Pro versions, not used since version 2.0.0
 
@@ -284,8 +284,9 @@ function cc_whmcs_bridge_output($page=null) {
             echo $news->body;
             die();
         } elseif ($ajax == 1 ||
+            (stristr($cc_whmcs_bridge_to_include, 'serverstatus') !== false && isset($_REQUEST['num'])) ||
             (isset($_REQUEST['action'])	&& $_REQUEST['action'] == 'getcustomfields') ||
-            (isset($_REQUEST['check'], $_REQUEST['addtocart'], $_REQUEST['domain']) && strtolower(filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest') ||
+            (isset($_REQUEST['check'], $_REQUEST['addtocart'], $_REQUEST['domain'])) ||
             (isset($_REQUEST['responseType']) && $_REQUEST['responseType'] == 'json')
         ) {
             $output=$news->DownloadToString();

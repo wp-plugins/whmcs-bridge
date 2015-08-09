@@ -14,8 +14,8 @@ function cc_whmcs_sidebar_init() {
 
 class cc_whmcs_sidebar_main extends WP_Widget {
 	/** constructor */
-	function cc_whmcs_sidebar_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Main');
+	function __construct() {
+		parent::__construct(false, $name = 'WHMCS Main');
 	}
 
 	/** @see WP_Widget::widget */
@@ -52,8 +52,8 @@ class cc_whmcs_sidebar_main extends WP_Widget {
 
 class cc_whmcs_sidebarAcInf_main extends WP_Widget {
 	/** constructor */
-	function cc_whmcs_sidebarAcInf_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Account Info');
+	function __construct() {
+		parent::__construct(false, $name = 'WHMCS Account Info');
 	}
 
 	/** @see WP_Widget::widget */
@@ -89,8 +89,8 @@ class cc_whmcs_sidebarAcInf_main extends WP_Widget {
 
 class cc_whmcs_sidebarAcSta_main extends WP_Widget {
 	/** constructor */
-	function cc_whmcs_sidebarAcSta_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Account Statistics');
+	function __construct() {
+		parent::__construct(false, $name = 'WHMCS Account Statistics');
 	}
 
 	/** @see WP_Widget::widget */
@@ -128,8 +128,8 @@ class cc_whmcs_sidebarAcSta_main extends WP_Widget {
 
 class cc_whmcs_welcomebox_main extends WP_Widget {
 	/** constructor */
-	function cc_whmcs_welcomebox_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Welcome Box');
+	function __construct() {
+		parent::__construct(false, $name = 'WHMCS Welcome Box');
 	}
 
 	/** @see WP_Widget::widget */
@@ -164,8 +164,8 @@ class cc_whmcs_welcomebox_main extends WP_Widget {
 
 class cc_whmcs_sidebarNav_main extends WP_Widget {
 	/** constructor */
-	function cc_whmcs_sidebarNav_main() {
-		parent::WP_Widget(false, $name = 'WHMCS Quick Navigation');
+	function __construct() {
+		parent::__construct(false, $name = 'WHMCS Quick Navigation');
 	}
 
 	/** @see WP_Widget::widget */
@@ -201,8 +201,8 @@ class cc_whmcs_sidebarNav_main extends WP_Widget {
 
 class cc_whmcs_sidebarNav_acc extends WP_Widget {
 	/** constructor */
-	function cc_whmcs_sidebarNav_acc() {
-		parent::WP_Widget(false, $name = 'WHMCS Client Navigation');
+	function __construct() {
+		parent::__construct(false, $name = 'WHMCS Client Navigation');
 	}
 
 	/** @see WP_Widget::widget */
@@ -239,8 +239,8 @@ class cc_whmcs_sidebarNav_acc extends WP_Widget {
 
 class cc_whmcs_topNav_main extends WP_Widget {
     /** constructor */
-    function cc_whmcs_topNav_main() {
-        parent::WP_Widget(false, $name = 'WHMCS Client Navigation (Top)');
+    function __construct() {
+        parent::__construct(false, $name = 'WHMCS Client Navigation (Top)');
     }
 
     /** @see WP_Widget::widget */
@@ -274,8 +274,8 @@ class cc_whmcs_topNav_main extends WP_Widget {
 // contribution northgatewebhosting.co.uk
 class cc_whmcs_carttotal_main extends WP_Widget {
     /** constructor */
-    function cc_whmcs_carttotal_main() {
-        parent::WP_Widget(false, $name = 'WHMCS Cart Total');
+    function __construct() {
+        parent::__construct(false, $name = 'WHMCS Cart Total');
     }
 
     /** @see WP_Widget::widget */

@@ -60,37 +60,37 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
     $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'assets/$1'.$pid;
 
 
-    $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/js\/main.js/";
+    $f[]="/templates\/orderforms\/([a-zA-Z0-9]*?)\/js\/main.js/";
     $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/js/main.js'.$pid;
 
     ## BootWHMCS
-    $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/static\/app.js/";
+    $f[]="/templates\/orderforms\/([a-zA-Z0-9]*?)\/static\/app.js/";
     $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/static/app.js'.$pid;
     ## BootWHMCS
 
-    $f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+    $f[]='/href\=\"([a-zA-Z0-9\_]*?).php\?(.*?)\"/';
     $r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-    $f[]="/jQuery.post\(\"([a-zA-Z]*?).php/";
+    $f[]="/jQuery.post\(\"([a-zA-Z0-9]*?).php/";
     $r[]="jQuery.post(\"$home?ccce=$1&ajax=1";
 
-    $f[]="/window.location\='([a-zA-Z\_]*?).php.(.*?)'/";
+    $f[]="/window.location\='([a-zA-Z0-9\_]*?).php.(.*?)'/";
     $r[]="window.location='".$home."?ccce=$1&$2".$pid."'";
 
     // six
-    $f[]="/window.location\ \=\ '([a-zA-Z\_]*?).php.(.*?)'/";
+    $f[]="/window.location\ \=\ '([a-zA-Z0-9\_]*?).php.(.*?)'/";
     $r[]="window.location='".$home."?ccce=$1&$2".$pid."'";
 
-    $f[]="/'([a-zA-Z\_]*?).php'/";
+    $f[]="/'([a-zA-Z0-9\_]*?).php'/";
     $r[]="'".$home."?ccce=$1".$pid."'";
 
-    $f[]="/\"([a-zA-Z\_]*?).php\"/";
+    $f[]="/\"([a-zA-Z0-9\_]*?).php\"/";
     $r[]="\"".$home."?ccce=$1".$pid."\"";
 
-    $f[]="/'([a-zA-Z\_]*?).php.(.*?)'/";
+    $f[]="/'([a-zA-Z0-9\_]*?).php.(.*?)'/";
     $r[]="'".$home."?ccce=$1&$2".$pid."'";
 
-    $f[]="/\"([a-zA-Z\_]*?).php.(.*?)\"/";
+    $f[]="/\"([a-zA-Z0-9\_]*?).php.(.*?)\"/";
     $r[]="\"".$home."?ccce=$1&$2".$pid."\"";
     // six
 
@@ -109,6 +109,12 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
     if (stristr($_REQUEST['js'], 'assets') !== false && stristr($_REQUEST['js'], '.css') !== false)
         $buffer=str_replace('../fonts/', cc_whmcs_bridge_url().'/assets/fonts/',$buffer);
 
+    if (stristr($_REQUEST['js'], '.css') !== false && stristr($_REQUEST['js'], 'templates') !== false) {
+        $path = pathinfo($_REQUEST['js']);
+        $relative_dir = $path['dirname'];
+        $buffer=str_replace('url(\'', 'url(\''.cc_whmcs_bridge_url().'/'.$relative_dir.'/', $buffer);
+    }
+
     $buffer=str_replace('"cart.php"','"'.$home.'?ccce=cart'.$pid.'"',$buffer);
     $buffer=str_replace('"cart.php?','"'.$home.'?ccce=cart'.$pid.'&"',$buffer);
     $buffer=str_replace("'cart.php?","'".$home."?ccce=cart".$pid.'&',$buffer);
@@ -122,16 +128,16 @@ function cc_whmcs_bridge_parser_ajax1($buffer) {
 function cc_whmcs_bridge_parser_ajax2($buffer) {
     cc_whmcs_bridge_home($home,$pid);
 
-    $f[]="/.post\(\"([a-zA-Z]*?).php/";
+    $f[]="/.post\(\"([a-zA-Z0-9]*?).php/";
     $r[]=".post(\"$home?ccce=$1&ajax=2";
 
-    $f[]="/.post\('([a-zA-Z]*?).php/";
+    $f[]="/.post\('([a-zA-Z0-9]*?).php/";
     $r[]=".post('$home?ccce=$1&ajax=2";
 
-    $f[]='/document.location\=\"([a-zA-Z\_]*?).php.(.*?)\"/';
+    $f[]='/document.location\=\"([a-zA-Z0-9\_]*?).php.(.*?)\"/';
     $r[]='document.location="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-    $f[]='/window.open\(\"([a-zA-Z\_]*?).php.(.*?)\"/';
+    $f[]='/window.open\(\"([a-zA-Z0-9\_]*?).php.(.*?)\"/';
     $r[]='window.open("'.$home.'?ajax=1&ccce=$1&$2'.$pid.'"';
 
     $buffer=preg_replace($f,$r,$buffer,-1,$count);
@@ -244,50 +250,45 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
     if (get_option('cc_whmcs_bridge_permalinks') && function_exists('cc_whmcs_bridge_parser_with_permalinks') && !$pid) {
         $buffer=cc_whmcs_bridge_parser_with_permalinks($buffer,$home,$pid,$whmcs,$sub,$whmcs2,$whmcs3);
     } else {
-        // index.php fixes
-            $f[]="/action='index.php.(.*?)/";
-            $r[]="action='$home?ccce=index&$1";
-
-            if (stristr($home, 'index.php') === false) {
-                $f[]="/index.php.(.*?)/";
-                $r[]="$home?ccce=index&$1";
-            }
-
         $loop = array();
         $loop[] = $whmcs;
         if (!is_null($whmcs2))
             $loop[] = $whmcs2;
         if (!is_null($whmcs3))
             $loop[] = $whmcs3;
-		if ($whmcs_path != '/')
-			$loop[] = $whmcs_path;
+        if ($whmcs_path != '')
+            $loop[] = $whmcs_path;
 
         // FULL URLS
 
         foreach ($loop as $rep_url) {
-            $f[]='/value\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php\"/';
+            // templates css/js
+            $f[]="/src=\"".preg_quote($rep_url,'/')."templates\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z0-9]*?).js/";
+            $r[]="src=\"{$home}js/?ajax=1&js=".'templates/$1/js/$2.js'.$pid;
+
+            $f[]="/href=\"".preg_quote($rep_url,'/')."templates\/([a-zA-Z0-9]*?)\/css\/([a-zA-Z0-9]*?).css/";
+            $r[]="href=\"{$home}js/?ajax=1&js=".'templates/$1/css/$2.css'.$pid;
+
+            $f[]='/value\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php\"/';
             $r[]='value="'.$home.'?ccce=$1'.$pid.'"';
 
-            $f[]='/value\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+            $f[]='/value\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php.(.*?)\"/';
             $r[]='value="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-            $f[]='/action\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+            $f[]='/action\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php.(.*?)\"/';
             $r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php\"/';
+            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php\"/';
             $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php\?((?:(?!phpinfo|").)*)\"/';
             $r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php\"/';
+            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php\"/';
             $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
-            $f[]='/href\=\"'.preg_quote($rep_url,'/').'([a-zA-Z0-9]*?).php\"/';
-            $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
-
-            $f[]='/'.preg_quote($rep_url,'/').'([a-zA-Z\_]*?).php/';
-            $r[]=''.$home.'?ccce=$1'.$pid;
+            //$f[]='/'.preg_quote($rep_url,'/').'([a-zA-Z0-9\_]*?).php/';
+            //$r[]=''.$home.'?ccce=$1'.$pid;
 
             // Payment Gateways
             $f[]='/'.preg_quote($rep_url,'/').'modules\/gateways\/([a-zA-Z0-9]*?)\/([a-zA-Z0-9]*?).php/';
@@ -319,47 +320,47 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
         }
 
         # 2factor
-            $f[] = '/img src\=\"\/([a-zA-Z]*?)\/([a-zA-Z]*?).php.(.*?)\"/';
+            $f[] = '/img src\=\"\/([a-zA-Z0-9]*?)\/([a-zA-Z0-9]*?).php.(.*?)\"/';
             $r[]="img src=\"$home"."?ccce=$2&$3&ajax=2\"";
 
         # wbteampro
-            $f[]='/img src\=\"([a-zA-Z]*?).php.(.*?)\"/';
+            $f[]='/img src\=\"([a-zA-Z0-9]*?).php.(.*?)\"/';
             $r[]="img src=\"$home"."?ccce=$1&$2&ajax=2\"";
 
         // SUB FOLDERS
-            $f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+            $f[]='/href\=\"'.preg_quote($sub,'/').'([a-zA-Z0-9\_]*?).php.(.*?)\"/';
             $r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
         // hyperlinks
-            $f[]='/href\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+            $f[]='/href\=\"([a-zA-Z0-9\_]*?).php\?(.*?)\"/';
             $r[]='href="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-            $f[]='/href\=\"([a-zA-Z\_]*?).php\"/';
+            $f[]='/href\=\"([a-zA-Z0-9\_]*?).php\"/';
             $r[]='href="'.$home.'?ccce=$1'.$pid.'"';
 
         // images
-            $f[]='/img src\=\"([a-zA-Z]*?).php.(.*?)\"/';
+            $f[]='/img src\=\"([a-zA-Z0-9]*?).php.(.*?)\"/';
             $r[]="img src=\"$home"."$1/?$2&ajax=2\"";
 
         // form posts
-            $f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"([a-zA-Z\_]*?).php\"(.*?)>/';
+            $f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"([a-zA-Z0-9\_]*?).php\"(.*?)>/';
             if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
             else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
 
-            $f[]='/action\=\"([a-zA-Z\_]*?).php\?(.*?)\"/';
+            $f[]='/action\=\"([a-zA-Z0-9\_]*?).php\?(.*?)\"/';
             $r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
-            $f[]='/action\=\"([a-zA-Z\_]*?).php\"/';
+            $f[]='/action\=\"([a-zA-Z0-9\_]*?).php\"/';
             $r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
-            $f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"(.*?)>/';
+            $f[]='/<form(.*?)method\=\"get\"(.*?)action\=\"'.preg_quote($sub,'/').'([a-zA-Z0-9\_]*?).php\"(.*?)>/';
             if (!$pid) $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" />';
             else $r[]='<form$1method="get"$2action="'.$home.'"$4><input type="hidden" name="ccce" value="$3" /><input type="hidden" name="page_id" value="'.cc_whmcs_bridge_mainpage().'"/>';
 
-            $f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php\"/';
+            $f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z0-9\_]*?).php\"/';
             $r[]='action="'.$home.'?ccce=$1'.$pid.'"';
 
-            $f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\"/';
+            $f[]='/action\=\"'.preg_quote($sub,'/').'([a-zA-Z0-9\_]*?).php.(.*?)\"/';
             $r[]='action="'.$home.'?ccce=$1&$2'.$pid.'"';
 
         // url specific fixes
@@ -387,32 +388,32 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $r[]='';
 
         // js single quotes
-            $f[]='/window.location\=\''.'([a-zA-Z\_]*?).php\'/';
+            $f[]='/window.location\=\''.'([a-zA-Z0-9\_]*?).php\'/';
             $r[]='window.location=\''.$home.'?ccce=$1'.$pid.'\'';
 
-            $f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z\_]*?).php.(.*?)\'/';
+            $f[]='/window.location\=\''.preg_quote($sub,'/').'([a-zA-Z0-9\_]*?).php.(.*?)\'/';
             $r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
-            $f[]='/window.location\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
+            $f[]='/window.location\=\''.'([a-zA-Z0-9\_]*?).php.(.*?)\'/';
             $r[]='window.location=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
-            $f[]='/window.location \= \''.'([a-zA-Z\_]*?).php.(.*?)\'/';
+            $f[]='/window.location \= \''.'([a-zA-Z0-9\_]*?).php.(.*?)\'/';
             $r[]='window.location = \''.$home.'?ccce=$1'.$pid.'&$2\'';
 
-            $f[]="/.post\(\'([a-zA-Z]*?).php/";
+            $f[]="/.post\(\'([a-zA-Z0-9]*?).php/";
             $r[]=".post('$home?ccce=$1&ajax=1$pid";
 
-            $f[]="/popupWindow\(\'([a-zA-Z]*?).php\?/";
+            $f[]="/popupWindow\(\'([a-zA-Z0-9]*?).php\?/";
             $r[]="popupWindow('$home?ccce=$1&ajax=1$pid&";
 
-            $f[]='/window.open\(\'([a-zA-Z\_]*?).php.(.*?)\'/';
+            $f[]='/window.open\(\'([a-zA-Z0-9\_]*?).php.(.*?)\'/';
             $r[]='window.open(\''.$home.'?ajax=1&ccce=$1&$2'.$pid.'\'';
 
             // quotations using location.href with single quote
-            $f[]='/location.href\=\''.'([a-zA-Z\_]*?).php\'/';
+            $f[]='/location.href\=\''.'([a-zA-Z0-9\_]*?).php\'/';
             $r[]='location.href=\''.$home.'?ccce=$1'.$pid.'\'';
 
-            $f[]='/location.href\=\''.'([a-zA-Z\_]*?).php.(.*?)\'/';
+            $f[]='/location.href\=\''.'([a-zA-Z0-9\_]*?).php.(.*?)\'/';
             $r[]='location.href=\''.$home.'?ccce=$1&$2'.$pid.'\'';
 
         // js double quotes
@@ -425,7 +426,7 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $f[]='/.load\(\"submitticket.php/';
             $r[]='.load("'.$home.'?ccce=submitticket&ajax=1'.$pid;
 
-            $f[]="/.post\(\"([a-zA-Z]*?).php/";
+            $f[]="/.post\(\"([a-zA-Z0-9]*?).php/";
             $r[]=".post(\"$home?ccce=$1&ajax=1$pid";
 
         // six
@@ -449,28 +450,28 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'modules/$1'.$pid;
 
         // six templates css/js
-            $f[]="/src=\"".preg_quote($whmcs_path, '/')."templates\/([a-zA-Z]*?)\/js\/([a-zA-Z0-9]*?).js/";
+            $f[]="/src=\"".preg_quote($whmcs_path, '/')."templates\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z0-9]*?).js/";
             $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/js/$2.js'.$pid;
 
-            $f[]="/href=\"".preg_quote($whmcs_path, '/')."templates\/([a-zA-Z]*?)\/css\/([a-zA-Z0-9]*?).css/";
+            $f[]="/href=\"".preg_quote($whmcs_path, '/')."templates\/([a-zA-Z0-9]*?)\/css\/([a-zA-Z0-9]*?).css/";
             $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/css/$2.css'.$pid;
 
         // orderforms
-            $f[]="/src=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z]*?).js/";
+            $f[]="/src=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z0-9]*?).js/";
             $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/orderforms/$1/js/$2.js'.$pid;
 
-            $f[]="/href=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/([a-zA-Z]*?).css/";
+            $f[]="/href=\"templates\/orderforms\/([a-zA-Z0-9]*?)\/([a-zA-Z0-9]*?).css/";
             $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'templates/orderforms/$1/$2.css'.$pid;
 
         // templates css/js
-            $f[]="/src=\"templates\/([a-zA-Z]*?)\/js\/([a-zA-Z0-9]*?).js/";
+            $f[]="/src=\"templates\/([a-zA-Z0-9]*?)\/js\/([a-zA-Z0-9]*?).js/";
             $r[]="src=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/js/$2.js'.$pid;
 
-            $f[]="/href=\"templates\/([a-zA-Z]*?)\/css\/([a-zA-Z0-9]*?).css/";
+            $f[]="/href=\"templates\/([a-zA-Z0-9]*?)\/css\/([a-zA-Z0-9]*?).css/";
             $r[]="href=\"{$home}?ccce=js&ajax=1&js=".'templates/$1/css/$2.css'.$pid;
 
         ## BootWHMCS
-            $f[]="/templates\/orderforms\/([a-zA-Z]*?)\/static\/app.js/";
+            $f[]="/templates\/orderforms\/([a-zA-Z0-9]*?)\/static\/app.js/";
             $r[]=$home."?ccce=js&ajax=2&js=".'templates/orderforms/$1/static/app.js'.$pid;
         ## BootWHMCS
 
@@ -483,16 +484,16 @@ function cc_whmcs_bridge_parser($buffer=null,$current=false) {
             $r[]='href="$1'.'&whmcspage=$2"';
 
         // six js links
-            $f[]="/'([a-zA-Z\_]*?).php'/";
+            $f[]="/'([a-zA-Z0-9\_]*?).php'/";
             $r[]="'".$home."?ccce=$1".$pid."'";
 
-            $f[]="/\"([a-zA-Z\_]*?).php\"/";
+            $f[]="/\"([a-zA-Z0-9\_]*?).php\"/";
             $r[]="\"".$home."?ccce=$1".$pid."\"";
 
-            $f[]="/'([a-zA-Z\_]*?).php.(.*?)'/";
+            $f[]="/'([a-zA-Z0-9\_]*?).php.(.*?)'/";
             $r[]="'".$home."?ccce=$1&$2".$pid."'";
 
-            $f[]="/\"([a-zA-Z\_]*?).php.(.*?)\"/";
+            $f[]="/\"([a-zA-Z0-9\_]*?).php.(.*?)\"/";
             $r[]="\"".$home."?ccce=$1&$2".$pid."\"";
 
         // run regex
